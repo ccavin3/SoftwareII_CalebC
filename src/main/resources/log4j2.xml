@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <CustomLevels>
+        <CustomLevel name="LOGIN" intLevel="350" />
+    </CustomLevels>
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <File name="LoginFileAppender" fileName="login_activity.txt" immediateFlush="true" append="true">
+            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} %msg%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="ConsoleAppender" level="debug" />
+        </Root>
+        <Logger name="com.example.client_schedule.controller.LoginController" level="info" additivity="false">
+            <AppenderRef ref="LoginFileAppender" level="login"/>
+        </Logger>
+    </Loggers>
+</Configuration>

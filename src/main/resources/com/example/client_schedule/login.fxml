@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<AnchorPane id="vbox" prefHeight="265.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" >
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <Label fx:id="countryLabel" text="%label.country.text" AnchorPane.topAnchor= "5" AnchorPane.leftAnchor="10" />
+    <Label fx:id="countryText" AnchorPane.topAnchor="5" AnchorPane.leftAnchor="85" disable="true" />
+    <Label fx:id="usernameLabel" text="%label.user.text" AnchorPane.topAnchor="35" AnchorPane.leftAnchor="10" />
+    <TextField fx:id="textUser" AnchorPane.topAnchor="35" AnchorPane.leftAnchor="85" />
+    <Label fx:id="pwdLabel" text="%label.pwd.text" AnchorPane.topAnchor="65" AnchorPane.leftAnchor="10" />
+    <TextField fx:id="textPwd" AnchorPane.topAnchor="65" AnchorPane.leftAnchor="85" />
+    <Button fx:id="loginButton" defaultButton="true" text="%button.login.text" AnchorPane.bottomAnchor="30" AnchorPane.rightAnchor="10" />
+    <Label fx:id="loginMessage" AnchorPane.bottomAnchor="1" AnchorPane.leftAnchor="5" />
+
+</AnchorPane>

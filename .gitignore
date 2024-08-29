@@ -37,3 +37,6 @@ build/
 ### Mac OS ###
 .DS_Store
 /.idea/.gitignore
+
+misc.xml
+workspace.xml

@@ -1,0 +1,1 @@
+moduleSearchIndex = [{"l":"com.example.client_schedule"}];updateSearchResults();

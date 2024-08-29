@@ -26,8 +26,14 @@ import org.apache.logging.log4j.Logger;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+/**
+ * The Login page controller.
+ */
 public class LoginController implements Initializable {
 
+    /**
+     * The Logger.
+     */
     Logger logger = LogManager.getLogger(LoginController.class);
 
     private ResourceBundle _bundle;
@@ -40,8 +46,14 @@ public class LoginController implements Initializable {
     @FXML
     private Label usernameLabel;
 
+    /**
+     * The Text user.
+     */
     @FXML TextField textUser;
 
+    /**
+     * The Pwd label.
+     */
     @FXML
     Label pwdLabel;
 
@@ -62,6 +74,11 @@ public class LoginController implements Initializable {
     private String country;
     private String userName;
 
+    /**
+     * Instantiates a new Login controller.
+     *
+     * @param country the country
+     */
     public LoginController(String country) {
         this.country = country;
         db = new DBContext();

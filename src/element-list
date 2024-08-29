@@ -1,0 +1,5 @@
+module:com.example.client_schedule
+com.example.client_schedule
+com.example.client_schedule.controller
+com.example.client_schedule.entities
+com.example.client_schedule.helper

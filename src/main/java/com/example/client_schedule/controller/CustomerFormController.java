@@ -29,7 +29,16 @@ import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 import org.hibernate.sql.ast.tree.from.TableAliasResolver;
 
+/**
+ * The type Customer form controller. This class controls all the functionality for Customer management.
+ */
 public class CustomerFormController implements Initializable {
+    /**
+     * Instantiates a new Customer form controller.
+     *
+     * @param db       the db
+     * @param userName the user name
+     */
     public CustomerFormController(DBContext db, String userName) {
         this.db = db;
         this.userName = userName;
@@ -66,39 +75,63 @@ public class CustomerFormController implements Initializable {
     @FXML
     private VBox tableArea;
 
+    /**
+     * The Insert button.
+     */
     @FXML
     protected Button insertButton;
 
     @FXML
     private EventHandler<ActionEvent> onInsertAction;
 
+    /**
+     * The Delete button.
+     */
     @FXML
     protected Button deleteButton;
 
     @FXML
     private EventHandler<ActionEvent> onDeleteAction;
 
+    /**
+     * The Revert button.
+     */
     @FXML
     protected Button revertButton;
 
     @FXML
     private EventHandler<ActionEvent> onRevertAction;
 
+    /**
+     * The Commit button.
+     */
     @FXML
     protected Button commitButton;
 
     @FXML
     private EventHandler<ActionEvent> onCommitAction;
 
+    /**
+     * The Table view control buttons.
+     */
     @FXML
     protected HBox tableViewControlButtons;
 
+    /**
+     * The Add insert.
+     */
     @FXML
     protected HBox addInsert;
 
+    /**
+     * The Commit revert.
+     */
     @FXML
     protected HBox commitRevert;
 
+    /**
+     * The Tab content.
+     */
     @FXML
     protected VBox tabContent;
 
@@ -185,18 +218,38 @@ public class CustomerFormController implements Initializable {
         tableView.getColumns().addAll(idCol, nameCol, addressCol, postalCol, phoneCol, divisionCol);
     }
 
+    /**
+     * Gets db.
+     *
+     * @return the db
+     */
     public DBContext getDb() {
         return db;
     }
 
+    /**
+     * Sets db.
+     *
+     * @param db the db
+     */
     public void setDb(DBContext db) {
         this.db = db;
     }
 
+    /**
+     * Gets user name.
+     *
+     * @return the user name
+     */
     public String getUserName() {
         return userName;
     }
 
+    /**
+     * Sets user name.
+     *
+     * @param userName the user name
+     */
     public void setUserName(String userName) {
         this.userName = userName;
     }

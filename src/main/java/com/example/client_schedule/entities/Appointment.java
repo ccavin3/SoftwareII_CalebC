@@ -2,8 +2,12 @@ package com.example.client_schedule.entities;
 
 import javafx.fxml.FXML;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import jakarta.persistence.*;
 
@@ -82,6 +86,17 @@ public class Appointment {
     @Column(name="Contact_ID", insertable=false, updatable=false)
     private int contactId;
 
+    @FXML
+    private LocalTime startTime;
+
+    @FXML
+    private LocalDate startDate;
+
+    @FXML
+    private LocalTime endTime;
+
+    @FXML
+    private LocalDate endDate;
 
 //endregion
 
@@ -381,6 +396,10 @@ public class Appointment {
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
+        if (startDate == null) {
+            this.startDate = start.toLocalDate();
+            this.startTime = start.toLocalTime();
+        }
     }
 
     /**
@@ -399,6 +418,10 @@ public class Appointment {
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
+        if (this.endDate == null) {
+            this.endDate = end.toLocalDate();
+            this.endTime = end.toLocalTime();
+        }
     }
 
     /**
@@ -581,5 +604,37 @@ public class Appointment {
         this.updatedBy = updatedBy;
     }
 
-//endregion
+    public LocalTime getStartTime() { return startTime; }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+        this.start = start.toLocalDate().atTime(startTime);
+    }
+
+    public LocalDate getStartDate() { return startDate; }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+        this.start = startDate.atTime(startTime);
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+        this.end = end.toLocalDate().atTime(endTime);
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+        this.end = endDate.atTime(endTime);
+    }
+
+    //endregion
 }

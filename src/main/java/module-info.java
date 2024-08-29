@@ -16,4 +16,6 @@ module com.example.client_schedule {
 
     exports com.example.client_schedule.controller;
     opens com.example.client_schedule.controller to javafx.fxml;
+
+    exports com.example.client_schedule.helper;
 }

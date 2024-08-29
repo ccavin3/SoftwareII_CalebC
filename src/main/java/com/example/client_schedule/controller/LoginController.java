@@ -144,8 +144,11 @@ public class LoginController implements Initializable {
 
     private void launchTabForm() throws IOException {
         Stage thiswindow = (Stage)loginButton.getScene().getWindow();
-        CustomerFormController controller = new CustomerFormController(db, userName);
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
+//        CustomerFormController controller = new CustomerFormController(db, userName);
+        AppointmentFormController controller = new AppointmentFormController(db, userName);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("applicationForm.fxml"), _bundle);
+//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 800, 600);

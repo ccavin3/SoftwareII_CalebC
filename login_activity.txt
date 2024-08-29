@@ -115,3 +115,7 @@
 2024-08-29 10:36:37.287 User: test - Login success
 2024-08-29 10:37:54.551 User: test - Login success
 2024-08-29 10:38:25.604 User: test - Login success
+2024-08-29 11:16:58.046 User: test - Error connecting to system
+2024-08-29 11:20:20.193 User: test - Error connecting to system
+2024-08-29 11:27:35.848 User: test - Login success
+2024-08-29 11:30:37.960 User: test - Login success

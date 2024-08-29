@@ -70,7 +70,7 @@ public class LoginController implements Initializable {
     @FXML
     private Label loginMessage;
 
-    private DBContext db = new DBContext();
+    private DBContext db;
 
     private String country;
     private String userName;
@@ -80,9 +80,9 @@ public class LoginController implements Initializable {
      *
      * @param country the country
      */
-    public LoginController(String country) {
+    public LoginController(DBContext db, String country) {
+        this.db = db;
         this.country = country;
-        db = new DBContext();
     }
 
     private String msg;
@@ -104,7 +104,7 @@ public class LoginController implements Initializable {
             } else {
                 msg = "";
                 loginMessage.setText(msg);
-                if (user == null || user.trim() == "" || pwd == null || pwd.trim() == "") {
+                if (user == null || user.trim().isEmpty() || pwd == null || pwd.trim().isEmpty()) {
                     msg = _bundle.getString("login.invalid.creds.response");
                     loginMessage.setText(msg);
                     logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
@@ -114,7 +114,7 @@ public class LoginController implements Initializable {
                         Query q = db.em.createQuery("from com.example.client_schedule.entities.User where userName = :n and password = :p");
                         q.setParameter("n", user);
                         q.setParameter("p", pwd);
-                        if (q.getResultList().stream().count() > 0) {
+                        if ((long) q.getResultList().size() > 0) {
                             msg = _bundle.getString("login.successful.text");
                             loginMessage.setText("");
                             logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
@@ -147,7 +147,7 @@ public class LoginController implements Initializable {
 //        CustomerFormController controller = new CustomerFormController(db, userName);
         AppointmentFormController controller = new AppointmentFormController(db, userName);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("applicationForm.fxml"), _bundle);
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
 //        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();

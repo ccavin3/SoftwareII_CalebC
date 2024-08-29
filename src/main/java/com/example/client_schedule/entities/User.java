@@ -20,15 +20,15 @@ public class User {
     @FXML
     @Column(name="User_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int id;
+    protected int id;
 
     @FXML
     @Column(name="User_Name")
-    private String userName;
+    protected String userName;
 
     @FXML
     @Column(name="Password")
-    private String password;
+    protected String password;
 
     /**
      * The Created.
@@ -59,7 +59,7 @@ public class User {
 
 //region ORM relationship
 @OneToMany(mappedBy = "user")
-private List<Appointment> appointments = new ArrayList<>();
+protected List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 

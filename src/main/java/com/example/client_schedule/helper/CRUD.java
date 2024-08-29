@@ -50,7 +50,10 @@ public class CRUD<T> extends TypeToken<T>{
     public ObservableList<T> rows() {
         try {
             String tableName = ((Table) getGenericClass().getAnnotation(Table.class)).name();
-            String fieldnames = readColumns().stream().map(f -> f.getName()).collect(Collectors.joining(","));
+            String fieldnames = readColumns()
+                    .stream()
+                    .map(f -> f.getName())
+                    .collect(Collectors.joining(","));
             String sql = String.format("select t from com.example.client_schedule.entities.%s t", getGenericClass().getSimpleName());
 //            String sql = String.format("select %s from com.example.client_schedule.entities.%s", fieldnames, getGenericClass().getSimpleName());
 //            String sql = String.format("select t from %s t", tableName);
@@ -65,7 +68,7 @@ public class CRUD<T> extends TypeToken<T>{
 
     protected ObservableList<Field> readColumns() throws ClassNotFoundException {
         List<Field> fields = readAllColumns(new LinkedList<Field>(), getGenericClass());
-        List<Field> filtered = fields.stream().filter(f -> f.isAnnotationPresent(Column.class)).toList();
+        List<Field> filtered = fields.stream().filter(f -> f.isAnnotationPresent(Column.class)).collect(Collectors.toList());
         return FXCollections.observableList(filtered);
     }
     protected List<Field> readAllColumns(List<Field> fields, final Class<?> type) throws ClassNotFoundException {

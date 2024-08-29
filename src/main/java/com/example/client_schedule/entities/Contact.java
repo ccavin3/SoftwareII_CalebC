@@ -18,20 +18,20 @@ public class Contact {
     @FXML
     @Column(name="Contact_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int id;
+    protected int id;
 
     @FXML
     @Column(name="Contact_Name")
-    private String name;
+    protected String name;
 
     @FXML
     @Column(name="Email")
-    private String email;
+    protected String email;
 //endregion
 
 //region ORM relationship
     @OneToMany(mappedBy = "contact")
-    private List<Appointment> appointments = new ArrayList<>();
+    protected List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 

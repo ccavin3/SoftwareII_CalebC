@@ -24,7 +24,7 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException {
         Locale locale = Locale.getDefault();
         ResourceBundle bundle = ResourceBundle.getBundle("com.example.client_schedule.i18n", locale);
-        LoginController controller = new LoginController(locale.getDisplayCountry());
+        LoginController controller = new LoginController(new DBContext(), locale.getDisplayCountry());
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login.fxml"), bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();

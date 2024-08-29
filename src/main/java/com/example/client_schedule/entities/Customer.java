@@ -20,23 +20,23 @@ public class Customer {
     @FXML
     @Column(name="Customer_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int id;
+    protected int id;
 
     @FXML
     @Column(name="Customer_Name")
-    private String name;
+    protected String name;
 
     @FXML
     @Column(name="Address")
-    private String address;
+    protected String address;
 
     @FXML
     @Column(name="Postal_Code")
-    private String zip;
+    protected String zip;
 
     @FXML
     @Column(name="Phone")
-    private String phone;
+    protected String phone;
 
     /**
      * The Created.
@@ -65,17 +65,17 @@ public class Customer {
 
     @FXML
     @Column(name="Division_ID", insertable=false, updatable=false)
-    private int divisionId;
+    protected int divisionId;
 
 //endregion
 
 //region ORM
     @ManyToOne
     @JoinColumn(name="Division_ID")
-    private Division division;
+    protected Division division;
 
     @OneToMany(mappedBy = "customer")
-    private List<Appointment> appointments = new ArrayList<>();
+    protected List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 

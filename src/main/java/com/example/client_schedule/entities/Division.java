@@ -20,11 +20,11 @@ public class Division {
     @FXML
     @Column(name="Division_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int id;
+    protected int id;
 
     @FXML
     @Column(name="Division")
-    private String name;
+    protected String name;
 
     /**
      * The Created.
@@ -53,17 +53,17 @@ public class Division {
 
     @FXML
     @Column(name="Country_ID", insertable=false, updatable=false)
-    private int countryId;
+    protected int countryId;
 
 //endregion
 
 //region ORM
     @ManyToOne()
     @JoinColumn(name="Country_ID")
-    private Country country;
+    protected Country country;
 
     @OneToMany(mappedBy = "division")
-    private List<Customer> customers = new ArrayList<>();
+    protected List<Customer> customers = new ArrayList<>();
 //endregion
 
     /**

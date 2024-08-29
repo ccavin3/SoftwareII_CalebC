@@ -197,7 +197,7 @@ public class AppointmentFormController extends Appointment implements Initializa
         //startCol.setCellFactory(TextFieldTableCell.forTableColumn());
         //endCol.setCellFactory(TextFieldTableCell.forTableColumn());
         DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm:ss t");
+        DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
         startTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
             @Override
             protected void updateItem(LocalTime time, boolean empty) {

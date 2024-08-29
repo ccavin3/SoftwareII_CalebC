@@ -8,7 +8,7 @@ module com.example.client_schedule {
     requires org.apache.logging.log4j.core;
     requires org.apache.logging.log4j.slf4j.impl;
 
-    opens com.example.client_schedule.entities to org.hibernate.orm.core, java.base;
+    opens com.example.client_schedule.entities to org.hibernate.orm.core, java.base, javafx.fxml;
     exports com.example.client_schedule.entities;
 
     opens com.example.client_schedule to javafx.fxml, java.base;

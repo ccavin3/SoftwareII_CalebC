@@ -23,31 +23,31 @@ public class Appointment {
     @FXML
     @Column(name="Appointment_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int id;
+    protected int id;
 
     @FXML
     @Column(name="Title")
-    private String title;
+    protected String title;
 
     @FXML
     @Column(name="Description")
-    private String description;
+    protected String description;
 
     @FXML
     @Column(name="Location")
-    private String location;
+    protected String location;
 
     @FXML
     @Column(name="Type")
-    private String type;
+    protected String type;
 
     @FXML
     @Column(name="Start")
-    private LocalDateTime start;
+    protected LocalDateTime start;
 
     @FXML
     @Column(name="End")
-    private LocalDateTime end;
+    protected LocalDateTime end;
 
     /**
      * The Created.
@@ -76,42 +76,42 @@ public class Appointment {
 
     @FXML
     @Column(name="Customer_ID", insertable=false, updatable=false)
-    private int customerId;
+    protected int customerId;
 
     @FXML
     @Column(name="User_ID", insertable=false, updatable=false)
-    private int userId;
+    protected int userId;
 
     @FXML
     @Column(name="Contact_ID", insertable=false, updatable=false)
-    private int contactId;
+    protected int contactId;
 
     @FXML
-    private LocalTime startTime;
+    protected LocalTime startTime;
 
     @FXML
-    private LocalDate startDate;
+    protected LocalDate startDate;
 
     @FXML
-    private LocalTime endTime;
+    protected LocalTime endTime;
 
     @FXML
-    private LocalDate endDate;
+    protected LocalDate endDate;
 
 //endregion
 
 //region ORM
     @ManyToOne()
     @JoinColumn(name="Customer_ID")
-    private Customer customer;
+    protected Customer customer;
 
     @ManyToOne()
     @JoinColumn(name="User_ID")
-    private User user;
+    protected User user;
 
     @ManyToOne()
     @JoinColumn(name="Contact_ID")
-    private Contact contact;
+    protected Contact contact;
 
 //endregion
 
@@ -396,10 +396,8 @@ public class Appointment {
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
-        if (startDate == null) {
-            this.startDate = start.toLocalDate();
-            this.startTime = start.toLocalTime();
-        }
+        this.startDate = start.toLocalDate();
+        this.startTime = start.toLocalTime();
     }
 
     /**
@@ -418,10 +416,8 @@ public class Appointment {
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
-        if (this.endDate == null) {
-            this.endDate = end.toLocalDate();
-            this.endTime = end.toLocalTime();
-        }
+        this.endDate = end.toLocalDate();
+        this.endTime = end.toLocalTime();
     }
 
     /**

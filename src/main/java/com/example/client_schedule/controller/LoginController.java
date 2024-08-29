@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -58,7 +59,7 @@ public class LoginController implements Initializable {
     Label pwdLabel;
 
     @FXML
-    private TextField textPwd;
+    private PasswordField textPwd;
 
     @FXML
     private Button loginButton;

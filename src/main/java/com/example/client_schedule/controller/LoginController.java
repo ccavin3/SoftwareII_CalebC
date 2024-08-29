@@ -91,6 +91,8 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _bundle = resourceBundle;
         countryText.setText(country);
+
+
         onLoginAction = e -> {
             String user = userName = textUser.getText();
             String pwd = textPwd.getText();

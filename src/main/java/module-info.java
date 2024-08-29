@@ -4,7 +4,6 @@ module com.example.client_schedule {
     requires java.sql;
     requires org.hibernate.orm.core;
     requires jakarta.persistence;
-    requires org.reflections;
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
     requires org.apache.logging.log4j.slf4j.impl;

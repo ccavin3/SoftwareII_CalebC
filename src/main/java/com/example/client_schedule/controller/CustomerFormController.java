@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -73,7 +74,7 @@ public class CustomerFormController implements Initializable {
     private TableView<Customer> tableView;
 
     @FXML
-    private VBox tableArea;
+    private StackPane tableArea;
 
     /**
      * The Insert button.
@@ -166,41 +167,20 @@ public class CustomerFormController implements Initializable {
         TableColumn<Customer, Integer> divisionIdCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
         TableColumn<Customer, Division> divisionCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
 
-        PropertyValueFactory<Customer, Integer> idproperty = new PropertyValueFactory<Customer, Integer>("id");
-        PropertyValueFactory<Customer, String> nameproperty = new PropertyValueFactory<Customer, String>("name");
-        PropertyValueFactory<Customer, String> addressproperty = new PropertyValueFactory<Customer, String>("address");
-        PropertyValueFactory<Customer, String> postalproperty = new PropertyValueFactory<Customer, String>("zip");
-        PropertyValueFactory<Customer, String> phoneproperty = new PropertyValueFactory<Customer, String>("phone");
-        PropertyValueFactory<Customer, Integer> divisionIdproperty = new PropertyValueFactory<Customer, Integer>("divisionId");
-        PropertyValueFactory<Customer, Division> divisionproperty = new PropertyValueFactory<Customer, Division>("division");
-//        idCol.setCellValueFactory(cellData ->
-//                new SimpleStringProperty(Integer.toString(cellData.getValue().getId())));
-        idCol.setCellValueFactory(idproperty);
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        postalCol.setCellValueFactory(new PropertyValueFactory<>("zip"));
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        divisionCol.setCellValueFactory(new PropertyValueFactory<>("division"));
+        divisionIdCol.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
+
         idCol.setCellFactory(TextFieldTableCell.forTableColumn(stringConverter));
-
-//        addressCol.setCellValueFactory(cellData ->
-//                new SimpleStringProperty(cellData.getValue().getAddress()));
-        addressCol.setCellValueFactory(addressproperty);
         addressCol.setCellFactory(TextFieldTableCell.forTableColumn());
-//        nameCol.setCellValueFactory(cellData ->
-//                new SimpleStringProperty(cellData.getValue().getName()));
-        nameCol.setCellValueFactory(nameproperty);
         nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-//        postalCol.setCellValueFactory(cellData ->
-//                new SimpleStringProperty(cellData.getValue().getZip()));
-        postalCol.setCellValueFactory(postalproperty);
         postalCol.setCellFactory(TextFieldTableCell.forTableColumn());
-//        phoneCol.setCellValueFactory(cellData ->
-//                new SimpleStringProperty(cellData.getValue().getPhone()));
-        phoneCol.setCellValueFactory(phoneproperty);
         phoneCol.setCellFactory(TextFieldTableCell.forTableColumn());
-
-//        divisionIdCol.setCellValueFactory(cellData -> cellData.getValue().getDivisionId());
-////                new SimpleIntegerProperty(Integer.toString(cellData.getValue().getDivisionId())));
 //        divisionIdCol.setCellFactory(ComboBoxTableCell.forTableColumn(db.divisions));
-
-        divisionCol.setCellValueFactory(divisionproperty);
-//        divisionCol.setCellFactory(ComboBoxTableCell.forTableColumn(db.divisions));
 
         divisionCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Division>() {
             @Override

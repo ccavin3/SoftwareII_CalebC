@@ -45,6 +45,22 @@ public class AppointmentFormController extends Appointment implements Initializa
     private DBContext db;
     private String userName;
 
+    private StringConverter<LocalDate> dateConverter = new StringConverter<LocalDate>() {
+        @Override
+        public String toString(LocalDate d) {
+            if (d == null) return null;
+            DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return d.format(parser);
+        }
+
+        @Override
+        public LocalDate fromString(String s) {
+            if (s == null) return null;
+            DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return LocalDate.parse(s, parser);
+        }
+    };
+
     private StringConverter<LocalTime> timeConverter = new StringConverter<LocalTime>() {
         @Override
         public String toString(LocalTime t) {
@@ -98,6 +114,12 @@ public class AppointmentFormController extends Appointment implements Initializa
 
     @FXML
     private TextField textType;
+
+    @FXML
+    private TextField textStart;
+
+    @FXML
+    private TextField textEnd;
 
     @FXML
     private DatePicker dateField;

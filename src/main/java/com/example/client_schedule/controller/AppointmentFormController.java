@@ -45,6 +45,22 @@ public class AppointmentFormController extends Appointment implements Initializa
     private DBContext db;
     private String userName;
 
+    private StringConverter<LocalDate> dateConverter = new StringConverter<LocalDate>() {
+        @Override
+        public String toString(LocalDate d) {
+            if (d == null) return null;
+            DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return d.format(parser);
+        }
+
+        @Override
+        public LocalDate fromString(String s) {
+            if (s == null) return null;
+            DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return LocalDate.parse(s, parser);
+        }
+    };
+
     private StringConverter<LocalTime> timeConverter = new StringConverter<LocalTime>() {
         @Override
         public String toString(LocalTime t) {
@@ -147,6 +163,9 @@ public class AppointmentFormController extends Appointment implements Initializa
     @FXML
     protected VBox tabContent;
 
+    @FXML
+    protected Appointment currentAppointment;
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
@@ -219,55 +238,11 @@ public class AppointmentFormController extends Appointment implements Initializa
         //startCol.setCellFactory(TextFieldTableCell.forTableColumn());
         //endCol.setCellFactory(TextFieldTableCell.forTableColumn());
         DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm[:ss] a");
         startTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(timeConverter));
-//        startTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
-//            @Override
-//            protected void updateItem(LocalTime time, boolean empty) {
-//                super.updateItem(time, empty);
-//                if(empty) {
-//                    setText("");
-//                } else {
-//                    setText(String.format(time.format(tformatter)));
-//                }
-//            }
-//        });
-        startDateCol.setCellFactory(column -> new TableCell<Appointment, LocalDate>() {
-            @Override
-            protected void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                if(empty) {
-                    setText("");
-                } else {
-                    setGraphic(new DatePicker(date));
-                    setText("");
-                }
-            }
-        });
+        startDateCol.setCellFactory(TextFieldTableCell.forTableColumn(dateConverter));
         endTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(timeConverter));
-//        endTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
-//            @Override
-//            protected void updateItem(LocalTime time, boolean empty) {
-//                super.updateItem(time, empty);
-//                if(empty) {
-//                    setText("");
-//                } else {
-//                    setText(String.format(time.format(tformatter)));
-//                }
-//            }
-//        });
-        endDateCol.setCellFactory(column -> new TableCell<Appointment, LocalDate>() {
-            @Override
-            protected void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                if(empty) {
-                    setText("");
-                } else {
-                    setGraphic(new DatePicker(date));
-                    setText("");
-                }
-            }
-        });
+        endDateCol.setCellFactory(TextFieldTableCell.forTableColumn(dateConverter));
 
         customerCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Customer>() {
             @Override
@@ -358,6 +333,6 @@ public class AppointmentFormController extends Appointment implements Initializa
     }
 
     private void recordRemove() {
-        db.appointments.remove(tableView.getSelectionModel().getSelectedItem());
+        tableView.getItems().remove(tableView.getSelectionModel().getSelectedItem());
     }
 }

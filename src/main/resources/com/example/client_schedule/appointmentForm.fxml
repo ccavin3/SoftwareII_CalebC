@@ -18,7 +18,7 @@
             <HBox fx:id="tableViewControlButtons">
                 <HBox fx:id="addInsert" alignment="CENTER_LEFT">
                     <Button fx:id="insertButton" text="%button.insert.text" />
-                    <Button fx:id="deleteButton" text="%button.delete.text" onAction="" />
+                    <Button fx:id="deleteButton" text="%button.delete.text" />
                 </HBox>
                 <HBox prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS" />
                 <HBox fx:id="commitRevert" alignment="CENTER_RIGHT">

@@ -3,12 +3,6 @@ package com.example.client_schedule.controller;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.entities.Division;
 import com.example.client_schedule.helper.DBContext;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,10 +19,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
-import org.hibernate.sql.ast.tree.from.TableAliasResolver;
 
 /**
  * The type Customer form controller. This class controls all the functionality for Customer management.

@@ -1,10 +1,7 @@
 package com.example.client_schedule.entities;
 
 import jakarta.persistence.*;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 
 import java.time.LocalDateTime;
@@ -71,12 +68,20 @@ public class Customer {
     @Column(name="Division_ID", insertable=false, updatable=false)
     public IntegerProperty divisionId;
 
+    @FXML
+    @Transient
+    public IntegerProperty countryId;
+
+    @FXML
+    @Transient
+    public ObjectProperty<Country> country;
+
 //endregion
 
 //region ORM
     @ManyToOne
     @JoinColumn(name="Division_ID")
-    public Division division;
+    public ObjectProperty<Division> division;
 
     @OneToMany(mappedBy = "customer")
     public List<Appointment> appointments = new ArrayList<>();
@@ -265,7 +270,7 @@ public class Customer {
      * @param division the division
      */
     public void setDivision(Division division) {
-        this.division = division;
+        this.division.set(division);
     }
 
     /**
@@ -395,12 +400,24 @@ public class Customer {
         this.divisionId.set(divisionId);
     }
 
-    public IntegerProperty idProperty() {
+    public IntegerProperty getIdProperty() {
         return id;
     }
 
-    public IntegerProperty divisionIdProperty() {
+    public IntegerProperty getDivisionIdProperty() {
         return divisionId;
+    }
+
+    public Integer getCountryId() {
+        return countryId.get();
+    }
+
+    public void setCountryId(Integer i) {
+        countryId.set(i);
+    }
+
+    public IntegerProperty getCountryIdProperty() {
+        return countryId;
     }
     //endregion
 }

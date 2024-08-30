@@ -15,8 +15,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import javafx.util.converter.NumberStringConverter;
 
-import javax.swing.*;
 import java.net.URL;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -118,31 +118,14 @@ public class AppointmentFormController extends Appointment implements Initializa
     private TextField textType;
 
     @FXML
+    private TextField textDate;
+
+    @FXML
     private TextField textStart;
 
     @FXML
     private TextField textEnd;
 
-    @FXML
-    private DatePicker dateField;
-
-    @FXML
-    private TextField startTime;
-
-    @FXML
-    private TextField startDate;
-
-    @FXML
-    private TextField endTime;
-
-    @FXML
-    private TextField endDate;
-
-    @FXML
-    private ComboBox endTimeMinute;
-
-    @FXML
-    private ComboBox endTimePeriod;
 
     @FXML
     private TableView<Appointment> tableView;
@@ -209,6 +192,10 @@ public class AppointmentFormController extends Appointment implements Initializa
      */
     @FXML
     protected VBox tabContent;
+
+    @FXML
+    private Appointment currentAppointment;
+
 
     private DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm[:ss] a");
@@ -277,6 +264,17 @@ public class AppointmentFormController extends Appointment implements Initializa
 //            return row;
 //        });
         addAppointmentRows();
+
+        textTitle.textProperty().bindBidirectional(currentAppointment.title);
+        textAppointmentID.textProperty().bindBidirectional(currentAppointment.id, new NumberStringConverter());
+        textDescription.textProperty().bindBidirectional(currentAppointment.description);
+        textType.textProperty().bindBidirectional(currentAppointment.type);
+        textLocation.textProperty().bindBidirectional(currentAppointment.location);
+        contactDropdown.valueProperty().bindBidirectional(currentAppointment.contact);
+        textStart.textProperty().bindBidirectional(currentAppointment.start);
+        textEnd.textProperty().bindBidirectional(currentAppointment.end);
+
+
     }
 
     private void addAppointmentRows() {

@@ -62,6 +62,9 @@ public class CustomerFormController extends Customer implements Initializable {
     private TextField textAddress;
 
     @FXML
+    private ComboBox<Division> comboBoxDivision;
+
+    @FXML
     private TableView<Customer> tableView;
 
     @FXML

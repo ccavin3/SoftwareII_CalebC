@@ -29,27 +29,24 @@
         </VBox>
     </top>
     <center>
-<!--        <VBox>-->
-<!--            <HBox>-->
-<!--                <Label alignment="CENTER_LEFT" text="%label.customer.name.text" />-->
-<!--                <TextField fx:id="textName" alignment="CENTER_RIGHT" />-->
-<!--            </HBox>-->
-<!--            <HBox>-->
-<!--                <Label alignment="CENTER_LEFT" text="%label.customer.address.text" />-->
-<!--                <TextField fx:id="textAddress" alignment="CENTER_RIGHT" />-->
-<!--            </HBox>-->
-<!--            <HBox>-->
-<!--                <TextField fx:id="textAddress2" alignment="CENTER_RIGHT" />-->
-<!--            </HBox>-->
-<!--            <HBox>-->
-<!--                <Label alignment="CENTER_LEFT" text="%label.customer.postal.text" />-->
-<!--                <TextField fx:id="textPostal" alignment="CENTER_RIGHT" />-->
-<!--            </HBox>-->
-<!--            <HBox>-->
-<!--                <Label alignment="CENTER_LEFT" text="%label.customer.phone.text" />-->
-<!--                <TextField fx:id="Phone" alignment="CENTER_RIGHT" />-->
-<!--            </HBox>-->
-<!--        </VBox>-->
+        <VBox>
+            <HBox>
+                <Label alignment="CENTER_LEFT" text="%label.appointment.title.text" />
+                <TextField fx:id="textName" alignment="CENTER_RIGHT" />
+            </HBox>
+            <HBox>
+                <Label alignment="CENTER_LEFT" text="%label.appointment.type.text" />
+                <TextField fx:id="textType" alignment="CENTER_RIGHT" />
+            </HBox>
+            <HBox>
+                <Label alignment="CENTER_LEFT" text="%label.appointment.start.text" />
+                <TextField fx:id="textPostal" alignment="CENTER_RIGHT" />
+            </HBox>
+            <HBox>
+                <Label alignment="CENTER_LEFT" text="%label.appointment.end.text" />
+                <TextField fx:id="Phone" alignment="CENTER_RIGHT" />
+            </HBox>
+        </VBox>
 
     </center>
 

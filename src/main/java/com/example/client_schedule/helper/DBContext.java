@@ -1,13 +1,12 @@
 package com.example.client_schedule.helper;
 
 import com.example.client_schedule.entities.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class DBContext {
 
@@ -35,7 +34,17 @@ public class DBContext {
     class contactdb extends CRUD<Contact> {}
     class countrydb extends CRUD<Country> {}
     class customerdb extends CRUD<Customer> {}
-    class appointmentdb extends CRUD<Appointment> {}
+    class appointmentdb extends CRUD<Appointment> {
+        @Override
+        public ObservableList<Appointment> rows() {
+            return FXCollections.observableList(super.rows().stream().peek(r -> {
+                r.setStartDate(r.getStart().toLocalDate());
+                r.setStartTime(r.getStart().toLocalTime());
+                r.setEndDate(r.getEnd().toLocalDate());
+                r.setEndTime(r.getEnd().toLocalTime());
+            }).collect(Collectors.toList()));
+        }
+    }
 
     public ObservableList<User> users;
     public ObservableList<Division> divisions;

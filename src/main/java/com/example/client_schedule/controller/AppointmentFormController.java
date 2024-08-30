@@ -45,6 +45,22 @@ public class AppointmentFormController extends Appointment implements Initializa
     private DBContext db;
     private String userName;
 
+    private StringConverter<LocalTime> timeConverter = new StringConverter<LocalTime>() {
+        @Override
+        public String toString(LocalTime t) {
+            if (t == null) return null;
+            DateTimeFormatter parser = DateTimeFormatter.ofPattern("h[:mm][:ss] a");
+            return t.format(parser);
+        }
+
+        @Override
+        public LocalTime fromString(String s) {
+            if (s == null) return null;
+            DateTimeFormatter parser = DateTimeFormatter.ofPattern("h[:mm][:ss] a");
+            return LocalTime.parse(s, parser);
+        }
+    };
+
     private StringConverter<Integer> stringConverter = new StringConverter<Integer>() {
         @Override
         public String toString(Integer integer) {
@@ -138,6 +154,12 @@ public class AppointmentFormController extends Appointment implements Initializa
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
+
+        deleteButton.setOnAction(onDeleteAction);
+        insertButton.setOnAction(onInsertAction);
+        commitButton.setOnAction(onCommitAction);
+        revertButton.setOnAction(onRevertAction);
+
         tableView.setEditable(true);
         addAppointmentColumns();
 //        tableView.setRowFactory(tableView -> {
@@ -198,17 +220,18 @@ public class AppointmentFormController extends Appointment implements Initializa
         //endCol.setCellFactory(TextFieldTableCell.forTableColumn());
         DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
-        startTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
-            @Override
-            protected void updateItem(LocalTime time, boolean empty) {
-                super.updateItem(time, empty);
-                if(empty) {
-                    setText("");
-                } else {
-                    setText(tformatter.format(time));
-                }
-            }
-        });
+        startTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(timeConverter));
+//        startTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
+//            @Override
+//            protected void updateItem(LocalTime time, boolean empty) {
+//                super.updateItem(time, empty);
+//                if(empty) {
+//                    setText("");
+//                } else {
+//                    setText(String.format(time.format(tformatter)));
+//                }
+//            }
+//        });
         startDateCol.setCellFactory(column -> new TableCell<Appointment, LocalDate>() {
             @Override
             protected void updateItem(LocalDate date, boolean empty) {
@@ -216,22 +239,23 @@ public class AppointmentFormController extends Appointment implements Initializa
                 if(empty) {
                     setText("");
                 } else {
-                    setText(dformatter.format(date));
-                }
-            }
-        });
-
-        endTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
-            @Override
-            protected void updateItem(LocalTime time, boolean empty) {
-                super.updateItem(time, empty);
-                if(empty) {
+                    setGraphic(new DatePicker(date));
                     setText("");
-                } else {
-                    setText(tformatter.format(time));
                 }
             }
         });
+        endTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(timeConverter));
+//        endTimeCol.setCellFactory(column -> new TableCell<Appointment, LocalTime>() {
+//            @Override
+//            protected void updateItem(LocalTime time, boolean empty) {
+//                super.updateItem(time, empty);
+//                if(empty) {
+//                    setText("");
+//                } else {
+//                    setText(String.format(time.format(tformatter)));
+//                }
+//            }
+//        });
         endDateCol.setCellFactory(column -> new TableCell<Appointment, LocalDate>() {
             @Override
             protected void updateItem(LocalDate date, boolean empty) {
@@ -239,7 +263,8 @@ public class AppointmentFormController extends Appointment implements Initializa
                 if(empty) {
                     setText("");
                 } else {
-                    setText(dformatter.format(date));
+                    setGraphic(new DatePicker(date));
+                    setText("");
                 }
             }
         });
@@ -329,11 +354,10 @@ public class AppointmentFormController extends Appointment implements Initializa
     }
 
     private void recordAdd() {
-
+        db.appointments.add(new Appointment());
     }
 
     private void recordRemove() {
-
+        db.appointments.remove(tableView.getSelectionModel().getSelectedItem());
     }
-
 }

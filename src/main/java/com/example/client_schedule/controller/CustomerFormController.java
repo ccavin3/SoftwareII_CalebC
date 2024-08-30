@@ -33,7 +33,7 @@ import org.hibernate.sql.ast.tree.from.TableAliasResolver;
 /**
  * The type Customer form controller. This class controls all the functionality for Customer management.
  */
-public class CustomerFormController implements Initializable {
+public class CustomerFormController extends Customer implements Initializable {
     /**
      * Instantiates a new Customer form controller.
      *
@@ -143,6 +143,12 @@ public class CustomerFormController implements Initializable {
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
+
+        deleteButton.setOnAction(onDeleteAction);
+        insertButton.setOnAction(onInsertAction);
+        commitButton.setOnAction(onCommitAction);
+        revertButton.setOnAction(onRevertAction);
+
         tableView.setEditable(true);
         addCustomerColumns();
 //        tableView.setRowFactory(tableView -> {
@@ -243,11 +249,11 @@ public class CustomerFormController implements Initializable {
     }
 
     private void recordAdd() {
-
+        db.customers.add(new Customer());
     }
 
     private void recordRemove() {
-
+        db.customers.remove(tableView.getSelectionModel().getSelectedItem());;
     }
 
 }

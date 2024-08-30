@@ -38,7 +38,9 @@ public abstract class JDBC {
 
     public static void closeConnection() {
         try {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
             connectionStatus = "Database Connection closed!";
             System.out.println(connectionStatus);
         } catch (SQLException e) {

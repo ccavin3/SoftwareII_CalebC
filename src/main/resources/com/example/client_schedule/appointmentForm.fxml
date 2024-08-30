@@ -12,13 +12,13 @@
 <BorderPane  xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <VBox>
-            <StackPane fx:id="tableArea" maxHeight="100">
+            <StackPane fx:id="tableArea" maxHeight="200">
                 <TableView fx:id="tableView" />
             </StackPane>
             <HBox fx:id="tableViewControlButtons">
                 <HBox fx:id="addInsert" alignment="CENTER_LEFT">
                     <Button fx:id="insertButton" text="%button.insert.text" />
-                    <Button fx:id="deleteButton" text="%button.delete.text" />
+                    <Button fx:id="deleteButton" text="%button.delete.text" onAction="" />
                 </HBox>
                 <HBox prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS" />
                 <HBox fx:id="commitRevert" alignment="CENTER_RIGHT">

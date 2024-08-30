@@ -87,17 +87,20 @@ public class Appointment {
     protected int contactId;
 
     @FXML
-    protected LocalTime startTime;
+    @Transient
+    private LocalTime startTime;
 
     @FXML
-    protected LocalDate startDate;
+    @Transient
+    private LocalDate startDate;
 
     @FXML
-    protected LocalTime endTime;
+    @Transient
+    private LocalTime endTime;
 
     @FXML
-    protected LocalDate endDate;
-
+    @Transient
+    private LocalDate endDate;
 //endregion
 
 //region ORM
@@ -223,13 +226,17 @@ public class Appointment {
      * @param type        the type
      * @param start       the start
      */
-    public Appointment(String title, String description, String loction, String type, LocalDateTime start) {
+    public Appointment(String title, String description, String location, String type, LocalDateTime start) {
         this.title = title;
         this.description = description;
         this.location = location;
         this.type = type;
         this.start = start;
+        this.startDate = start.toLocalDate();
+        this.startTime = start.toLocalTime();
         this.end = start;
+        this.endDate = start.toLocalDate();
+        this.endTime = start.toLocalTime();
     }
 
     /**
@@ -248,7 +255,11 @@ public class Appointment {
         this.location = location;
         this.type = type;
         this.start = start;
+        this.startDate = start.toLocalDate();
+        this.startTime = start.toLocalTime();
         this.end = end;
+        this.endDate = end.toLocalDate();
+        this.endTime = end.toLocalTime();
     }
 
     /**
@@ -276,7 +287,11 @@ public class Appointment {
         this.location = location;
         this.type = type;
         this.start = start;
+        this.startDate = start.toLocalDate();
+        this.startTime = start.toLocalTime();
         this.end = end;
+        this.endDate = end.toLocalDate();
+        this.endTime = end.toLocalTime();
         this.created = created;
         this.createdBy = createdBy;
         this.updated = updated;
@@ -390,17 +405,6 @@ public class Appointment {
     }
 
     /**
-     * Sets start.
-     *
-     * @param start the start
-     */
-    public void setStart(LocalDateTime start) {
-        this.start = start;
-        this.startDate = start.toLocalDate();
-        this.startTime = start.toLocalTime();
-    }
-
-    /**
      * Gets end.
      *
      * @return the end
@@ -409,18 +413,7 @@ public class Appointment {
         return end;
     }
 
-    /**
-     * Sets end.
-     *
-     * @param end the end
-     */
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
-        this.endDate = end.toLocalDate();
-        this.endTime = end.toLocalTime();
-    }
-
-    /**
+     /**
      * Gets customer id.
      *
      * @return the customer id
@@ -600,37 +593,60 @@ public class Appointment {
         this.updatedBy = updatedBy;
     }
 
-    public LocalTime getStartTime() { return startTime; }
+    public LocalTime getStartTime() {
+        return this.start.toLocalTime();
+    }
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
-        this.start = start.toLocalDate().atTime(startTime);
     }
 
-    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getStartDate() {
+        return start.toLocalDate();
+    }
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
-        this.start = startDate.atTime(startTime);
     }
 
     public LocalTime getEndTime() {
-        return endTime;
+        return end.toLocalTime();
     }
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-        this.end = end.toLocalDate().atTime(endTime);
     }
 
     public LocalDate getEndDate() {
-        return endDate;
+        return end.toLocalDate();
     }
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-        this.end = endDate.atTime(endTime);
     }
+
+    /**
+     * Sets start.
+     *
+     * @param start the start
+     */
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+//        this.startDate = start.toLocalDate();
+//        this.startTime = start.toLocalTime();
+    }
+
+    /**
+     * Sets end.
+     *
+     * @param end the end
+     */
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
+//        this.endDate = end.toLocalDate();
+//        this.endTime = end.toLocalTime();
+    }
+
 
     //endregion
 }

@@ -52,6 +52,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Label text="%label.appointment.id.text" />
@@ -62,9 +63,10 @@
                 <Label text="%label.appointment.location.text" GridPane.rowIndex="5" />
                 <Label text="%label.appointment.contact.text" GridPane.rowIndex="6" />
                 <Label text="%label.appointment.type.text" GridPane.rowIndex="7" />
-                <Label text="%label.appointment.date.text" GridPane.rowIndex="8" />
-                <Label text="%label.appointment.start.text" GridPane.rowIndex="9" />
-                <Label text="%label.appointment.end.text" GridPane.rowIndex="10" />
+                <Label text="%label.appointment.startDate.text" GridPane.rowIndex="8" />
+                <Label text="%label.appointment.startTime.text" GridPane.rowIndex="9" />
+                <Label text="%label.appointment.endDate.text" GridPane.rowIndex="10" />
+                <Label text="%label.appointment.endTime.text" GridPane.rowIndex="11" />
                 <TextField fx:id="textAppointmentID" disable="true" GridPane.columnIndex="1" />
                 <TextField fx:id="textUserID" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <TextField fx:id="textCustomerID" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -82,9 +84,10 @@
                     </items>
                 </ComboBox>
                 <TextField fx:id="textType" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <TextField fx:id="textDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-            <TextField fx:id="textStart" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-            <TextField fx:id="textEnd" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <TextField fx:id="textStartDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <TextField fx:id="textStartTime" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <TextField fx:id="textEndDate" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                <TextField fx:id="textEndTime" GridPane.columnIndex="1" GridPane.rowIndex="11" />
             </children>
         </GridPane>
     </center>

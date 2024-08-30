@@ -1,5 +1,6 @@
 package com.example.client_schedule.controller;
 
+import com.example.client_schedule.entities.Country;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.entities.Division;
 import com.example.client_schedule.helper.DBContext;
@@ -11,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.TableView;
@@ -20,6 +23,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import javafx.util.converter.NumberStringConverter;
 
 /**
  * The type Customer form controller. This class controls all the functionality for Customer management.
@@ -64,10 +68,10 @@ public class CustomerFormController extends Customer implements Initializable {
     private TextField textAddress;
 
     @FXML
-    private ComboBox comboBoxCountry;
+    private ComboBox<Country> comboBoxCountry;
 
     @FXML
-    private ComboBox comboBoxDivision;
+    private ComboBox<Division> comboBoxDivision;
 
     @FXML
     private TextField textPostal;
@@ -141,6 +145,12 @@ public class CustomerFormController extends Customer implements Initializable {
     @FXML
     protected VBox tabContent;
 
+    @FXML
+    private Customer currentCustomer;
+
+    @FXML
+    private EventHandler<ActionEvent> onSelection;
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
@@ -148,18 +158,22 @@ public class CustomerFormController extends Customer implements Initializable {
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
+        onSelectionAction = e -> getComboId(e);
 
         deleteButton.setOnAction(onDeleteAction);
         insertButton.setOnAction(onInsertAction);
         commitButton.setOnAction(onCommitAction);
         revertButton.setOnAction(onRevertAction);
 
+        comboBoxDivision.setItems(db.divisions);
+        comboBoxCountry.setItems(db.countries);
+
         tableView.setEditable(true);
         addCustomerColumns();
 //        lambda expression
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
             if (wen != null) {
-
+                currentCustomer = wen;
             }
         });
 //        tableView.setRowFactory(tableView -> {
@@ -169,6 +183,12 @@ public class CustomerFormController extends Customer implements Initializable {
 //            return row;
 //        });
         addCustomerRows();
+        textName.textProperty().bindBidirectional(currentCustomer.name);
+        textID.textProperty().bindBidirectional(currentCustomer.id, new NumberStringConverter());
+        textAddress.textProperty().bindBidirectional(currentCustomer.address);
+        textPhone.textProperty().bindBidirectional(currentCustomer.phone);
+        textPostal.textProperty().bindBidirectional(currentCustomer.zip);
+        comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.divisionId);
     }
 
     private void addCustomerRows() {
@@ -267,4 +287,7 @@ public class CustomerFormController extends Customer implements Initializable {
         db.customers.remove(tableView.getSelectionModel().getSelectedItem());;
     }
 
+    private Integer getComboId(ActionEvent e) {
+        e.getSource()
+    }
 }

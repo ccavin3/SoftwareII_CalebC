@@ -1,6 +1,10 @@
 package com.example.client_schedule.entities;
 
 import jakarta.persistence.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 
 import java.time.LocalDateTime;
@@ -20,62 +24,62 @@ public class Customer {
     @FXML
     @Column(name="Customer_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    protected int id;
+    public IntegerProperty id;
 
     @FXML
     @Column(name="Customer_Name")
-    protected String name;
+    public StringProperty name;
 
     @FXML
     @Column(name="Address")
-    protected String address;
+    public StringProperty address;
 
     @FXML
     @Column(name="Postal_Code")
-    protected String zip;
+    public StringProperty zip;
 
     @FXML
     @Column(name="Phone")
-    protected String phone;
+    public StringProperty phone;
 
     /**
      * The Created.
      */
     @FXML
     @Column(name="Create_Date")
-    protected LocalDateTime created;
+    public LocalDateTime created;
     /**
      * The Created by.
      */
     @FXML
     @Column(name="Created_By")
-    protected String createdBy;
+    public String createdBy;
     /**
      * The Updated.
      */
     @FXML
     @Column(name="Last_Update")
-    protected ZonedDateTime updated;
+    public ZonedDateTime updated;
     /**
      * The Updated by.
      */
     @FXML
     @Column(name="Last_Updated_By")
-    protected String updatedBy;
+    public String updatedBy;
 
     @FXML
     @Column(name="Division_ID", insertable=false, updatable=false)
-    protected int divisionId;
+    public IntegerProperty divisionId;
 
 //endregion
 
 //region ORM
     @ManyToOne
     @JoinColumn(name="Division_ID")
-    protected Division division;
+    public Division division;
 
     @OneToMany(mappedBy = "customer")
-    protected List<Appointment> appointments = new ArrayList<>();
+    public List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 
@@ -92,7 +96,7 @@ public class Customer {
      * @param name the name
      */
     public Customer(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     /**
@@ -102,8 +106,8 @@ public class Customer {
      * @param name the name
      */
     public Customer(int id, String name) {
-        this.id = id;
-        this.name = name;
+        this.id.set(id);
+        this.name.set(name);
     }
 
     /**
@@ -117,12 +121,12 @@ public class Customer {
      * @param divisionId the division id
      */
     public Customer(int id, String name, String address, String zip, String phone, int divisionId) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.zip = zip;
-        this.phone = phone;
-        this.divisionId = divisionId;
+        this.id.set(id);
+        this.name.set(name);
+        this.address.set(address);
+        this.zip.set(zip);
+        this.phone.set(phone);
+        this.divisionId.set(divisionId);
     }
 
     /**
@@ -140,16 +144,16 @@ public class Customer {
      * @param divisionId the division id
      */
     public Customer(int id, String name, String address, String zip, String phone, LocalDateTime created, String createdBy, ZonedDateTime updated, String updatedBy, int divisionId) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.zip = zip;
-        this.phone = phone;
+        this.id.set(id);
+        this.name.set(name);
+        this.address.set(address);
+        this.zip.set(zip);
+        this.phone.set(phone);
         this.created = created;
         this.createdBy = createdBy;
         this.updated = updated;
         this.updatedBy = updatedBy;
-        this.divisionId = divisionId;
+        this.divisionId.set(divisionId);
     }
 
     //endregion
@@ -162,7 +166,7 @@ public class Customer {
      * @return the id
      */
     public int getId() {
-        return id;
+        return id.get();
     }
 
     /**
@@ -171,7 +175,7 @@ public class Customer {
      * @param id the id
      */
     public void setId(int id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -180,7 +184,7 @@ public class Customer {
      * @return the name
      */
     public String getName() {
-        return name;
+        return name.get();
     }
 
     /**
@@ -189,7 +193,7 @@ public class Customer {
      * @param name the name
      */
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     /**
@@ -198,7 +202,7 @@ public class Customer {
      * @return the address
      */
     public String getAddress() {
-        return address;
+        return address.get();
     }
 
     /**
@@ -207,7 +211,7 @@ public class Customer {
      * @param address the address
      */
     public void setAddress(String address) {
-        this.address = address;
+        this.address.set(address);
     }
 
     /**
@@ -216,7 +220,7 @@ public class Customer {
      * @return the zip
      */
     public String getZip() {
-        return zip;
+        return zip.get();
     }
 
     /**
@@ -225,7 +229,7 @@ public class Customer {
      * @param zip the zip
      */
     public void setZip(String zip) {
-        this.zip = zip;
+        this.zip.set(zip);
     }
 
     /**
@@ -234,7 +238,7 @@ public class Customer {
      * @return the phone
      */
     public String getPhone() {
-        return phone;
+        return phone.get();
     }
 
     /**
@@ -243,7 +247,7 @@ public class Customer {
      * @param phone the phone
      */
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone.set(phone);
     }
 
     /**
@@ -379,7 +383,7 @@ public class Customer {
      * @return the division id
      */
     public int getDivisionId() {
-        return divisionId;
+        return divisionId.get();
     }
 
     /**
@@ -388,8 +392,15 @@ public class Customer {
      * @param divisionId the division id
      */
     public void setDivisionId(int divisionId) {
-        this.divisionId = divisionId;
+        this.divisionId.set(divisionId);
     }
 
+    public IntegerProperty idProperty() {
+        return id;
+    }
+
+    public IntegerProperty divisionIdProperty() {
+        return divisionId;
+    }
     //endregion
 }

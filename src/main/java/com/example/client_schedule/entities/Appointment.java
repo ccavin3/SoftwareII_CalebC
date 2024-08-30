@@ -23,68 +23,68 @@ public class Appointment {
     @FXML
     @Column(name="Appointment_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    protected int id;
+    public int id;
 
     @FXML
     @Column(name="Title")
-    protected String title;
+    public String title;
 
     @FXML
     @Column(name="Description")
-    protected String description;
+    public String description;
 
     @FXML
     @Column(name="Location")
-    protected String location;
+    public String location;
 
     @FXML
     @Column(name="Type")
-    protected String type;
+    public String type;
 
     @FXML
     @Column(name="Start")
-    protected LocalDateTime start;
+    public LocalDateTime start;
 
     @FXML
     @Column(name="End")
-    protected LocalDateTime end;
+    public LocalDateTime end;
 
     /**
      * The Created.
      */
     @FXML
     @Column(name="Create_Date")
-    protected LocalDateTime created;
+    public LocalDateTime created;
     /**
      * The Created by.
      */
     @FXML
     @Column(name="Created_By")
-    protected String createdBy;
+    public String createdBy;
     /**
      * The Updated.
      */
     @FXML
     @Column(name="Last_Update")
-    protected ZonedDateTime updated;
+    public ZonedDateTime updated;
     /**
      * The Updated by.
      */
     @FXML
     @Column(name="Last_Updated_By")
-    protected String updatedBy;
+    public String updatedBy;
 
     @FXML
     @Column(name="Customer_ID", insertable=false, updatable=false)
-    protected int customerId;
+    public int customerId;
 
     @FXML
     @Column(name="User_ID", insertable=false, updatable=false)
-    protected int userId;
+    public int userId;
 
     @FXML
     @Column(name="Contact_ID", insertable=false, updatable=false)
-    protected int contactId;
+    public int contactId;
 
     @FXML
     @Transient
@@ -106,15 +106,15 @@ public class Appointment {
 //region ORM
     @ManyToOne()
     @JoinColumn(name="Customer_ID")
-    protected Customer customer;
+    public Customer customer;
 
     @ManyToOne()
     @JoinColumn(name="User_ID")
-    protected User user;
+    public User user;
 
     @ManyToOne()
     @JoinColumn(name="Contact_ID")
-    protected Contact contact;
+    public Contact contact;
 
 //endregion
 

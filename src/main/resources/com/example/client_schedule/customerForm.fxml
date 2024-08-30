@@ -49,7 +49,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label text="Customer ID" />
+                <Label text="ID" />
                 <Label text="%label.customer.name.text" GridPane.rowIndex="1" />
                 <Label text="%label.customer.address.text" GridPane.rowIndex="2" />
                 <Label text="%label.country.text" GridPane.rowIndex="3" />

@@ -54,6 +54,8 @@ public class CustomerFormController extends Customer implements Initializable {
             return Integer.parseInt(s);
         }
     };
+    @FXML
+    private TextField textID;
 
     @FXML
     private TextField textName;
@@ -62,7 +64,16 @@ public class CustomerFormController extends Customer implements Initializable {
     private TextField textAddress;
 
     @FXML
-    private ComboBox<Division> comboBoxDivision;
+    private ComboBox comboBoxCountry;
+
+    @FXML
+    private ComboBox comboBoxDivision;
+
+    @FXML
+    private TextField textPostal;
+
+    @FXML
+    private TextField textPhone;
 
     @FXML
     private TableView<Customer> tableView;
@@ -130,9 +141,6 @@ public class CustomerFormController extends Customer implements Initializable {
     @FXML
     protected VBox tabContent;
 
-    @FXML
-    protected Customer currentCustomer;
-
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
@@ -148,6 +156,12 @@ public class CustomerFormController extends Customer implements Initializable {
 
         tableView.setEditable(true);
         addCustomerColumns();
+//        lambda expression
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
+            if (wen != null) {
+
+            }
+        });
 //        tableView.setRowFactory(tableView -> {
 //            TableRow<Customer> row = new TableRow<>();
 //            ObjectProperty<Customer> opMsg = row.itemProperty();

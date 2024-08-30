@@ -149,7 +149,10 @@ public class CustomerFormController extends Customer implements Initializable {
     private Customer currentCustomer;
 
     @FXML
-    private EventHandler<ActionEvent> onSelection;
+    private EventHandler<ActionEvent> onDivisionSelectionAction;
+
+    @FXML
+    private EventHandler<ActionEvent> onCountrySelectionAction;
 
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
@@ -158,7 +161,8 @@ public class CustomerFormController extends Customer implements Initializable {
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
-        onSelectionAction = e -> getComboId(e);
+        onDivisionSelectionAction = this::getComboDivisionId;
+        onCountrySelectionAction = this::getCountryDivisionId;
 
         deleteButton.setOnAction(onDeleteAction);
         insertButton.setOnAction(onInsertAction);
@@ -166,7 +170,31 @@ public class CustomerFormController extends Customer implements Initializable {
         revertButton.setOnAction(onRevertAction);
 
         comboBoxDivision.setItems(db.divisions);
+        comboBoxDivision.setConverter(new StringConverter<Division>() {
+              @Override
+              public String toString(Division division) {
+                  return division.getName();
+              }
+
+              @Override
+              public Division fromString(String s) {
+                  return comboBoxDivision.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
+              }
+          }
+
+        );
         comboBoxCountry.setItems(db.countries);
+        comboBoxCountry.setConverter(new StringConverter<Country>() {
+            @Override
+            public String toString(Country country) {
+                return country.getName();
+            }
+
+            @Override
+            public Country fromString(String s) {
+                return comboBoxCountry.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
+            }
+        });
 
         tableView.setEditable(true);
         addCustomerColumns();
@@ -188,7 +216,10 @@ public class CustomerFormController extends Customer implements Initializable {
         textAddress.textProperty().bindBidirectional(currentCustomer.address);
         textPhone.textProperty().bindBidirectional(currentCustomer.phone);
         textPostal.textProperty().bindBidirectional(currentCustomer.zip);
-        comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.divisionId);
+        comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.division);
+        comboBoxCountry.valueProperty().bindBidirectional(currentCustomer.country);
+        currentCustomer.getCountryIdProperty().bindBidirectional(currentCustomer.country.get().getIdProperty());
+        currentCustomer.getDivisionIdProperty().bindBidirectional(currentCustomer.division.get().getIdProperty());
     }
 
     private void addCustomerRows() {
@@ -287,7 +318,14 @@ public class CustomerFormController extends Customer implements Initializable {
         db.customers.remove(tableView.getSelectionModel().getSelectedItem());;
     }
 
-    private Integer getComboId(ActionEvent e) {
-        e.getSource()
+    private void getComboDivisionId(ActionEvent e) {
+        Division i = ((Division)((ComboBox)e.getSource()).getSelectionModel().getSelectedItem());
+        setDivisionId(i.getId());
     }
+
+    private void getCountryDivisionId(ActionEvent e) {
+        Country i = ((Country)((ComboBox)e.getSource()).getSelectionModel().getSelectedItem());
+        setCountryId(i.getId());
+    }
+
 }

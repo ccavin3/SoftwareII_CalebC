@@ -1,6 +1,7 @@
 package com.example.client_schedule.entities;
 
 import jakarta.persistence.*;
+import javafx.beans.property.IntegerProperty;
 import javafx.fxml.FXML;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class Division {
     @FXML
     @Column(name="Division_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    protected int id;
+    protected IntegerProperty id;
 
     @FXML
     @Column(name="Division")
@@ -100,7 +101,7 @@ public class Division {
      * @param name the name
      */
     public Division(int id, String name) {
-        this.id = id;
+        this.id.set(id);
         this.name = name;
     }
 
@@ -111,7 +112,7 @@ public class Division {
      * @param countryId the country id
      */
     public Division(int id, int countryId) {
-        this.id = id;
+        this.id.set(id);
         this.countryId = countryId;
     }
 
@@ -123,7 +124,7 @@ public class Division {
      * @param countryId the country id
      */
     public Division(int id, String name, int countryId) {
-        this.id = id;
+        this.id.set(id);
         this.name = name;
         this.countryId = countryId;
     }
@@ -141,7 +142,7 @@ public class Division {
      * @param countryId the country id
      */
     public Division(int id, String name, LocalDateTime created, String createdBy, ZonedDateTime updated, String updatedBy, int countryId) {
-        this.id = id;
+        this.id.set(id);
         this.name = name;
         this.created = created;
         this.createdBy = createdBy;
@@ -159,7 +160,7 @@ public class Division {
      * @return the id
      */
     public int getId() {
-        return id;
+        return id.get();
     }
 
     /**
@@ -168,9 +169,12 @@ public class Division {
      * @param id the id
      */
     public void setId(int id) {
-        this.id = id;
+        this.id.set(id);
     }
 
+    public IntegerProperty getIdProperty() {
+        return this.id;
+    }
     /**
      * Gets name.
      *

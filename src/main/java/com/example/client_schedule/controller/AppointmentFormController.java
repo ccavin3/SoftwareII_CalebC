@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
+import javax.swing.*;
 import java.net.URL;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 /**
  * The type Appointment form controller. This class controls all the functionality for Appointment management.
@@ -125,16 +127,16 @@ public class AppointmentFormController extends Appointment implements Initializa
     private DatePicker dateField;
 
     @FXML
-    private ComboBox startTimeHour;
+    private TextField startTime;
 
     @FXML
-    private ComboBox startTimeMinute;
+    private TextField startDate;
 
     @FXML
-    private ComboBox startTimePeriod;
+    private TextField endTime;
 
     @FXML
-    private ComboBox endTimeHour;
+    private TextField endDate;
 
     @FXML
     private ComboBox endTimeMinute;
@@ -212,13 +214,45 @@ public class AppointmentFormController extends Appointment implements Initializa
     private DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm[:ss] a");
     private DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm[:ss] a");
 
+    private UnaryOperator<TextFormatter.Change> dateValidationFormatter = change -> {
+        if (change.getText().matches("/^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$/")) {
+            return change; //if change is a number
+        } else {
+            change.setText(""); //else make no change
+            change.setRange(    //don't remove any selected text either.
+                    change.getRangeStart(),
+                    change.getRangeStart()
+            );
+            return change;
+        }
+    };
+
+    private UnaryOperator<TextFormatter.Change> timeValidationFormatter = change -> {
+        if (change.getText().matches("/^ *(1[0-2]|[1-9]):[0-5][0-9] *(a|p|A|P)(m|M) *$/")) {
+            return change; //if change is a number
+        } else {
+            change.setText(""); //else make no change
+            change.setRange(    //don't remove any selected text either.
+                    change.getRangeStart(),
+                    change.getRangeStart()
+            );
+            return change;
+        }
+    };
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
+
         onCommitAction = e -> dbCommit();
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
+
+        startDate.setTextFormatter(dateValidationFormatter);
+        endDate.setTextFormatter(dateValidationFormatter);
+        startTime.setTextFormatter(timeValidationFormatter);
+        endTime.setTextFormatter(timeValidationFormatter);
 
         deleteButton.setOnAction(onDeleteAction);
         insertButton.setOnAction(onInsertAction);

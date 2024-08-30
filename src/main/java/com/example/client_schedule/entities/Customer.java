@@ -261,7 +261,7 @@ public class Customer {
      * @return the division
      */
     public Division getDivision() {
-        return division;
+        return division.get();
     }
 
     /**

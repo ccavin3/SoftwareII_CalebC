@@ -249,10 +249,10 @@ public class AppointmentFormController extends Appointment implements Initializa
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
 
-        startDate.setTextFormatter(dateValidationFormatter);
-        endDate.setTextFormatter(dateValidationFormatter);
-        startTime.setTextFormatter(timeValidationFormatter);
-        endTime.setTextFormatter(timeValidationFormatter);
+        startDate.setTextFormatter(new TextFormatter<>(dateValidationFormatter));
+        endDate.setTextFormatter(new TextFormatter<>(dateValidationFormatter));
+        startTime.setTextFormatter(new TextFormatter<>(timeValidationFormatter));
+        endTime.setTextFormatter(new TextFormatter<>(timeValidationFormatter));
 
         deleteButton.setOnAction(onDeleteAction);
         insertButton.setOnAction(onInsertAction);

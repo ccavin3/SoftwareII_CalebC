@@ -82,7 +82,7 @@ public class Country {
      * @param name the name
      */
     public Country(int id, String name) {
-        this.id = id;
+        this.id.set(id);
         this.name = name;
     }
 

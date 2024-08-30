@@ -127,6 +127,9 @@ public class CustomerFormController extends Customer implements Initializable {
     @FXML
     protected VBox tabContent;
 
+    @FXML
+    protected Customer currentCustomer;
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;

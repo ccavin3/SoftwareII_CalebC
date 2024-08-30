@@ -76,10 +76,49 @@ public class AppointmentFormController extends Appointment implements Initializa
     };
 
     @FXML
-    private TextField textName;
+    private TextField textAppointmentID;
 
     @FXML
-    private TextField textAddress;
+    private TextField textUserID;
+
+    @FXML
+    private TextField textCustomerID;
+
+    @FXML
+    private TextField textTitle;
+
+    @FXML
+    private TextField textDescription;
+
+    @FXML
+    private TextField textLocation;
+
+    @FXML
+    private ComboBox contactDropdown;
+
+    @FXML
+    private TextField textType;
+
+    @FXML
+    private DatePicker dateField;
+
+    @FXML
+    private ComboBox startTimeHour;
+
+    @FXML
+    private ComboBox startTimeMinute;
+
+    @FXML
+    private ComboBox startTimePeriod;
+
+    @FXML
+    private ComboBox endTimeHour;
+
+    @FXML
+    private ComboBox endTimeMinute;
+
+    @FXML
+    private ComboBox endTimePeriod;
 
     @FXML
     private TableView<Appointment> tableView;

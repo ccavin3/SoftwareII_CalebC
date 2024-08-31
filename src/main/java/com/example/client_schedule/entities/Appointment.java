@@ -125,16 +125,28 @@ public class Appointment {
     private final IntegerProperty contactIdProperty = new SimpleIntegerProperty();
 
     @Transient
-    private StringProperty startTimeProperty = new SimpleStringProperty();
-    
-    @Transient
-    private StringProperty startDateProperty = new SimpleStringProperty();
+    private ObjectProperty<LocalTime> startTimeProperty = new SimpleObjectProperty<>();
 
     @Transient
-    private StringProperty endTimeProperty = new SimpleStringProperty();
+    private LocalTime startTime;
 
     @Transient
-    private StringProperty endDateProperty = new SimpleStringProperty();
+    private ObjectProperty<LocalDate> startDateProperty = new SimpleObjectProperty<>();
+
+    @Transient
+    private LocalDate startDate;
+
+    @Transient
+    private ObjectProperty<LocalTime> endTimeProperty = new SimpleObjectProperty<>();
+
+    @Transient
+    private LocalTime endTime;
+
+    @Transient
+    private ObjectProperty<LocalDate> endDateProperty = new SimpleObjectProperty<>();
+
+    @Transient
+    private LocalDate endDate;
 
     @Transient
     private DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -763,82 +775,90 @@ public class Appointment {
     }
 
     public LocalTime getStartTime() {
-        return LocalTime.parse(this.startTimeProperty.get(), tformatter);
+        return this.startTimeProperty.get();
     }
 
-    public StringProperty getStartTimeProperty() {
+    public ObjectProperty<LocalTime> getStartTimeProperty() {
+        if (this.startTimeProperty.get() == null && this.startTime != null) {
+            this.startTimeProperty.set(this.startTime);
+        }
         return startTimeProperty;
     }
     
     public void setStartTime(LocalTime startTime) {
-        if (startTime == null) {
-            this.startTimeProperty.set(null);
-            this.setStart(null);
-        } else if (this.startTimeProperty.get() == null || startTime != LocalTime.parse(this.startTimeProperty.get(), tformatter)) {
-            this.startTimeProperty.set(startTime.format(tformatter));
+        if (this.startTimeProperty.get() == null || startTime != this.startTimeProperty.get()) {
+            this.startTimeProperty.set(startTime);
+            this.startTime = startTime;
             if (this.startDateProperty.get() != null ) {
-                this.setStart(LocalDate.parse(this.startDateProperty.get(), dformatter).atTime(LocalTime.parse(this.startTimeProperty.get(), tformatter)));
+                this.setStart(this.startDateProperty.get().atTime(this.startTimeProperty.get()));
             }
+            this.setListeners();
         }
     }
 
     public LocalDate getStartDate() {
-        return LocalDate.parse(this.startDateProperty.get(), dformatter);
+        return this.startDateProperty.get();
     }
 
-    public StringProperty getStartDateProperty() {
+    public ObjectProperty<LocalDate> getStartDateProperty() {
+        if (this.startDateProperty.get() == null && this.startDate != null) {
+            this.startDateProperty.set(this.startDate);
+        }
         return startDateProperty;
     }
     
     public void setStartDate(LocalDate startDate) {
-        if (startDate == null) {
-            this.startDateProperty.set(null);
-            this.setStart(null);
-        } else if (this.startDateProperty.get() == null || startDate != LocalDate.parse(this.startDateProperty.get(), dformatter)) {
-            this.startDateProperty.set(startDate.format(dformatter));
+        if (this.startDateProperty.get() == null || startDate != this.startDateProperty.get()) {
+            this.startDateProperty.set(startDate);
+            this.startDate = startDate;
             if (this.startTimeProperty.get() != null) {
-                this.setStart(LocalDate.parse(this.startDateProperty.get(), dformatter).atTime(LocalTime.parse(this.startTimeProperty.get(), tformatter)));
+                this.setStart(this.startDateProperty.get().atTime(this.startTimeProperty.get()));
             }
+            this.setListeners();
         }
     }
 
     public LocalTime getEndTime() {
-        return LocalTime.parse(this.endTimeProperty.get(), tformatter);
+        return this.endTimeProperty.get();
     }
 
-    public StringProperty getEndTimeProperty() {
+    public ObjectProperty<LocalTime> getEndTimeProperty() {
+        if (this.endTimeProperty.get() == null && this.endTime != null) {
+            this.endTimeProperty.set(this.endTime);
+        }
         return endTimeProperty;
     }
     
     public void setEndTime(LocalTime endTime) {
-        if (endTime == null) {
-            this.endTimeProperty.set(null);
-            this.setEnd(null);
-        } else if (this.endTimeProperty.get() == null || endTime != LocalTime.parse(this.endTimeProperty.get(), tformatter)) {
-            this.endTimeProperty.set(endTime.format(tformatter));
+        if (this.endTimeProperty.get() == null || endTime != this.endTimeProperty.get()) {
+            this.endTimeProperty.set(endTime);
+            this.endTime = endTime;
             if (this.endDateProperty.get() != null ) {
-                this.setEnd(LocalDate.parse(this.endDateProperty.get(), dformatter).atTime(LocalTime.parse(this.endTimeProperty.get(), tformatter)));
+                this.setEnd(this.endDateProperty.get().atTime(this.endTimeProperty.get()));
             }
+            this.setListeners();
         }
     }
 
     public LocalDate getEndDate() {
-        return LocalDate.parse(this.endDateProperty.get(), dformatter);
+        return this.endDate;
     }
 
-    public StringProperty getEndDateProperty() {
+    public ObjectProperty<LocalDate> getEndDateProperty() {
+        if (this.endDateProperty.get() == null && this.endDate != null) {
+            this.endDateProperty.set(this.endDate);
+        }
         return endDateProperty;
     }
     
     public void setEndDate(LocalDate endDate) {
-        if (endDate == null) {
-            this.endDateProperty.set(null);
-            this.setEnd(null);
-        } else if (this.endDateProperty.get() == null || endDate != LocalDate.parse(this.endDateProperty.get(), dformatter)) {
-            this.endDateProperty.set(endDate.format(dformatter));
+        if (this.endDateProperty.get() == null || endDate != this.endDateProperty.get()) {
+            this.endDateProperty.set(endDate);
+            this.endDate = endDate;
             if (this.endTimeProperty.get() != null) {
-                this.setEnd(LocalDate.parse(this.endDateProperty.get(), dformatter).atTime(LocalTime.parse(this.endTimeProperty.get(), tformatter)));
+                this.setEnd(this.endDateProperty.get().atTime(this.endTimeProperty.get()));
             }
+            this.setListeners();
         }
     }
 

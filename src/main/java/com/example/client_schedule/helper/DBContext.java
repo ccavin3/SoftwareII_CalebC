@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -25,9 +26,9 @@ public class DBContext {
                 i.setPhone(i.getPhone());
                 i.setZip(i.getZip());
                 i.setName(i.getName());
-                i.setDivision(i.getDivision());
                 i.setAddress(i.getAddress());
                 i.setDivisionId(i.getDivisionId());
+                i.setDivision(i.getDivision());
                 i.setId(i.getId());
             }).collect(Collectors.toList()));
             countries = FXCollections.observableList((new countrydb()).rows().stream().peek(i -> {
@@ -49,10 +50,10 @@ public class DBContext {
                 i.setUser(i.getUser());
                 i.setStart(i.getStart());
                 i.setEnd(i.getEnd());
-                i.setStartTime(i.getStartTime());
-                i.setStartDate(i.getStartDate());
-                i.setEndDate(i.getEndDate());
-                i.setEndTime(i.getEndTime());
+                i.setStartTime(i.getStart().toLocalTime());
+                i.setStartDate(i.getStart().toLocalDate());
+                i.setEndDate(i.getEnd().toLocalDate());
+                i.setEndTime(i.getEnd().toLocalTime());
                 i.setTitle(i.getTitle());
                 i.setType(i.getType());
             }).collect(Collectors.toList()));
@@ -67,17 +68,7 @@ public class DBContext {
     class contactdb extends CRUD<Contact> {}
     class countrydb extends CRUD<Country> {}
     class customerdb extends CRUD<Customer> {}
-    class appointmentdb extends CRUD<Appointment> {
-        @Override
-        public ObservableList<Appointment> rows() {
-            return FXCollections.observableList(super.rows().stream().peek(r -> {
-                r.setStartDate(r.getStart().toLocalDate());
-                r.setStartTime(r.getStart().toLocalTime());
-                r.setEndDate(r.getEnd().toLocalDate());
-                r.setEndTime(r.getEnd().toLocalTime());
-            }).collect(Collectors.toList()));
-        }
-    }
+    class appointmentdb extends CRUD<Appointment> {}
 
     public ObservableList<User> users;
     public ObservableList<Division> divisions;

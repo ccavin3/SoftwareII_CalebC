@@ -2,6 +2,8 @@ package com.example.client_schedule.entities;
 
 import jakarta.persistence.*;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 
 import java.time.LocalDateTime;
@@ -88,7 +90,15 @@ public class Customer {
 
 //endregion
 
-//region ORM
+    private void setListeners(Division division) {
+        this.getDivisionIdProperty().bindBidirectional(division.getIdProperty());
+    }
+
+    private void unSetListeners(Division division) {
+        this.getDivisionIdProperty().bindBidirectional(division.getIdProperty());
+    }
+
+    //region ORM
     @ManyToOne
     @JoinColumn(name="Division_ID")
     public Division division;
@@ -173,8 +183,7 @@ public class Customer {
         this.updated = updated;
         this.updatedBy = updatedBy;
     }
-
-    //endregion
+//endregion
 
 //region getters-setters
 
@@ -307,6 +316,8 @@ public class Customer {
      * @param division the division
      */
     public void setDivision(Division division) {
+        unSetListeners(this.division);
+        setListeners(division);
         this.division = division;
         this.divisionProperty.set(division);
     }

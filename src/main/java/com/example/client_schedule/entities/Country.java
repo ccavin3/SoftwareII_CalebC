@@ -2,6 +2,7 @@ package com.example.client_schedule.entities;
 
 import jakarta.persistence.*;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,10 @@ public class Country {
     @FXML
     @Column(name="Country_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    protected IntegerProperty id;
+    protected Integer id;
+
+    @Transient
+    private IntegerProperty idProperty = new SimpleIntegerProperty();
 
     @FXML
     @Column(name="Country")
@@ -82,7 +86,7 @@ public class Country {
      * @param name the name
      */
     public Country(int id, String name) {
-        this.id.set(id);
+        this.setId(id);
         this.name = name;
     }
 
@@ -97,7 +101,7 @@ public class Country {
      * @param updatedBy the updated by
      */
     public Country(int id, String name, LocalDateTime created, String createdBy, ZonedDateTime updated, String updatedBy) {
-        this.id.set(id);
+        this.setId(id);
         this.name = name;
         this.created = created;
         this.createdBy = createdBy;
@@ -113,21 +117,22 @@ public class Country {
      */
 //region getters-setters
     public int getId() {
-        return id.get();
+        return id;
     }
 
+    public IntegerProperty getIdProperty() {
+        return this.idProperty;
+    }
     /**
      * Sets id.
      *
      * @param id the id
      */
     public void setId(int id) {
-        this.id.set(id);
+        this.id = id;
+        this.idProperty.set(id);
     }
 
-    public IntegerProperty getIdProperty() {
-        return this.id;
-    }
 
     /**
      * Gets name.

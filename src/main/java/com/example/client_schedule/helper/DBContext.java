@@ -18,11 +18,44 @@ public class DBContext {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("client_schedule");
             CRUD.em = em = emf.createEntityManager();
             users = (new userdb()).rows();
-            divisions = (new divisiondb()).rows();
-            customers = (new customerdb()).rows();
-            countries = (new countrydb()).rows();
-            contacts = (new contactdb()).rows();
-            appointments = (new appointmentdb()).rows();
+            divisions = FXCollections.observableList((new divisiondb()).rows().stream().peek(i -> {
+                i.setId(i.getId());
+            }).collect(Collectors.toList()));
+            customers = FXCollections.observableList((new customerdb()).rows().stream().peek(i -> {
+                i.setPhone(i.getPhone());
+                i.setZip(i.getZip());
+                i.setName(i.getName());
+                i.setDivision(i.getDivision());
+                i.setAddress(i.getAddress());
+                i.setDivisionId(i.getDivisionId());
+                i.setId(i.getId());
+            }).collect(Collectors.toList()));
+            countries = FXCollections.observableList((new countrydb()).rows().stream().peek(i -> {
+                i.setId(i.getId());
+            }).collect(Collectors.toList()));
+            contacts = FXCollections.observableList((new contactdb()).rows().stream().peek(i -> {
+            }).collect(Collectors.toList()));
+            appointments = FXCollections.observableList((new appointmentdb()).rows().stream().peek(i -> {
+                i.setContact(i.getContact());
+                i.setId(i.getId());
+                i.setContact(i.getContact());
+                i.setDescription(i.getDescription());
+                i.setLocation(i.getLocation());
+                i.setContactId(i.getContactId());
+                i.setCustomerId(i.getCustomerId());
+                i.setUserId(i.getContactId());
+                i.setContact(i.getContact());
+                i.setCustomer(i.getCustomer());
+                i.setUser(i.getUser());
+                i.setStart(i.getStart());
+                i.setEnd(i.getEnd());
+                i.setStartTime(i.getStartTime());
+                i.setStartDate(i.getStartDate());
+                i.setEndDate(i.getEndDate());
+                i.setEndTime(i.getEndTime());
+                i.setTitle(i.getTitle());
+                i.setType(i.getType());
+            }).collect(Collectors.toList()));
         }
         catch (Exception e) {
             if (e.getMessage() != null) {}

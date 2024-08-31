@@ -4,6 +4,13 @@ import com.example.client_schedule.entities.Country;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.entities.Division;
 import com.example.client_schedule.helper.DBContext;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -146,7 +153,7 @@ public class CustomerFormController extends Customer implements Initializable {
     protected VBox tabContent;
 
     @FXML
-    private Customer currentCustomer;
+    private ObjectProperty<Customer> currentCustomer = new SimpleObjectProperty<>();
 
     @FXML
     private EventHandler<ActionEvent> onDivisionSelectionAction;
@@ -154,26 +161,60 @@ public class CustomerFormController extends Customer implements Initializable {
     @FXML
     private EventHandler<ActionEvent> onCountrySelectionAction;
 
+    private void updateTextFieldsText(Customer wen) {
+        if (wen != null) {
+            textPostal.setText(wen.getZip());
+            textPhone.setText(wen.getPhone());
+            textAddress.setText(wen.getAddress());
+            textID.setText(Integer.toString(wen.getId()));
+            textName.setText(wen.getName());
+            comboBoxDivision.setValue(wen.getDivision());
+        }
+    }
+
+    private FilteredList<Division> filteredDivisionList;
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
+        this.currentCustomer.set(db.customers.stream().findFirst().orElse(null));
+//        this.currentCustomer.get().getIdProperty().set(currentCustomer.get().getId());
+//        this.currentCustomer.get().getDivisionIdProperty().set(currentCustomer.get().getDivisionId());
+//        this.currentCustomer.get().getDivisionProperty().set(currentCustomer.get().getDivision());
+//        this.currentCustomer.get().getAddressProperty().set(currentCustomer.get().getAddress());
+//        this.currentCustomer.get().getNameProperty().set(currentCustomer.get().getName());
+//        this.currentCustomer.get().getZipProperty().set(currentCustomer.get().getZip());
+//        this.currentCustomer.get().getPhoneProperty().set(currentCustomer.get().getPhone());
+
         onCommitAction = e -> dbCommit();
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
         onDivisionSelectionAction = this::getComboDivisionId;
-        onCountrySelectionAction = this::getCountryDivisionId;
+        onCountrySelectionAction = this::getComboCountryId;
+
+        currentCustomer.addListener(new ChangeListener<Customer>() {
+            @Override
+            public void changed(ObservableValue<? extends Customer> observableValue, Customer old, Customer wen) {
+                updateTextFieldsText(wen);
+            }
+        });
 
         deleteButton.setOnAction(onDeleteAction);
         insertButton.setOnAction(onInsertAction);
         commitButton.setOnAction(onCommitAction);
         revertButton.setOnAction(onRevertAction);
-
-        comboBoxDivision.setItems(db.divisions);
+        comboBoxCountry.setOnAction(onCountrySelectionAction);
+        comboBoxCountry.setValue(currentCustomer.get().getDivisionProperty().get().getCountry());
+        filteredDivisionList = new FilteredList<>(db.divisions, p -> p.getCountryId() == this.currentCustomer.get().getDivision().getCountryId());
+        comboBoxDivision.setItems(filteredDivisionList);
         comboBoxDivision.setConverter(new StringConverter<Division>() {
               @Override
               public String toString(Division division) {
-                  return division.getName();
+                  if (division == null) {
+                      return "";
+                  } else {
+                      return division.getName();
+                  }
               }
 
               @Override
@@ -187,7 +228,11 @@ public class CustomerFormController extends Customer implements Initializable {
         comboBoxCountry.setConverter(new StringConverter<Country>() {
             @Override
             public String toString(Country country) {
-                return country.getName();
+                if (country == null) {
+                    return "";
+                } else {
+                    return country.getName();
+                }
             }
 
             @Override
@@ -195,33 +240,26 @@ public class CustomerFormController extends Customer implements Initializable {
                 return comboBoxCountry.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
             }
         });
-
         tableView.setEditable(true);
         addCustomerColumns();
 //        lambda expression
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
-            if (wen != null) {
-                currentCustomer = wen;
-            }
+            currentCustomer.set(wen);
         });
-//        tableView.setRowFactory(tableView -> {
-//            TableRow<Customer> row = new TableRow<>();
-//            ObjectProperty<Customer> opMsg = row.itemProperty();
-//            Customer tmpMsg = opMsg.get();
-//            return row;
-//        });
         addCustomerRows();
-        textName.textProperty().bindBidirectional(currentCustomer.name);
-        textID.textProperty().bindBidirectional(currentCustomer.id, new NumberStringConverter());
-        textAddress.textProperty().bindBidirectional(currentCustomer.address);
-        textPhone.textProperty().bindBidirectional(currentCustomer.phone);
-        textPostal.textProperty().bindBidirectional(currentCustomer.zip);
-        comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.division);
-        comboBoxCountry.valueProperty().bindBidirectional(currentCustomer.country);
-        currentCustomer.getCountryIdProperty().bindBidirectional(currentCustomer.country.get().getIdProperty());
-        currentCustomer.getDivisionIdProperty().bindBidirectional(currentCustomer.division.get().getIdProperty());
+        updateTextFieldsText(this.currentCustomer.get());
+        reBind();
     }
 
+    private void reBind() {
+        Bindings.bindBidirectional(textID.textProperty(), currentCustomer.get().getIdProperty(), new NumberStringConverter());
+        Bindings.bindBidirectional(textName.textProperty(), currentCustomer.get().getNameProperty());
+        Bindings.bindBidirectional(textAddress.textProperty(), currentCustomer.get().getAddressProperty());
+        Bindings.bindBidirectional(textPhone.textProperty(), currentCustomer.get().getPhoneProperty());
+        Bindings.bindBidirectional(textPostal.textProperty(), currentCustomer.get().getZipProperty());
+        Bindings.bindBidirectional(comboBoxDivision.valueProperty(), currentCustomer.get().getDivisionProperty());
+        Bindings.bindBidirectional(currentCustomer.get().getDivisionIdProperty(), currentCustomer.get().getDivisionProperty().get().getIdProperty());
+    }
     private void addCustomerRows() {
         tableView.setItems(db.customers);
     }
@@ -261,7 +299,6 @@ public class CustomerFormController extends Customer implements Initializable {
                 return null;
             }
         }, db.divisions));
-
         idCol.setVisible(false);
         tableView.getColumns().addAll(idCol, nameCol, addressCol, postalCol, phoneCol, divisionCol);
     }
@@ -323,9 +360,10 @@ public class CustomerFormController extends Customer implements Initializable {
         setDivisionId(i.getId());
     }
 
-    private void getCountryDivisionId(ActionEvent e) {
-        Country i = ((Country)((ComboBox)e.getSource()).getSelectionModel().getSelectedItem());
-        setCountryId(i.getId());
+    private void getComboCountryId(ActionEvent e) {
+        final Country i = ((Country)((ComboBox)e.getSource()).getSelectionModel().getSelectedItem());
+        Platform.runLater(() -> {
+            filteredDivisionList.setPredicate(item -> item.getCountryId() == i.getId());
+        });
     }
-
 }

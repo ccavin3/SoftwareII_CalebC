@@ -3,6 +3,12 @@ package com.example.client_schedule.controller;
 import com.example.client_schedule.entities.*;
 import com.example.client_schedule.helper.DBContext;
 import jakarta.persistence.Table;
+import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,7 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import javafx.util.converter.NumberStringConverter;
+import javafx.util.converter.*;
 
 import java.net.URL;
 import java.sql.Time;
@@ -103,6 +109,9 @@ public class AppointmentFormController extends Appointment implements Initializa
     private TextField textCustomerID;
 
     @FXML
+    private TextField textContactID;
+
+    @FXML
     private TextField textTitle;
 
     @FXML
@@ -110,9 +119,6 @@ public class AppointmentFormController extends Appointment implements Initializa
 
     @FXML
     private TextField textLocation;
-
-    @FXML
-    private ComboBox contactDropdown;
 
     @FXML
     private TextField textType;
@@ -143,6 +149,15 @@ public class AppointmentFormController extends Appointment implements Initializa
 
     @FXML
     private StackPane tableArea;
+
+    @FXML
+    private ComboBox<Contact> comboBoxContact;
+
+    @FXML
+    private ComboBox<User> comboBoxUser;
+
+    @FXML
+    private ComboBox<Customer> comboBoxCustomer;
 
     /**
      * The Insert button.
@@ -204,16 +219,16 @@ public class AppointmentFormController extends Appointment implements Initializa
     @FXML
     protected VBox tabContent;
 
-    @FXML
-    private Appointment currentAppointment;
-
-
     private DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm[:ss] a");
     private DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm[:ss] a");
+    private StringConverter<String> dateStringConverter;
+    private StringConverter<String> timeStringConverter;
 
     private UnaryOperator<TextFormatter.Change> dateValidationFormatter = change -> {
-        if (change.getText().matches("/^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$/")) {
+        if (change.getControlNewText().matches("(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-((19|2[0-9])[0-9]{2})")) {
+            return change;  // if change is a date
+        } else if (change.getText().matches("\\d+")){
             return change; //if change is a number
         } else {
             change.setText(""); //else make no change
@@ -226,7 +241,9 @@ public class AppointmentFormController extends Appointment implements Initializa
     };
 
     private UnaryOperator<TextFormatter.Change> timeValidationFormatter = change -> {
-        if (change.getText().matches("/^ *(1[0-2]|[1-9]):[0-5][0-9] *(a|p|A|P)(m|M) *$/")) {
+        if (change.getControlNewText().matches("/^ *(1[0-2]|[1-9]):[0-5][0-9] *(a|p|A|P)(m|M) *$/")) {
+            return change; //if change is a LocalTime
+        } else if (change.getText().matches("\\d+")) {
             return change; //if change is a number
         } else {
             change.setText(""); //else make no change
@@ -238,19 +255,118 @@ public class AppointmentFormController extends Appointment implements Initializa
         }
     };
 
+    private TextFormatter<String> sldFormatter;
+
+    private TextFormatter<String> sltFormatter;
+
+    private TextFormatter<String> eldFormatter;
+
+    private TextFormatter<String> eltFormatter;
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
+        dateStringConverter = new StringConverter<String>() {
+            @Override
+            public String toString(String localDate) {
+                return localDate;
+            }
 
+            @Override
+            public String fromString(String s) {
+                return LocalDate.parse(s).format(dformatter);
+            }
+        };
+        timeStringConverter = new StringConverter<String>() {
+            @Override
+            public String toString(String localTime) {
+                return localTime;
+            }
+
+            @Override
+            public String fromString(String s) {
+                return LocalTime.parse(s).format(tformatter);
+            }
+        };
+        sldFormatter = new TextFormatter<>(
+                dateStringConverter,   //converter
+                LocalDate.now().format(dformatter),        //default value
+                dateValidationFormatter
+        );
+        sltFormatter = new TextFormatter<>(
+                timeStringConverter,   //converter
+                LocalTime.now().format(tformatter),        //default value
+                timeValidationFormatter
+        );
+        eldFormatter = new TextFormatter<>(
+                dateStringConverter,   //converter
+                LocalDate.now().format(dformatter),        //default value
+                dateValidationFormatter
+        );
+        eltFormatter = new TextFormatter<>(
+                timeStringConverter,   //converter
+                LocalTime.now().format(tformatter),        //default value
+                timeValidationFormatter
+        );
         onCommitAction = e -> dbCommit();
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
 
-        startDate.setTextFormatter(new TextFormatter<>(dateValidationFormatter));
-        endDate.setTextFormatter(new TextFormatter<>(dateValidationFormatter));
-        startTime.setTextFormatter(new TextFormatter<>(timeValidationFormatter));
-        endTime.setTextFormatter(new TextFormatter<>(timeValidationFormatter));
+//        textStartDate.setTextFormatter(sldFormatter);
+//        textEndDate.setTextFormatter(eldFormatter);
+//        textStartTime.setTextFormatter(sltFormatter);
+//        textEndTime.setTextFormatter(eltFormatter);
+
+        comboBoxContact.setItems(db.contacts);
+        comboBoxContact.setConverter(new StringConverter<Contact>() {
+            @Override
+            public String toString(Contact contact) {
+                if (contact != null) {
+                    return contact.getName();
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public Contact fromString(String s) {
+                return comboBoxContact.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
+            }
+        });
+        comboBoxUser.setItems(db.users);
+        comboBoxUser.setConverter(new StringConverter<User>() {
+            @Override
+            public String toString(User user) {
+                if (user != null) {
+                    return user.getUserName();
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public User fromString(String s) {
+                return comboBoxUser.getItems().stream().filter(ap -> ap.getUserName().equals(s)).findFirst().orElse(null);
+            }
+        });
+
+        comboBoxCustomer.setItems(db.customers);
+        comboBoxCustomer.setConverter(new StringConverter<Customer>() {
+            @Override
+            public String toString(Customer customer) {
+                if (customer != null) {
+                    return customer.getName();
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public Customer fromString(String s) {
+                return comboBoxCustomer.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
+            }
+        });
 
         deleteButton.setOnAction(onDeleteAction);
         insertButton.setOnAction(onInsertAction);
@@ -260,14 +376,18 @@ public class AppointmentFormController extends Appointment implements Initializa
         tableView.setEditable(true);
         addAppointmentColumns();
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
+            if (old != null) {
+                unBind(old);
+                clearfields();
+            }
             if (wen != null) {
-                textTitle.setText(wen.getTitle());
-                textType.setText(wen.getType());
-                textStart.setText(wen.getStart().format(dtformatter));
-                textEnd.setText(wen.getEnd().format(dtformatter));
-
+                reBind(wen);
+            } else {
+                unBind(old);
+                clearfields();
             }
         });
+
 //        tableView.setRowFactory(tableView -> {
 //            TableRow<Appointment> row = new TableRow<>();
 //            ObjectProperty<Appointment> opMsg = row.itemProperty();
@@ -275,17 +395,60 @@ public class AppointmentFormController extends Appointment implements Initializa
 //            return row;
 //        });
         addAppointmentRows();
+    }
 
-        textTitle.textProperty().bindBidirectional(currentAppointment.title);
-        textAppointmentID.textProperty().bindBidirectional(currentAppointment.id, new NumberStringConverter());
-        textDescription.textProperty().bindBidirectional(currentAppointment.description);
-        textType.textProperty().bindBidirectional(currentAppointment.type);
-        textLocation.textProperty().bindBidirectional(currentAppointment.location);
-        contactDropdown.valueProperty().bindBidirectional(currentAppointment.contact);
-        textStart.textProperty().bindBidirectional(currentAppointment.start);
-        textEnd.textProperty().bindBidirectional(currentAppointment.end);
+    private void unBind(Appointment currentAppointment) {
+        textTitle.textProperty().unbindBidirectional(currentAppointment.getTitleProperty());
+        textAppointmentID.textProperty().unbindBidirectional(currentAppointment.getIdProperty());
+        textDescription.textProperty().unbindBidirectional(currentAppointment.getDescriptionProperty());
+        textType.textProperty().unbindBidirectional(currentAppointment.getTypeProperty());
+        textLocation.textProperty().unbindBidirectional(currentAppointment.getLocationProperty());
+        comboBoxCustomer.valueProperty().unbindBidirectional(currentAppointment.getCustomerProperty());
+        comboBoxContact.valueProperty().unbindBidirectional(currentAppointment.getContactProperty());
+        comboBoxUser.valueProperty().unbindBidirectional(currentAppointment.getUserProperty());
+        textStart.textProperty().unbindBidirectional(currentAppointment.getStartProperty());
+        textEnd.textProperty().unbindBidirectional(currentAppointment.getEndProperty());
+        textStartDate.textProperty().unbindBidirectional(getStartDateProperty());
+        textEndDate.textProperty().unbindBidirectional(getEndDateProperty());
+        textStartTime.textProperty().unbindBidirectional(getStartTimeProperty());
+        textEndTime.textProperty().unbindBidirectional(getEndTimeProperty());
+    }
 
-
+    private void clearfields() {
+        textTitle.clear();
+        textAppointmentID.clear();
+        textAppointmentID.clear();
+        textType.clear();
+        textLocation.clear();
+        comboBoxCustomer.setValue(null);
+        comboBoxContact.setValue(null);
+        comboBoxUser.setValue(null);
+        textStart.clear();
+        textEnd.clear();
+        textStartDate.clear();
+        textStartTime.clear();
+        textEndDate.clear();
+        textEndTime.clear();
+    }
+    private void reBind(Appointment currentAppointment) {
+        textTitle.textProperty().bindBidirectional(currentAppointment.getTitleProperty());
+        textAppointmentID.textProperty().bindBidirectional(currentAppointment.getIdProperty(), new NumberStringConverter());
+        textDescription.textProperty().bindBidirectional(currentAppointment.getDescriptionProperty());
+        textType.textProperty().bindBidirectional(currentAppointment.getTypeProperty());
+        textLocation.textProperty().bindBidirectional(currentAppointment.getLocationProperty());
+        comboBoxCustomer.valueProperty().bindBidirectional(currentAppointment.getCustomerProperty());
+        comboBoxContact.valueProperty().bindBidirectional(currentAppointment.getContactProperty());
+        comboBoxUser.valueProperty().bindBidirectional(currentAppointment.getUserProperty());
+        textStart.textProperty().bindBidirectional(currentAppointment.getStartProperty(), new LocalDateTimeStringConverter(dtformatter, null));
+        textEnd.textProperty().bindBidirectional(currentAppointment.getEndProperty(), new LocalDateTimeStringConverter(dtformatter, null));
+        textStartDate.textProperty().bindBidirectional(currentAppointment.getStartDateProperty());
+        textEndDate.textProperty().bindBidirectional(currentAppointment.getEndDateProperty());
+        textStartTime.textProperty().bindBidirectional(currentAppointment.getStartTimeProperty());
+        textEndTime.textProperty().bindBidirectional(currentAppointment.getEndTimeProperty());
+//        Bindings.bindBidirectional(textStartDate.textProperty(), currentAppointment.get().getStartDateProperty(), new LocalDateStringConverter(dformatter, null));
+//        Bindings.bindBidirectional(textEndDate.textProperty(), currentAppointment.get().getEndDateProperty(), new LocalDateStringConverter(dformatter, null));
+//        Bindings.bindBidirectional(textStartTime.textProperty(), currentAppointment.get().getStartTimeProperty(), new LocalTimeStringConverter(tformatter, null));
+//        Bindings.bindBidirectional(textEndTime.textProperty(), currentAppointment.get().getEndTimeProperty(), new LocalTimeStringConverter(tformatter, null));
     }
 
     private void addAppointmentRows() {

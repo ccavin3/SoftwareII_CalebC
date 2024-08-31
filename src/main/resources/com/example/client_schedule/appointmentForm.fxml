@@ -53,6 +53,11 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Label text="%label.appointment.id.text" />
@@ -63,31 +68,27 @@
                 <Label text="%label.appointment.location.text" GridPane.rowIndex="5" />
                 <Label text="%label.appointment.contact.text" GridPane.rowIndex="6" />
                 <Label text="%label.appointment.type.text" GridPane.rowIndex="7" />
-                <Label text="%label.appointment.startDate.text" GridPane.rowIndex="8" />
-                <Label text="%label.appointment.startTime.text" GridPane.rowIndex="9" />
-                <Label text="%label.appointment.endDate.text" GridPane.rowIndex="10" />
-                <Label text="%label.appointment.endTime.text" GridPane.rowIndex="11" />
+                <Label text="%label.appointment.sdate.text" GridPane.rowIndex="8" />
+                <Label text="%label.appointment.stime.text" GridPane.rowIndex="9" />
+                <Label text="%label.appointment.edate.text" GridPane.rowIndex="10" />
+                <Label text="%label.appointment.etime.text" GridPane.rowIndex="11" />
                 <TextField fx:id="textAppointmentID" disable="true" GridPane.columnIndex="1" />
-                <TextField fx:id="textUserID" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="textCustomerID" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <ComboBox fx:id="comboBoxUser" disable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <ComboBox fx:id="comboBoxCustomer" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <TextField fx:id="textTitle" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <TextField fx:id="textDescription" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <TextField fx:id="textLocation" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <ComboBox fx:id="contactDropdown" prefHeight="26.0" prefWidth="273.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-
-                            <String fx:value="AM" />
-                            <String fx:value="PM" />
-                        </FXCollections>
-
-                    </items>
-                </ComboBox>
+                <ComboBox fx:id= "comboBoxContact" prefHeight="26.0" prefWidth="273.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                 <TextField fx:id="textType" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <TextField fx:id="textStartDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-            <TextField fx:id="textStartTime" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-            <TextField fx:id="textEndDate" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                <TextField fx:id="textStartDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                <TextField fx:id="textStartTime" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                <TextField fx:id="textEndDate" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                 <TextField fx:id="textEndTime" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+                <TextField fx:id="textStart" visible="false" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                <TextField fx:id="textEnd" visible="false" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                <TextField fx:id="textCustomerID" visible="false" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                <TextField fx:id="textUserID" visible="false" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+                <TextField fx:id="textContactID" visible="false" disable="true" GridPane.rowIndex="15" />
             </children>
         </GridPane>
     </center>

@@ -25,7 +25,7 @@ public class Customer {
     @Id
     @FXML
     @Column(name="Customer_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public Integer id;
 
     @Transient
@@ -100,7 +100,7 @@ public class Customer {
      * The Division id.
      */
     @FXML
-    @Column(name="Division_ID", insertable=false, updatable=false)
+    @Column(name="Division_ID")
     public Integer divisionId;
 
     @Transient
@@ -121,7 +121,7 @@ public class Customer {
      */
 //region ORM
     @ManyToOne
-    @JoinColumn(name="Division_ID")
+    @JoinColumn(name="Division_ID", insertable = false, updatable = false)
     public Division division;
 
     @Transient

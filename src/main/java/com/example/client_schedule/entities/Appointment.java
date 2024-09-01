@@ -26,15 +26,34 @@ public class Appointment {
     /**
      * The Id.
      */
+    private void setPropertyRefs() {
+        this.idProperty = new SimpleIntegerProperty(this, "id", this.id);
+        this.titleProperty = new SimpleStringProperty(this, "title", this.title);
+        this.descriptionProperty = new SimpleStringProperty(this, "description", this.description);
+        this.locationProperty = new SimpleStringProperty(this, "location", this.location);
+        this.typeProperty  = new SimpleStringProperty(this, "type", this.type);
+        this.startProperty = new SimpleObjectProperty<>(this, "start", this.start);
+        this.endProperty = new SimpleObjectProperty<>(this, "end", this.end);
+        this.customerIdProperty = new SimpleIntegerProperty(this, "customerId", this.customerId);
+        this.userIdProperty = new SimpleIntegerProperty(this, "userId", this.userId);
+        this.contactIdProperty = new SimpleIntegerProperty(this, "contactId", this.contactId);
+        this.startTimeProperty = new SimpleObjectProperty<>(this, "startTime", this.startTime);
+        this.startDateProperty = new SimpleObjectProperty<>(this, "startDate", this.startDate);
+        this.endTimeProperty = new SimpleObjectProperty<>(this, "endTime", this.endTime);
+        this.endDateProperty = new SimpleObjectProperty<>(this, "endDate", this.endDate);
+        this.customerProperty = new SimpleObjectProperty<>(this, "customer", this.customer);
+        this.userProperty = new SimpleObjectProperty<>(this, "user", this.user);
+        this.contactProperty = new SimpleObjectProperty<>(this, "contact", this.contact);
+    }
 //region Entity Columns
     @Id
     @FXML
     @Column(name="Appointment_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
     
     @Transient
-    private IntegerProperty idProperty = new SimpleIntegerProperty();
+    private IntegerProperty idProperty;
 
     /**
      * The Title.
@@ -44,58 +63,43 @@ public class Appointment {
     public String title;
 
     @Transient
-    private StringProperty titleProperty = new SimpleStringProperty();
-
-    /**
-     * The Description.
-     */
+    private StringProperty titleProperty;
+    
     @FXML
     @Column(name="Description")
     public String description;
 
     @Transient
-    private StringProperty descriptionProperty = new SimpleStringProperty();
-
-    /**
-     * The Location.
-     */
+    private StringProperty descriptionProperty;
+    
     @FXML
     @Column(name="Location")
     public String location;
 
     @Transient
-    private StringProperty locationProperty = new SimpleStringProperty();
-
-    /**
-     * The Type.
-     */
+    private StringProperty locationProperty;
+    
     @FXML
     @Column(name="Type")
     public String type;
 
     @Transient
-    private StringProperty typeProperty = new SimpleStringProperty();
-
-    /**
-     * The Start.
-     */
+    private StringProperty typeProperty;
+    
     @FXML
     @Column(name="Start")
     public LocalDateTime start;
 
     @Transient
-    private ObjectProperty<LocalDateTime> startProperty = new SimpleObjectProperty<>();
-
-    /**
-     * The End.
-     */
+    private ObjectProperty<LocalDateTime> startProperty;
+    
     @FXML
     @Column(name="End")
     public LocalDateTime end;
 
     @Transient
-    private ObjectProperty<LocalDateTime> endProperty = new SimpleObjectProperty<>();
-
+    private ObjectProperty<LocalDateTime> endProperty;
+    
     /**
      * The Created.
      */
@@ -128,52 +132,46 @@ public class Appointment {
      * The Customer id.
      */
     @FXML
-    @Column(name="Customer_ID", insertable=false, updatable=false)
+    @Column(name="Customer_ID", nullable=false)
     public int customerId;
     
     @Transient
-    private IntegerProperty customerIdProperty = new SimpleIntegerProperty();
-
-    /**
-     * The User id.
-     */
+    private IntegerProperty customerIdProperty;
+    
     @FXML
-    @Column(name="User_ID", insertable=false, updatable=false)
+    @Column(name="User_ID", nullable=false)
     public int userId;
 
     @Transient
-    private IntegerProperty userIdProperty = new SimpleIntegerProperty();
-
-    /**
-     * The Contact id.
-     */
+    private IntegerProperty userIdProperty;
+    
     @FXML
-    @Column(name="Contact_ID", insertable=false, updatable=false)
+    @Column(name="Contact_ID", nullable=false)
     public int contactId;
 
     @Transient
-    private final IntegerProperty contactIdProperty = new SimpleIntegerProperty();
+    private IntegerProperty contactIdProperty;
 
     @Transient
-    private ObjectProperty<LocalTime> startTimeProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalTime> startTimeProperty;
 
     @Transient
     private LocalTime startTime;
 
     @Transient
-    private ObjectProperty<LocalDate> startDateProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> startDateProperty;
 
     @Transient
     private LocalDate startDate;
 
     @Transient
-    private ObjectProperty<LocalTime> endTimeProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalTime> endTimeProperty;
 
     @Transient
     private LocalTime endTime;
 
     @Transient
-    private ObjectProperty<LocalDate> endDateProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> endDateProperty;
 
     @Transient
     private LocalDate endDate;
@@ -192,31 +190,25 @@ public class Appointment {
      */
 //region ORM
     @ManyToOne()
-    @JoinColumn(name="Customer_ID")
+    @JoinColumn(name="Customer_ID", insertable = false, updatable = false)
     public Customer customer;
 
     @Transient
-    private ObjectProperty<Customer> customerProperty = new SimpleObjectProperty<>();
-
-    /**
-     * The User.
-     */
+    private ObjectProperty<Customer> customerProperty;
+    
     @ManyToOne()
-    @JoinColumn(name="User_ID")
+    @JoinColumn(name="User_ID", insertable = false, updatable = false)
     public User user;
 
     @Transient
-    private ObjectProperty<User> userProperty = new SimpleObjectProperty<>();
-
-    /**
-     * The Contact.
-     */
+    private ObjectProperty<User> userProperty;
+    
     @ManyToOne()
-    @JoinColumn(name="Contact_ID")
+    @JoinColumn(name="Contact_ID", insertable = false, updatable = false)
     public Contact contact;
     
     @Transient
-    private ObjectProperty<Contact> contactProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Contact> contactProperty;
 
 //endregion
 
@@ -275,6 +267,7 @@ public class Appointment {
      * Instantiates a new Appointment.
      */
     public Appointment() {
+        this.setPropertyRefs();
         this.setListeners();
     }
 
@@ -284,8 +277,9 @@ public class Appointment {
      * @param title the title
      */
     public Appointment(String title) {
-        this.setListeners();
         this.setTitle(title);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -295,9 +289,10 @@ public class Appointment {
      * @param description the description
      */
     public Appointment(String title, String description) {
-        this.setListeners();
         this.setTitle(title);
         this.setDescription(description);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -307,9 +302,10 @@ public class Appointment {
      * @param title the title
      */
     public Appointment(int id, String title) {
-        this.setListeners();
         this.setId(id);
         this.setTitle(title);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -320,10 +316,11 @@ public class Appointment {
      * @param location    the location
      */
     public Appointment(String title, String description, String location) {
-        this.setListeners();
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(location);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -335,11 +332,12 @@ public class Appointment {
      * @param location    the location
      */
     public Appointment(int id, String title, String description, String location) {
-        this.setListeners();
         this.setId(id);
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(location);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -351,11 +349,12 @@ public class Appointment {
      * @param type        the type
      */
     public Appointment(String title, String description, String location, String type) {
-        this.setListeners();
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(location);
         this.setType(type);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -368,12 +367,13 @@ public class Appointment {
      * @param type        the type
      */
     public Appointment(int id, String title, String description, String location, String type) {
-        this.setListeners();
         this.setId(id);
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(location);
         this.setType(type);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -386,7 +386,6 @@ public class Appointment {
      * @param start       the start
      */
     public Appointment(String title, String description, String location, String type, LocalDateTime start) {
-        this.setListeners();
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(location);
@@ -397,6 +396,8 @@ public class Appointment {
         this.setEnd(start);
         this.setEndDate(start.toLocalDate());
         this.setEndTime(start.toLocalTime());
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -410,7 +411,6 @@ public class Appointment {
      * @param end         the end
      */
     public Appointment(String title, String description, String location, String type, LocalDateTime start, LocalDateTime end) {
-        this.setListeners();
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(location);
@@ -421,6 +421,8 @@ public class Appointment {
         this.setEnd(end);
         this.setEndDate(end.toLocalDate());
         this.setEndTime(end.toLocalTime());
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     /**
@@ -442,7 +444,6 @@ public class Appointment {
      * @param contactId   the contact id
      */
     public Appointment(int id, String title, String description, String location, String type, LocalDateTime start, LocalDateTime end, LocalDateTime created, String createdBy, ZonedDateTime updated, String updatedBy, int customerId, int userId, int contactId) {
-        this.setListeners();
         this.setId(id);
         this.setTitle(title);
         this.setDescription(description);
@@ -461,6 +462,8 @@ public class Appointment {
         this.setCustomerId(customerId);
         this.setUserId(userId);
         this.setContactId(contactId);
+        this.setPropertyRefs();
+        this.setListeners();
     }
 
     //endregion
@@ -492,7 +495,7 @@ public class Appointment {
      */
     public void setId(int id) {
         this.id = id;
-        this.idProperty.set(id);
+//        this.idProperty.set(this.id);
     }
 
     /**
@@ -520,7 +523,7 @@ public class Appointment {
      */
     public void setTitle(String title) {
         this.title = title;
-        this.titleProperty.set(title);
+        this.titleProperty.set(this.title);
     }
 
     /**
@@ -548,7 +551,7 @@ public class Appointment {
      */
     public void setDescription(String description) {
         this.description = description;
-        this.descriptionProperty.set(description);
+        this.descriptionProperty.set(this.description);
     }
 
     /**
@@ -604,7 +607,7 @@ public class Appointment {
      */
     public void setType(String type) {
         this.type = type;
-        this.typeProperty.set(type);
+        this.typeProperty.set(this.type);
     }
 
     /**
@@ -668,7 +671,7 @@ public class Appointment {
      */
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
-        this.customerIdProperty.set(customerId);
+        this.customerIdProperty.set(this.customerId);
     }
 
     /**
@@ -696,7 +699,7 @@ public class Appointment {
      */
     public void setUserId(int userId) {
         this.userId = userId;
-        this.userIdProperty.set(userId);
+        this.userIdProperty.set(this.userId);
     }
 
     /**
@@ -724,7 +727,7 @@ public class Appointment {
      */
     public void setContactId(int contactId) {
         this.contactId = contactId;
-        this.contactIdProperty.set(contactId);
+        this.contactIdProperty.set(this.contactId);
     }
 
     /**
@@ -752,7 +755,7 @@ public class Appointment {
      */
     public void setCustomer(Customer customer) {
         this.customer = customer;
-        this.customerProperty.set(customer);
+        this.customerProperty.set(this.customer);
     }
 
     /**
@@ -780,7 +783,7 @@ public class Appointment {
      */
     public void setUser(User user) {
         this.user = user;
-        this.userProperty.set(user);
+        this.userProperty.set(this.user);
     }
 
     /**
@@ -808,7 +811,7 @@ public class Appointment {
      */
     public void setContact(Contact contact) {
         this.contact = contact;
-        this.contactProperty.set(contact);
+        this.contactProperty.set(this.contact);
     }
 
     /**
@@ -889,7 +892,7 @@ public class Appointment {
      * @return the start time
      */
     public LocalTime getStartTime() {
-        return this.startTimeProperty.get();
+        return this.startTime;
     }
 
     /**
@@ -898,9 +901,6 @@ public class Appointment {
      * @return the start time property
      */
     public ObjectProperty<LocalTime> getStartTimeProperty() {
-        if (this.startTimeProperty.get() == null && this.startTime != null) {
-            this.startTimeProperty.set(this.startTime);
-        }
         return startTimeProperty;
     }
 
@@ -910,14 +910,12 @@ public class Appointment {
      * @param startTime the start time
      */
     public void setStartTime(LocalTime startTime) {
-        if (this.startTimeProperty.get() == null || startTime != this.startTimeProperty.get()) {
-            this.startTimeProperty.set(startTime);
-            this.startTime = startTime;
-            if (this.startDateProperty.get() != null ) {
-                this.setStart(this.startDateProperty.get().atTime(this.startTimeProperty.get()));
-            }
-            this.setListeners();
+        this.startTime = startTime;
+        this.startTimeProperty.set(this.startTime);
+        if (this.startDate != null) {
+            this.setStart(this.startDate.atTime(this.startTime));
         }
+        this.setListeners();
     }
 
     /**
@@ -926,7 +924,7 @@ public class Appointment {
      * @return the start date
      */
     public LocalDate getStartDate() {
-        return this.startDateProperty.get();
+        return this.startDate;
     }
 
     /**
@@ -935,10 +933,7 @@ public class Appointment {
      * @return the start date property
      */
     public ObjectProperty<LocalDate> getStartDateProperty() {
-        if (this.startDateProperty.get() == null && this.startDate != null) {
-            this.startDateProperty.set(this.startDate);
-        }
-        return startDateProperty;
+        return this.startDateProperty;
     }
 
     /**
@@ -947,14 +942,12 @@ public class Appointment {
      * @param startDate the start date
      */
     public void setStartDate(LocalDate startDate) {
-        if (this.startDateProperty.get() == null || startDate != this.startDateProperty.get()) {
-            this.startDateProperty.set(startDate);
-            this.startDate = startDate;
-            if (this.startTimeProperty.get() != null) {
-                this.setStart(this.startDateProperty.get().atTime(this.startTimeProperty.get()));
-            }
-            this.setListeners();
+        this.startDate = startDate;
+        this.startDateProperty.set(this.startDate);
+        if (this.startTime != null) {
+                this.setStart(this.startDate.atTime(this.startTime));
         }
+        this.setListeners();
     }
 
     /**
@@ -963,7 +956,7 @@ public class Appointment {
      * @return the end time
      */
     public LocalTime getEndTime() {
-        return this.endTimeProperty.get();
+        return this.endTime;
     }
 
     /**
@@ -972,9 +965,6 @@ public class Appointment {
      * @return the end time property
      */
     public ObjectProperty<LocalTime> getEndTimeProperty() {
-        if (this.endTimeProperty.get() == null && this.endTime != null) {
-            this.endTimeProperty.set(this.endTime);
-        }
         return endTimeProperty;
     }
 
@@ -984,14 +974,12 @@ public class Appointment {
      * @param endTime the end time
      */
     public void setEndTime(LocalTime endTime) {
-        if (this.endTimeProperty.get() == null || endTime != this.endTimeProperty.get()) {
-            this.endTimeProperty.set(endTime);
-            this.endTime = endTime;
-            if (this.endDateProperty.get() != null ) {
-                this.setEnd(this.endDateProperty.get().atTime(this.endTimeProperty.get()));
-            }
-            this.setListeners();
+        this.endTime = endTime;
+        this.endTimeProperty.set(this.endTime);
+        if (this.endDate != null ) {
+            this.setEnd(this.endDate.atTime(this.endTime));
         }
+        this.setListeners();
     }
 
     /**
@@ -1009,9 +997,6 @@ public class Appointment {
      * @return the end date property
      */
     public ObjectProperty<LocalDate> getEndDateProperty() {
-        if (this.endDateProperty.get() == null && this.endDate != null) {
-            this.endDateProperty.set(this.endDate);
-        }
         return endDateProperty;
     }
 
@@ -1021,14 +1006,12 @@ public class Appointment {
      * @param endDate the end date
      */
     public void setEndDate(LocalDate endDate) {
-        if (this.endDateProperty.get() == null || endDate != this.endDateProperty.get()) {
-            this.endDateProperty.set(endDate);
-            this.endDate = endDate;
-            if (this.endTimeProperty.get() != null) {
-                this.setEnd(this.endDateProperty.get().atTime(this.endTimeProperty.get()));
-            }
-            this.setListeners();
+        this.endDate = endDate;
+        this.endDateProperty.set(this.endDate);
+        if (this.endTime != null) {
+            this.setEnd(this.endDate.atTime(this.endTime));
         }
+        this.setListeners();
     }
 
     /**
@@ -1038,7 +1021,7 @@ public class Appointment {
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
-        this.startProperty.set(start);
+        this.startProperty.set(this.start);
     }
 
     /**
@@ -1048,7 +1031,7 @@ public class Appointment {
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
-        this.endProperty.set(end);
+        this.endProperty.set(this.end);
     }
 
 

@@ -20,6 +20,7 @@ import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
@@ -336,15 +337,23 @@ public class CustomerFormController extends Customer implements Initializable {
     }
 
     private void dbCommit() {
-
+        db.em.getTransaction().commit();
+        db.em.getTransaction();
     }
 
     private void dbRevert() {
-
+        db.em.getTransaction().rollback();
+        db.em.getTransaction();
     }
 
     private void recordAdd() {
-        db.customers.add(new Customer());
+        Customer nc = new Customer();
+        nc.setDivisionId(1);
+        nc.setCreatedBy(userName);
+        nc.setCreated(LocalDateTime.now());
+        db.em.persist(nc);
+        db.customers.add(nc);
+        reBind(nc);
     }
 
     private void recordRemove() {

@@ -24,7 +24,7 @@ public class Country {
     @Id
     @FXML
     @Column(name="Country_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     protected Integer id;
 
     @Transient

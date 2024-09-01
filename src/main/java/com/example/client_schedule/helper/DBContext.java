@@ -18,6 +18,7 @@ public class DBContext {
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("client_schedule");
             CRUD.em = em = emf.createEntityManager();
+            em.getTransaction().begin();
             users = (new userdb()).rows();
             divisions = FXCollections.observableList((new divisiondb()).rows().stream().peek(i -> {
                 i.setId(i.getId());

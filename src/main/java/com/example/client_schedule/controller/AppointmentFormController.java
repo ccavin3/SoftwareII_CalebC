@@ -590,15 +590,19 @@ public class AppointmentFormController extends Appointment implements Initializa
     }
 
     private void dbCommit() {
-
+        db.em.getTransaction().commit();
+        db.em.getTransaction().begin();
     }
 
     private void dbRevert() {
-
+        db.em.getTransaction().rollback();
+        db.em.getTransaction().begin();
     }
 
     private void recordAdd() {
-        db.appointments.add(new Appointment());
+        Appointment na = new Appointment();
+        db.em.persist(na);
+        db.appointments.add(na);
     }
 
     private void recordRemove() {

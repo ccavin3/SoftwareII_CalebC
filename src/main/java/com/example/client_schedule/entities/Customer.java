@@ -82,7 +82,7 @@ public class Customer {
     public String updatedBy;
 
     @FXML
-    @Column(name="Division_ID", insertable=false, updatable=false)
+    @Column(name="Division_ID")
     public Integer divisionId;
 
     @Transient
@@ -100,7 +100,7 @@ public class Customer {
 
     //region ORM
     @ManyToOne
-    @JoinColumn(name="Division_ID")
+    @JoinColumn(name="Division_ID", insertable = false, updatable = false)
     public Division division;
 
     @Transient

@@ -63,32 +63,42 @@ public class AppointmentFormController extends Appointment implements Initializa
     private StringConverter<LocalDate> dateConverter = new StringConverter<LocalDate>() {
         @Override
         public String toString(LocalDate d) {
-            if (d == null) return null;
-            DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            return d.format(parser);
+            if (d == null) return "";
+            return dformatter.format(d);
         }
 
         @Override
         public LocalDate fromString(String s) {
-            if (s == null) return null;
-            DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            return LocalDate.parse(s, parser);
+            if (s == null || s.trim().isEmpty()) return null;
+            return LocalDate.parse(s, dformatter);
         }
     };
 
     private StringConverter<LocalTime> timeConverter = new StringConverter<LocalTime>() {
         @Override
         public String toString(LocalTime t) {
-            if (t == null) return null;
-            DateTimeFormatter parser = DateTimeFormatter.ofPattern("h[:mm][:ss] a");
-            return t.format(parser);
+            if (t == null) return "";
+            return tformatter.format(t);
         }
 
         @Override
         public LocalTime fromString(String s) {
-            if (s == null) return null;
-            DateTimeFormatter parser = DateTimeFormatter.ofPattern("h[:mm][:ss] a");
-            return LocalTime.parse(s, parser);
+            if (s == null || s.trim().isEmpty()) return null;
+            return LocalTime.parse(s, tformatter);
+        }
+    };
+
+    private StringConverter<LocalDateTime> dateTimeConverter = new StringConverter<LocalDateTime>() {
+        @Override
+        public String toString(LocalDateTime t) {
+            if (t == null) return "";
+            return dtformatter.format(t);
+        }
+
+        @Override
+        public LocalDateTime fromString(String s) {
+            if (s == null || s.trim().isEmpty()) return null;
+            return LocalDateTime.parse(s, dtformatter);
         }
     };
 
@@ -410,20 +420,35 @@ public class AppointmentFormController extends Appointment implements Initializa
 
     private void unBind(Appointment currentAppointment) {
         if (currentAppointment != null) {
-            textTitle.textProperty().unbindBidirectional(currentAppointment.getTitleProperty());
-            textAppointmentID.textProperty().unbindBidirectional(currentAppointment.getIdProperty());
-            textDescription.textProperty().unbindBidirectional(currentAppointment.getDescriptionProperty());
-            textType.textProperty().unbindBidirectional(currentAppointment.getTypeProperty());
-            textLocation.textProperty().unbindBidirectional(currentAppointment.getLocationProperty());
-            comboBoxCustomer.valueProperty().unbindBidirectional(currentAppointment.getCustomerProperty());
-            comboBoxContact.valueProperty().unbindBidirectional(currentAppointment.getContactProperty());
-            comboBoxUser.valueProperty().unbindBidirectional(currentAppointment.getUserProperty());
-            textStart.textProperty().unbindBidirectional(currentAppointment.getStartProperty());
-            textEnd.textProperty().unbindBidirectional(currentAppointment.getEndProperty());
-            textStartDate.textProperty().unbindBidirectional(getStartDateProperty());
-            textEndDate.textProperty().unbindBidirectional(getEndDateProperty());
-            textStartTime.textProperty().unbindBidirectional(getStartTimeProperty());
-            textEndTime.textProperty().unbindBidirectional(getEndTimeProperty());
+            textTitle.textProperty().removeListener(titleListener);
+            textAppointmentID.textProperty().removeListener(idListener);
+            textDescription.textProperty().removeListener(descriptionListener);
+            textType.textProperty().removeListener(typeListener);
+            textLocation.textProperty().removeListener(locationListener);
+            comboBoxContact.valueProperty().removeListener(contactChangeListener);
+            comboBoxUser.valueProperty().removeListener(userChangeListener);
+            comboBoxCustomer.valueProperty().removeListener(customerChangeListener);
+            textStart.textProperty().removeListener(startListener);
+            textEnd.textProperty().removeListener(endListener);
+            textStartDate.textProperty().removeListener(startDateListener);
+            textEndDate.textProperty().removeListener(endDateListener);
+            textStartTime.textProperty().removeListener(startTimeListener);
+            textEndTime.textProperty().removeListener(endTimeListener);
+
+//            textTitle.textProperty().unbindBidirectional(currentAppointment.getTitleProperty());
+//            textAppointmentID.textProperty().unbindBidirectional(currentAppointment.getIdProperty());
+//            textDescription.textProperty().unbindBidirectional(currentAppointment.getDescriptionProperty());
+//            textType.textProperty().unbindBidirectional(currentAppointment.getTypeProperty());
+//            textLocation.textProperty().unbindBidirectional(currentAppointment.getLocationProperty());
+//            comboBoxCustomer.valueProperty().unbindBidirectional(currentAppointment.getCustomerProperty());
+//            comboBoxContact.valueProperty().unbindBidirectional(currentAppointment.getContactProperty());
+//            comboBoxUser.valueProperty().unbindBidirectional(currentAppointment.getUserProperty());
+//            Bindings.unbindBidirectional(textStart.textProperty(), currentAppointment.getStartProperty());
+//            Bindings.unbindBidirectional(textEnd.textProperty(), currentAppointment.getEndProperty());
+//            Bindings.unbindBidirectional(textStartDate.textProperty(), currentAppointment.getStartDateProperty());
+//            Bindings.unbindBidirectional(textEndDate.textProperty(), currentAppointment.getEndDateProperty());
+//            Bindings.unbindBidirectional(textStartTime.textProperty(), currentAppointment.getStartTimeProperty());
+//            Bindings.unbindBidirectional(textEndTime.textProperty(), currentAppointment.getEndTimeProperty());
         }
     }
 
@@ -443,26 +468,136 @@ public class AppointmentFormController extends Appointment implements Initializa
         textEndDate.clear();
         textEndTime.clear();
     }
+    private ChangeListener<String> titleListener;
+    private ChangeListener<String> idListener;
+    private ChangeListener<String> descriptionListener;
+    private ChangeListener<String> typeListener;
+    private ChangeListener<String> locationListener;
+    private ChangeListener<Customer> customerChangeListener;
+    private ChangeListener<User> userChangeListener;
+    private ChangeListener<Contact> contactChangeListener;
+    private ChangeListener<String> startListener;
+    private ChangeListener<String> endListener;
+    private ChangeListener<String> startDateListener;
+    private ChangeListener<String> endDateListener;
+    private ChangeListener<String> startTimeListener;
+    private ChangeListener<String> endTimeListener;
+
     private void reBind(Appointment currentAppointment) {
         if (currentAppointment != null) {
-            textTitle.textProperty().bindBidirectional(currentAppointment.getTitleProperty());
-            textAppointmentID.textProperty().bindBidirectional(currentAppointment.getIdProperty(), new NumberStringConverter());
-            textDescription.textProperty().bindBidirectional(currentAppointment.getDescriptionProperty());
-            textType.textProperty().bindBidirectional(currentAppointment.getTypeProperty());
-            textLocation.textProperty().bindBidirectional(currentAppointment.getLocationProperty());
-            comboBoxCustomer.valueProperty().bindBidirectional(currentAppointment.getCustomerProperty());
-            comboBoxContact.valueProperty().bindBidirectional(currentAppointment.getContactProperty());
-            comboBoxUser.valueProperty().bindBidirectional(currentAppointment.getUserProperty());
-            textStart.textProperty().bindBidirectional(currentAppointment.getStartProperty(), new LocalDateTimeStringConverter(dtformatter,dtformatter));
-            textEnd.textProperty().bindBidirectional(currentAppointment.getEndProperty(), new LocalDateTimeStringConverter(dtformatter,dtformatter));
-            textStartDate.textProperty().bindBidirectional(currentAppointment.getStartDateProperty(), new LocalDateStringConverter(dformatter,dformatter));
-            textEndDate.textProperty().bindBidirectional(currentAppointment.getEndDateProperty(), new LocalDateStringConverter(dformatter,dformatter));
-            textStartTime.textProperty().bindBidirectional(currentAppointment.getStartTimeProperty(), new LocalTimeStringConverter(tformatter,tformatter));
-            textEndTime.textProperty().bindBidirectional(currentAppointment.getEndTimeProperty(), new LocalTimeStringConverter(tformatter,tformatter));
-//        Bindings.bindBidirectional(textStartDate.textProperty(), currentAppointment.get().getStartDateProperty(), new LocalDateStringConverter(dformatter, null));
-//        Bindings.bindBidirectional(textEndDate.textProperty(), currentAppointment.get().getEndDateProperty(), new LocalDateStringConverter(dformatter, null));
-//        Bindings.bindBidirectional(textStartTime.textProperty(), currentAppointment.get().getStartTimeProperty(), new LocalTimeStringConverter(tformatter, null));
-//        Bindings.bindBidirectional(textEndTime.textProperty(), currentAppointment.get().getEndTimeProperty(), new LocalTimeStringConverter(tformatter, null));
+            textTitle.textProperty().addListener(titleListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setTitle(t1);
+                    tableView.refresh();
+                }
+            });
+            textAppointmentID.textProperty().addListener(idListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setId(Integer.parseInt(t1));
+                    tableView.refresh();
+                }
+            });
+            textDescription.textProperty().addListener(descriptionListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setDescription(t1);
+                    tableView.refresh();
+                }
+            });
+            textType.textProperty().addListener(typeListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setType(t1);
+                    tableView.refresh();
+                }
+            });
+            textLocation.textProperty().addListener(locationListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setLocation(t1);
+                    tableView.refresh();
+                }
+            });
+            comboBoxCustomer.valueProperty().addListener(customerChangeListener = new ChangeListener<Customer>() {
+                @Override
+                public void changed(ObservableValue<? extends Customer> observableValue, Customer customer, Customer t1) {
+                    currentAppointment.setCustomer(t1);
+                    tableView.refresh();
+                }
+            });
+            comboBoxUser.valueProperty().addListener(userChangeListener = new ChangeListener<User>() {
+                @Override
+                public void changed(ObservableValue<? extends User> observableValue, User user, User t1) {
+                    currentAppointment.setUser(t1);
+                    tableView.refresh();
+                }
+            });
+            comboBoxContact.valueProperty().addListener(contactChangeListener = new ChangeListener<Contact>() {
+                @Override
+                public void changed(ObservableValue<? extends Contact> observableValue, Contact contact, Contact t1) {
+                    currentAppointment.setContact(t1);
+                    tableView.refresh();
+                }
+            });
+            textStart.textProperty().addListener(startListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setStart(LocalDateTime.parse(t1, dtformatter));
+                    tableView.refresh();
+                }
+            });
+            textEnd.textProperty().addListener(endListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setEnd(LocalDateTime.parse(t1, dtformatter));
+                    tableView.refresh();
+                }
+            });
+            textStartDate.textProperty().addListener(startDateListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setStartDate(LocalDate.parse(t1, dformatter));
+                    tableView.refresh();
+                }
+            });
+            textEndDate.textProperty().addListener(endDateListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setEndDate(LocalDate.parse(t1, dformatter));
+                    tableView.refresh();
+                }
+            });
+            textStartTime.textProperty().addListener(startTimeListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setStartTime(LocalTime.parse(t1, tformatter));
+                    tableView.refresh();
+                }
+            });
+            textEndTime.textProperty().addListener(endTimeListener = new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    currentAppointment.setEndTime(LocalTime.parse(t1, tformatter));
+                    tableView.refresh();
+                }
+            });
+//            textTitle.textProperty().bindBidirectional(currentAppointment.getTitleProperty());
+//            textAppointmentID.textProperty().bindBidirectional(currentAppointment.getIdProperty(), new NumberStringConverter());
+//            textDescription.textProperty().bindBidirectional(currentAppointment.getDescriptionProperty());
+//            textType.textProperty().bindBidirectional(currentAppointment.getTypeProperty());
+
+//            textLocation.textProperty().bindBidirectional(currentAppointment.getLocationProperty());
+//            comboBoxCustomer.valueProperty().bindBidirectional(currentAppointment.getCustomerProperty());
+//            comboBoxContact.valueProperty().bindBidirectional(currentAppointment.getContactProperty());
+//            comboBoxUser.valueProperty().bindBidirectional(currentAppointment.getUserProperty());
+//            Bindings.bindBidirectional(textStart.textProperty(), currentAppointment.getStartProperty(), dateTimeConverter);
+//            Bindings.bindBidirectional(textEnd.textProperty(), currentAppointment.getEndProperty(), dateTimeConverter);
+//            Bindings.bindBidirectional(textStartDate.textProperty(), currentAppointment.getStartDateProperty(), dateConverter);
+//            Bindings.bindBidirectional(textEndDate.textProperty(), currentAppointment.getEndDateProperty(), dateConverter);
+//            Bindings.bindBidirectional(textStartTime.textProperty(), currentAppointment.getStartTimeProperty(), timeConverter);
+//            Bindings.bindBidirectional(textEndTime.textProperty(), currentAppointment.getEndTimeProperty(), timeConverter);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.client_schedule.controller;
 
+import com.example.client_schedule.MainApplication;
 import com.example.client_schedule.entities.*;
 import com.example.client_schedule.helper.DBContext;
 import jakarta.persistence.Table;
@@ -13,7 +14,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,9 +25,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.*;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -101,6 +107,9 @@ public class AppointmentFormController extends Appointment implements Initializa
     };
 
     @FXML
+    private Button reportButton;
+
+    @FXML
     private TextField textAppointmentID;
 
     @FXML
@@ -165,6 +174,9 @@ public class AppointmentFormController extends Appointment implements Initializa
      */
     @FXML
     protected Button insertButton;
+
+    @FXML
+    private EventHandler<ActionEvent> onReportAction;
 
     @FXML
     private EventHandler<ActionEvent> onInsertAction;
@@ -316,6 +328,7 @@ public class AppointmentFormController extends Appointment implements Initializa
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
+        onReportAction = e -> lauchReport();
 
 //        textStartDate.setTextFormatter(sldFormatter);
 //        textEndDate.setTextFormatter(eldFormatter);
@@ -376,6 +389,7 @@ public class AppointmentFormController extends Appointment implements Initializa
         insertButton.setOnAction(onInsertAction);
         commitButton.setOnAction(onCommitAction);
         revertButton.setOnAction(onRevertAction);
+        reportButton.setOnAction(onReportAction);
 
         tableView.setEditable(true);
         addAppointmentColumns();
@@ -453,7 +467,8 @@ public class AppointmentFormController extends Appointment implements Initializa
     }
 
     private void addAppointmentRows() {
-        tableView.setItems(appointmentFilteredList);
+//        tableView.setItems(appointmentFilteredList);
+        tableView.setItems(db.appointments);
     }
 
     private void addAppointmentColumns() {
@@ -601,11 +616,50 @@ public class AppointmentFormController extends Appointment implements Initializa
 
     private void recordAdd() {
         Appointment na = new Appointment();
+        na.setContactId(comboBoxContact.getItems().stream().findFirst().get().getId());
+        na.setCustomerId(comboBoxCustomer.getItems().stream().findFirst().get().getId());
+        na.setUserId(comboBoxUser.getItems().stream().findFirst().get().getId());
+        na.setStart(LocalDateTime.now());
+        na.setEnd(LocalDateTime.now());
+        na.setStartDate(LocalDate.now());
+        na.setEndDate(LocalDate.now());
+        na.setStartTime(LocalTime.now());
+        na.setEndTime(LocalTime.now().plusMinutes(15));
+        na.createdBy = this.userName;
+        na.created = LocalDateTime.now();
         db.em.persist(na);
         db.appointments.add(na);
+        reBind(na);
     }
 
     private void recordRemove() {
         tableView.getItems().remove(tableView.getSelectionModel().getSelectedItem());
+    }
+
+    private void lauchReport() {
+        try {
+            launchReportForm();
+        } catch (Exception ex) {
+
+        }
+    }
+
+    private void launchReportForm() throws IOException {
+        Stage thiswindow = (Stage)reportButton.getScene().getWindow();
+//        CustomerFormController controller = new CustomerFormController(db, userName);
+//        AppointmentFormController controller = new AppointmentFormController(db, userName);
+        ReportsController controller = new ReportsController(db, userName);
+//
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("reportsForm.fxml"), _bundle);
+
+//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
+//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
+        fxmlLoader.setController(controller);
+        Parent root = fxmlLoader.load();
+        Scene scene = new Scene(root, 800, 600);
+        Stage stage = new Stage();
+        stage.setTitle("Schedule Data");
+        stage.setScene(scene);
+        stage.show();
     }
 }

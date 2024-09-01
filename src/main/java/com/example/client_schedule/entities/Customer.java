@@ -22,7 +22,7 @@ public class Customer {
     @Id
     @FXML
     @Column(name="Customer_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public Integer id;
 
     @Transient

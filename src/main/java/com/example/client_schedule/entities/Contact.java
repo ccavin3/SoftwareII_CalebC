@@ -17,7 +17,7 @@ public class Contact {
     @Id
     @FXML
     @Column(name="Contact_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     protected int id;
 
     @FXML

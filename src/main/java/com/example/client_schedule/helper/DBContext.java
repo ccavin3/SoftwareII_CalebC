@@ -18,12 +18,13 @@ public class DBContext {
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("client_schedule");
             CRUD.em = em = emf.createEntityManager();
+            em.setFlushMode(FlushModeType.COMMIT);
             em.getTransaction().begin();
-            users = (new userdb()).rows();
-            divisions = FXCollections.observableList((new divisiondb()).rows().stream().peek(i -> {
+            users = userDB.rows();
+            divisions = FXCollections.observableList(divisionDB.rows().stream().peek(i -> {
                 i.setId(i.getId());
             }).collect(Collectors.toList()));
-            customers = FXCollections.observableList((new customerdb()).rows().stream().peek(i -> {
+            customers = FXCollections.observableList(customerDB.rows().stream().peek(i -> {
                 i.setPhone(i.getPhone());
                 i.setZip(i.getZip());
                 i.setName(i.getName());
@@ -32,12 +33,12 @@ public class DBContext {
                 i.setDivision(i.getDivision());
                 i.setId(i.getId());
             }).collect(Collectors.toList()));
-            countries = FXCollections.observableList((new countrydb()).rows().stream().peek(i -> {
+            countries = FXCollections.observableList(countryDB.rows().stream().peek(i -> {
                 i.setId(i.getId());
             }).collect(Collectors.toList()));
-            contacts = FXCollections.observableList((new contactdb()).rows().stream().peek(i -> {
+            contacts = FXCollections.observableList(contactDB.rows().stream().peek(i -> {
             }).collect(Collectors.toList()));
-            appointments = FXCollections.observableList((new appointmentdb()).rows().stream().peek(i -> {
+            appointments = FXCollections.observableList(appointmentDB.rows().stream().peek(i -> {
                 i.setContact(i.getContact());
                 i.setId(i.getId());
                 i.setContact(i.getContact());
@@ -64,12 +65,19 @@ public class DBContext {
         }
     }
 
-    class userdb extends CRUD<User> {}
-    class divisiondb extends CRUD<Division> {}
-    class contactdb extends CRUD<Contact> {}
-    class countrydb extends CRUD<Country> {}
-    class customerdb extends CRUD<Customer> {}
-    class appointmentdb extends CRUD<Appointment> {}
+    class UserDB extends CRUD<User> {}
+    class DivisionDB extends CRUD<Division> {}
+    class ContactDB extends CRUD<Contact> {}
+    class CountryDB extends CRUD<Country> {}
+    class CustomerDB extends CRUD<Customer> {}
+    class AppointmentDB extends CRUD<Appointment> {}
+
+    public AppointmentDB appointmentDB = new AppointmentDB();
+    public CustomerDB customerDB = new CustomerDB();
+    public CountryDB countryDB = new CountryDB();
+    public ContactDB contactDB = new ContactDB();
+    public DivisionDB divisionDB = new DivisionDB();
+    public UserDB userDB = new UserDB();
 
     public ObservableList<User> users;
     public ObservableList<Division> divisions;

@@ -21,7 +21,7 @@ public class Division {
     @Id
     @FXML
     @Column(name="Division_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     protected Integer id;
 
     @Transient

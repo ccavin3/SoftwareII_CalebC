@@ -27,7 +27,7 @@ public class Appointment {
     @Id
     @FXML
     @Column(name="Appointment_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
     
     @Transient
@@ -104,21 +104,21 @@ public class Appointment {
     public String updatedBy;
 
     @FXML
-    @Column(name="Customer_ID", insertable=false, updatable=false)
+    @Column(name="Customer_ID", nullable=false)
     public int customerId;
     
     @Transient
     private IntegerProperty customerIdProperty = new SimpleIntegerProperty();
     
     @FXML
-    @Column(name="User_ID", insertable=false, updatable=false)
+    @Column(name="User_ID", nullable=false)
     public int userId;
 
     @Transient
     private IntegerProperty userIdProperty = new SimpleIntegerProperty();
     
     @FXML
-    @Column(name="Contact_ID", insertable=false, updatable=false)
+    @Column(name="Contact_ID", nullable=false)
     public int contactId;
 
     @Transient
@@ -159,21 +159,21 @@ public class Appointment {
 
 //region ORM
     @ManyToOne()
-    @JoinColumn(name="Customer_ID")
+    @JoinColumn(name="Customer_ID", insertable = false, updatable = false)
     public Customer customer;
 
     @Transient
     private ObjectProperty<Customer> customerProperty = new SimpleObjectProperty<>();
     
     @ManyToOne()
-    @JoinColumn(name="User_ID")
+    @JoinColumn(name="User_ID", insertable = false, updatable = false)
     public User user;
 
     @Transient
     private ObjectProperty<User> userProperty = new SimpleObjectProperty<>();
     
     @ManyToOne()
-    @JoinColumn(name="Contact_ID")
+    @JoinColumn(name="Contact_ID", insertable = false, updatable = false)
     public Contact contact;
     
     @Transient

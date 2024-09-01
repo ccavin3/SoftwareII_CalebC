@@ -337,11 +337,13 @@ public class CustomerFormController extends Customer implements Initializable {
     }
 
     private void dbCommit() {
-
+        db.em.getTransaction().commit();
+        db.em.getTransaction();
     }
 
     private void dbRevert() {
-
+        db.em.getTransaction().rollback();
+        db.em.getTransaction();
     }
 
     private void recordAdd() {

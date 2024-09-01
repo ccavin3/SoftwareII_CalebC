@@ -20,6 +20,9 @@ import java.io.IOException;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +81,7 @@ public class LoginController implements Initializable {
     /**
      * Instantiates a new Login controller.
      *
+     * @param db      the db
      * @param country the country
      */
     public LoginController(DBContext db, String country) {
@@ -143,7 +147,24 @@ public class LoginController implements Initializable {
         return String.format("User: %s - %s", userName, msg);
     }
 
+
+
+    private void checkForAppointment(){
+//         check DB for appointment
+
+    }
+
     private void launchTabForm() throws IOException {
+
+        Runnable appointmentCheckRunnable = new Runnable() {
+            public void run() {
+                checkForAppointment();
+            }
+        };
+
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        exec.scheduleAtFixedRate(appointmentCheckRunnable , 0, 1, TimeUnit.MINUTES);
+
         Stage thiswindow = (Stage)loginButton.getScene().getWindow();
 //        CustomerFormController controller = new CustomerFormController(db, userName);
 //        AppointmentFormController controller = new AppointmentFormController(db, userName);
@@ -161,5 +182,10 @@ public class LoginController implements Initializable {
         stage.setScene(scene);
         stage.show();
         thiswindow.close();
+
+
+        };
+
+
     }
 }

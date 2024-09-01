@@ -33,7 +33,7 @@ import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 /**
- * The type Customer form controller. This class controls all the functionality for Customer management.
+ * The Customer form controller. This class controls all the functionality for Customer management.
  */
 public class CustomerFormController extends Customer implements Initializable {
     /**

@@ -23,6 +23,9 @@ import jakarta.persistence.*;
 @Table(name="appointments")
 
 public class Appointment {
+    /**
+     * The Id.
+     */
 //region Entity Columns
     @Id
     @FXML
@@ -33,55 +36,73 @@ public class Appointment {
     @Transient
     private IntegerProperty idProperty = new SimpleIntegerProperty();
 
+    /**
+     * The Title.
+     */
     @FXML
     @Column(name="Title")
     public String title;
 
     @Transient
     private StringProperty titleProperty = new SimpleStringProperty();
-    
+
+    /**
+     * The Description.
+     */
     @FXML
     @Column(name="Description")
     public String description;
 
     @Transient
     private StringProperty descriptionProperty = new SimpleStringProperty();
-    
+
+    /**
+     * The Location.
+     */
     @FXML
     @Column(name="Location")
     public String location;
 
     @Transient
     private StringProperty locationProperty = new SimpleStringProperty();
-    
+
+    /**
+     * The Type.
+     */
     @FXML
     @Column(name="Type")
     public String type;
 
     @Transient
     private StringProperty typeProperty = new SimpleStringProperty();
-    
+
+    /**
+     * The Start.
+     */
     @FXML
     @Column(name="Start")
     public LocalDateTime start;
 
     @Transient
     private ObjectProperty<LocalDateTime> startProperty = new SimpleObjectProperty<>();
-    
+
+    /**
+     * The End.
+     */
     @FXML
     @Column(name="End")
     public LocalDateTime end;
 
     @Transient
     private ObjectProperty<LocalDateTime> endProperty = new SimpleObjectProperty<>();
-    
+
     /**
      * The Created.
      */
     @FXML
     @Column(name="Create_Date")
     public LocalDateTime created;
-    
+
     /**
      * The Created by.
      */
@@ -103,20 +124,29 @@ public class Appointment {
     @Column(name="Last_Updated_By")
     public String updatedBy;
 
+    /**
+     * The Customer id.
+     */
     @FXML
     @Column(name="Customer_ID", insertable=false, updatable=false)
     public int customerId;
     
     @Transient
     private IntegerProperty customerIdProperty = new SimpleIntegerProperty();
-    
+
+    /**
+     * The User id.
+     */
     @FXML
     @Column(name="User_ID", insertable=false, updatable=false)
     public int userId;
 
     @Transient
     private IntegerProperty userIdProperty = new SimpleIntegerProperty();
-    
+
+    /**
+     * The Contact id.
+     */
     @FXML
     @Column(name="Contact_ID", insertable=false, updatable=false)
     public int contactId;
@@ -157,6 +187,9 @@ public class Appointment {
 
 //endregion
 
+    /**
+     * The Customer.
+     */
 //region ORM
     @ManyToOne()
     @JoinColumn(name="Customer_ID")
@@ -164,14 +197,20 @@ public class Appointment {
 
     @Transient
     private ObjectProperty<Customer> customerProperty = new SimpleObjectProperty<>();
-    
+
+    /**
+     * The User.
+     */
     @ManyToOne()
     @JoinColumn(name="User_ID")
     public User user;
 
     @Transient
     private ObjectProperty<User> userProperty = new SimpleObjectProperty<>();
-    
+
+    /**
+     * The Contact.
+     */
     @ManyToOne()
     @JoinColumn(name="Contact_ID")
     public Contact contact;
@@ -231,6 +270,7 @@ public class Appointment {
     }
 
 //region Constructors
+
     /**
      * Instantiates a new Appointment.
      */
@@ -341,7 +381,7 @@ public class Appointment {
      *
      * @param title       the title
      * @param description the description
-     * @param location     the location
+     * @param location    the location
      * @param type        the type
      * @param start       the start
      */
@@ -364,7 +404,7 @@ public class Appointment {
      *
      * @param title       the title
      * @param description the description
-     * @param location     the location
+     * @param location    the location
      * @param type        the type
      * @param start       the start
      * @param end         the end
@@ -436,10 +476,15 @@ public class Appointment {
         return id;
     }
 
+    /**
+     * Gets id property.
+     *
+     * @return the id property
+     */
     public IntegerProperty getIdProperty() {
         return this.idProperty;
     }
-    
+
     /**
      * Sets id.
      *
@@ -458,7 +503,12 @@ public class Appointment {
     public String getTitle() {
         return title;
     }
-    
+
+    /**
+     * Gets title property.
+     *
+     * @return the title property
+     */
     public StringProperty getTitleProperty() {
         return titleProperty;
     }
@@ -482,10 +532,15 @@ public class Appointment {
         return description;
     }
 
+    /**
+     * Gets description property.
+     *
+     * @return the description property
+     */
     public StringProperty getDescriptionProperty() {
         return descriptionProperty;
     }
-    
+
     /**
      * Sets description.
      *
@@ -505,10 +560,15 @@ public class Appointment {
         return location;
     }
 
+    /**
+     * Gets location property.
+     *
+     * @return the location property
+     */
     public StringProperty getLocationProperty() {
         return locationProperty;
     }
-    
+
     /**
      * Sets location.
      *
@@ -528,10 +588,15 @@ public class Appointment {
         return type;
     }
 
+    /**
+     * Gets type property.
+     *
+     * @return the type property
+     */
     public StringProperty getTypeProperty() {
         return typeProperty;
     }
-    
+
     /**
      * Sets type.
      *
@@ -551,10 +616,15 @@ public class Appointment {
         return start;
     }
 
+    /**
+     * Gets start property.
+     *
+     * @return the start property
+     */
     public ObjectProperty<LocalDateTime> getStartProperty() {
         return startProperty;
     }
-    
+
     /**
      * Gets end.
      *
@@ -564,11 +634,16 @@ public class Appointment {
         return end;
     }
 
+    /**
+     * Gets end property.
+     *
+     * @return the end property
+     */
     public ObjectProperty<LocalDateTime> getEndProperty() {
         return endProperty;
     }
-    
-     /**
+
+    /**
      * Gets customer id.
      *
      * @return the customer id
@@ -576,7 +651,12 @@ public class Appointment {
     public int getCustomerId() {
         return customerId;
     }
-    
+
+    /**
+     * Gets customer id property.
+     *
+     * @return the customer id property
+     */
     public IntegerProperty getCustomerIdProperty() {
         return customerIdProperty;
     }
@@ -600,9 +680,15 @@ public class Appointment {
         return userId;
     }
 
+    /**
+     * Gets user id property.
+     *
+     * @return the user id property
+     */
     public IntegerProperty getUserIdProperty() {
         return userIdProperty;
     }
+
     /**
      * Sets user id.
      *
@@ -621,11 +707,16 @@ public class Appointment {
     public int getContactId() {
         return contactId;
     }
-    
+
+    /**
+     * Gets contact id property.
+     *
+     * @return the contact id property
+     */
     public IntegerProperty getContactIdProperty() {
         return contactIdProperty;
     }
-    
+
     /**
      * Sets contact id.
      *
@@ -644,6 +735,12 @@ public class Appointment {
     public Customer getCustomer() {
         return customer;
     }
+
+    /**
+     * Gets customer property.
+     *
+     * @return the customer property
+     */
     public ObjectProperty<Customer> getCustomerProperty() {
         return customerProperty;
     }
@@ -667,9 +764,15 @@ public class Appointment {
         return user;
     }
 
+    /**
+     * Gets user property.
+     *
+     * @return the user property
+     */
     public ObjectProperty<User> getUserProperty() {
         return userProperty;
     }
+
     /**
      * Sets user.
      *
@@ -689,9 +792,15 @@ public class Appointment {
         return contact;
     }
 
+    /**
+     * Gets contact property.
+     *
+     * @return the contact property
+     */
     public ObjectProperty<Contact> getContactProperty() {
         return contactProperty;
     }
+
     /**
      * Sets contact.
      *
@@ -774,17 +883,32 @@ public class Appointment {
         this.updatedBy = updatedBy;
     }
 
+    /**
+     * Gets start time.
+     *
+     * @return the start time
+     */
     public LocalTime getStartTime() {
         return this.startTimeProperty.get();
     }
 
+    /**
+     * Gets start time property.
+     *
+     * @return the start time property
+     */
     public ObjectProperty<LocalTime> getStartTimeProperty() {
         if (this.startTimeProperty.get() == null && this.startTime != null) {
             this.startTimeProperty.set(this.startTime);
         }
         return startTimeProperty;
     }
-    
+
+    /**
+     * Sets start time.
+     *
+     * @param startTime the start time
+     */
     public void setStartTime(LocalTime startTime) {
         if (this.startTimeProperty.get() == null || startTime != this.startTimeProperty.get()) {
             this.startTimeProperty.set(startTime);
@@ -796,17 +920,32 @@ public class Appointment {
         }
     }
 
+    /**
+     * Gets start date.
+     *
+     * @return the start date
+     */
     public LocalDate getStartDate() {
         return this.startDateProperty.get();
     }
 
+    /**
+     * Gets start date property.
+     *
+     * @return the start date property
+     */
     public ObjectProperty<LocalDate> getStartDateProperty() {
         if (this.startDateProperty.get() == null && this.startDate != null) {
             this.startDateProperty.set(this.startDate);
         }
         return startDateProperty;
     }
-    
+
+    /**
+     * Sets start date.
+     *
+     * @param startDate the start date
+     */
     public void setStartDate(LocalDate startDate) {
         if (this.startDateProperty.get() == null || startDate != this.startDateProperty.get()) {
             this.startDateProperty.set(startDate);
@@ -818,17 +957,32 @@ public class Appointment {
         }
     }
 
+    /**
+     * Gets end time.
+     *
+     * @return the end time
+     */
     public LocalTime getEndTime() {
         return this.endTimeProperty.get();
     }
 
+    /**
+     * Gets end time property.
+     *
+     * @return the end time property
+     */
     public ObjectProperty<LocalTime> getEndTimeProperty() {
         if (this.endTimeProperty.get() == null && this.endTime != null) {
             this.endTimeProperty.set(this.endTime);
         }
         return endTimeProperty;
     }
-    
+
+    /**
+     * Sets end time.
+     *
+     * @param endTime the end time
+     */
     public void setEndTime(LocalTime endTime) {
         if (this.endTimeProperty.get() == null || endTime != this.endTimeProperty.get()) {
             this.endTimeProperty.set(endTime);
@@ -840,17 +994,32 @@ public class Appointment {
         }
     }
 
+    /**
+     * Gets end date.
+     *
+     * @return the end date
+     */
     public LocalDate getEndDate() {
         return this.endDate;
     }
 
+    /**
+     * Gets end date property.
+     *
+     * @return the end date property
+     */
     public ObjectProperty<LocalDate> getEndDateProperty() {
         if (this.endDateProperty.get() == null && this.endDate != null) {
             this.endDateProperty.set(this.endDate);
         }
         return endDateProperty;
     }
-    
+
+    /**
+     * Sets end date.
+     *
+     * @param endDate the end date
+     */
     public void setEndDate(LocalDate endDate) {
         if (this.endDateProperty.get() == null || endDate != this.endDateProperty.get()) {
             this.endDateProperty.set(endDate);

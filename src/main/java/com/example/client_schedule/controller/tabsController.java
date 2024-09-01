@@ -22,17 +22,35 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+/**
+ * The type Tabs controller.
+ */
 public class tabsController implements Initializable {
 
+    /**
+     * The Db.
+     */
     protected DBContext db;
 
+    /**
+     * The User name.
+     */
     protected String userName;
 
+    /**
+     * The Bundle.
+     */
     protected ResourceBundle _bundle;
 
     @FXML
     private TabPane tabPanel;
 
+    /**
+     * Instantiates a new Tabs controller.
+     *
+     * @param db       the db
+     * @param userName the user name
+     */
     public tabsController(DBContext db, String userName) {
         this.db = db;
         this.userName = userName;

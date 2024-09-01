@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * The Main application class. Sets the stage, bundles resources, sets locale
+ */
 public class MainApplication extends Application {
 
     @Override
@@ -34,6 +37,11 @@ public class MainApplication extends Application {
         stage.show();
     }
 
+    /**
+     * The entry point of application. Makes connection with the Database
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         JDBC.makeConnection();
         launch();

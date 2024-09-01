@@ -18,6 +18,9 @@ import java.util.List;
 @Table(name="customers")
 
 public class Customer {
+    /**
+     * The Id.
+     */
 //region Entity Columns
     @Id
     @FXML
@@ -28,6 +31,9 @@ public class Customer {
     @Transient
     private IntegerProperty idProperty = new SimpleIntegerProperty();
 
+    /**
+     * The Name.
+     */
     @FXML
     @Column(name="Customer_Name")
     public String name;
@@ -35,6 +41,9 @@ public class Customer {
     @Transient
     private StringProperty nameProperty = new SimpleStringProperty();
 
+    /**
+     * The Address.
+     */
     @FXML
     @Column(name="Address")
     public String address;
@@ -42,6 +51,9 @@ public class Customer {
     @Transient
     private StringProperty addressProperty = new SimpleStringProperty();
 
+    /**
+     * The Zip.
+     */
     @FXML
     @Column(name="Postal_Code")
     public String zip;
@@ -49,6 +61,9 @@ public class Customer {
     @Transient
     private StringProperty zipProperty = new SimpleStringProperty();
 
+    /**
+     * The Phone.
+     */
     @FXML
     @Column(name="Phone")
     public String phone;
@@ -81,6 +96,9 @@ public class Customer {
     @Column(name="Last_Updated_By")
     public String updatedBy;
 
+    /**
+     * The Division id.
+     */
     @FXML
     @Column(name="Division_ID", insertable=false, updatable=false)
     public Integer divisionId;
@@ -98,7 +116,10 @@ public class Customer {
         this.getDivisionIdProperty().bindBidirectional(division.getIdProperty());
     }
 
-    //region ORM
+    /**
+     * The Division.
+     */
+//region ORM
     @ManyToOne
     @JoinColumn(name="Division_ID")
     public Division division;
@@ -106,6 +127,9 @@ public class Customer {
     @Transient
     private ObjectProperty<Division> divisionProperty = new SimpleObjectProperty<>();
 
+    /**
+     * The Appointments.
+     */
     @OneToMany(mappedBy = "customer")
     public List<Appointment> appointments = new ArrayList<>();
 
@@ -206,9 +230,15 @@ public class Customer {
         this.idProperty.set(id);
     }
 
+    /**
+     * Gets id property.
+     *
+     * @return the id property
+     */
     public IntegerProperty getIdProperty() {
         return this.idProperty;
     }
+
     /**
      * Gets name.
      *
@@ -218,6 +248,11 @@ public class Customer {
         return name;
     }
 
+    /**
+     * Gets name property.
+     *
+     * @return the name property
+     */
     public StringProperty getNameProperty() {
         return nameProperty;
     }
@@ -241,9 +276,15 @@ public class Customer {
         return address;
     }
 
+    /**
+     * Gets address property.
+     *
+     * @return the address property
+     */
     public StringProperty getAddressProperty() {
         return this.addressProperty;
     }
+
     /**
      * Sets address.
      *
@@ -263,9 +304,15 @@ public class Customer {
         return zip;
     }
 
+    /**
+     * Gets zip property.
+     *
+     * @return the zip property
+     */
     public StringProperty getZipProperty() {
         return this.zipProperty;
     }
+
     /**
      * Sets zip.
      *
@@ -285,9 +332,15 @@ public class Customer {
         return phone;
     }
 
+    /**
+     * Gets phone property.
+     *
+     * @return the phone property
+     */
     public StringProperty getPhoneProperty() {
         return this.phoneProperty;
     }
+
     /**
      * Sets phone.
      *
@@ -307,9 +360,15 @@ public class Customer {
         return division;
     }
 
+    /**
+     * Gets division property.
+     *
+     * @return the division property
+     */
     public ObjectProperty<Division> getDivisionProperty() {
         return this.divisionProperty;
     }
+
     /**
      * Sets division.
      *
@@ -440,6 +499,11 @@ public class Customer {
         return divisionId;
     }
 
+    /**
+     * Gets division id property.
+     *
+     * @return the division id property
+     */
     public IntegerProperty getDivisionIdProperty() {
         return this.divisionIdProperty;
     }

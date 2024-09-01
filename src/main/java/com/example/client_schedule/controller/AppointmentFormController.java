@@ -35,7 +35,7 @@ import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
 /**
- * The type Appointment form controller. This class controls all the functionality for Appointment management.
+ * The Appointment form controller. This class controls all the functionality for Appointment management.
  */
 public class AppointmentFormController extends Appointment implements Initializable {
     /**

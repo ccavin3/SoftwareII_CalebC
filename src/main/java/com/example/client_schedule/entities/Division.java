@@ -17,6 +17,9 @@ import java.util.List;
 @Table(name="first_level_divisions")
 
 public class Division {
+    /**
+     * The Id.
+     */
 //region Entity Columns
     @Id
     @FXML
@@ -27,6 +30,9 @@ public class Division {
     @Transient
     private IntegerProperty idProperty = new SimpleIntegerProperty();
 
+    /**
+     * The Name.
+     */
     @FXML
     @Column(name="Division")
     protected String name;
@@ -56,17 +62,26 @@ public class Division {
     @Column(name="Last_Updated_By")
     protected String updatedBy;
 
+    /**
+     * The Country id.
+     */
     @FXML
     @Column(name="Country_ID", insertable=false, updatable=false)
     protected int countryId;
 
 //endregion
 
+    /**
+     * The Country.
+     */
 //region ORM
     @ManyToOne()
     @JoinColumn(name="Country_ID")
     protected Country country;
 
+    /**
+     * The Customers.
+     */
     @OneToMany(mappedBy = "division")
     protected List<Customer> customers = new ArrayList<>();
 //endregion
@@ -167,9 +182,15 @@ public class Division {
         return id;
     }
 
+    /**
+     * Gets id property.
+     *
+     * @return the id property
+     */
     public IntegerProperty getIdProperty() {
         return this.idProperty;
     }
+
     /**
      * Sets id.
      *

@@ -9,11 +9,20 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+/**
+ * The type Db context.
+ */
 public class DBContext {
 
+    /**
+     * The Em.
+     */
     @PersistenceContext(unitName="client_schedule")
     public EntityManager em;
 
+    /**
+     * Instantiates a new Db context.
+     */
     public DBContext(){
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("client_schedule");
@@ -63,18 +72,59 @@ public class DBContext {
         }
     }
 
+    /**
+     * The type Userdb.
+     */
     class userdb extends CRUD<User> {}
+
+    /**
+     * The type Divisiondb.
+     */
     class divisiondb extends CRUD<Division> {}
+
+    /**
+     * The type Contactdb.
+     */
     class contactdb extends CRUD<Contact> {}
+
+    /**
+     * The type Countrydb.
+     */
     class countrydb extends CRUD<Country> {}
+
+    /**
+     * The type Customerdb.
+     */
     class customerdb extends CRUD<Customer> {}
+
+    /**
+     * The type Appointmentdb.
+     */
     class appointmentdb extends CRUD<Appointment> {}
 
+    /**
+     * The Users.
+     */
     public ObservableList<User> users;
+    /**
+     * The Divisions.
+     */
     public ObservableList<Division> divisions;
+    /**
+     * The Customers.
+     */
     public ObservableList<Customer> customers;
+    /**
+     * The Countries.
+     */
     public ObservableList<Country> countries;
+    /**
+     * The Contacts.
+     */
     public ObservableList<Contact> contacts;
+    /**
+     * The Appointments.
+     */
     public ObservableList<Appointment> appointments;
 
 }

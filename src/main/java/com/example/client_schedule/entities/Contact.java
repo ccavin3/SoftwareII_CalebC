@@ -13,6 +13,9 @@ import jakarta.persistence.*;
 @Table(name="contacts")
 
 public class Contact {
+    /**
+     * The Id.
+     */
 //region Entity Columns
     @Id
     @FXML
@@ -20,15 +23,24 @@ public class Contact {
     @GeneratedValue(strategy=GenerationType.AUTO)
     protected int id;
 
+    /**
+     * The Name.
+     */
     @FXML
     @Column(name="Contact_Name")
     protected String name;
 
+    /**
+     * The Email.
+     */
     @FXML
     @Column(name="Email")
     protected String email;
 //endregion
 
+    /**
+     * The Appointments.
+     */
 //region ORM relationship
     @OneToMany(mappedBy = "contact")
     protected List<Appointment> appointments = new ArrayList<>();

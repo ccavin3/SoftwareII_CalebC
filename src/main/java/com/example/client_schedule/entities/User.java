@@ -15,6 +15,9 @@ import java.util.List;
 @Table(name="users")
 
 public class User {
+    /**
+     * The Id.
+     */
 //region Entity Columns
     @Id
     @FXML
@@ -22,10 +25,16 @@ public class User {
     @GeneratedValue(strategy=GenerationType.AUTO)
     protected int id;
 
+    /**
+     * The User name.
+     */
     @FXML
     @Column(name="User_Name")
     protected String userName;
 
+    /**
+     * The Password.
+     */
     @FXML
     @Column(name="Password")
     protected String password;
@@ -57,6 +66,9 @@ public class User {
 
 //endregion
 
+    /**
+     * The Appointments.
+     */
 //region ORM relationship
 @OneToMany(mappedBy = "user")
 protected List<Appointment> appointments = new ArrayList<>();

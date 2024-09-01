@@ -17,6 +17,9 @@ import java.util.List;
 @Table(name="countries")
 
 public class Country {
+    /**
+     * The Id.
+     */
 //region Entity Columns
     @Id
     @FXML
@@ -27,6 +30,9 @@ public class Country {
     @Transient
     private IntegerProperty idProperty = new SimpleIntegerProperty();
 
+    /**
+     * The Name.
+     */
     @FXML
     @Column(name="Country")
     protected String name;
@@ -58,6 +64,9 @@ public class Country {
 
 //endregion
 
+    /**
+     * The Divisions.
+     */
 //region ORM
     @OneToMany(mappedBy = "country")
     protected List<Division> divisions = new ArrayList<>();
@@ -120,9 +129,15 @@ public class Country {
         return id;
     }
 
+    /**
+     * Gets id property.
+     *
+     * @return the id property
+     */
     public IntegerProperty getIdProperty() {
         return this.idProperty;
     }
+
     /**
      * Sets id.
      *

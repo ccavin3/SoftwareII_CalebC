@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 
+/**
+ * The type Jdbc.
+ */
 public abstract class JDBC {
     private static final String protocol = "jdbc";
     private static final String vendor = ":mysql:";
@@ -17,11 +20,20 @@ public abstract class JDBC {
             "k/gcd" +
             "User";
     private static String password = "Passw0rd!";
+    /**
+     * The constant connection.
+     */
     public static Connection connection;
     private static PreparedStatement preparedStatement;
 
+    /**
+     * The constant connectionStatus.
+     */
     public static String connectionStatus;
 
+    /**
+     * Make connection.
+     */
     public static void makeConnection() {
         try {
             Class.forName(driver); // Locate Driver
@@ -36,6 +48,9 @@ public abstract class JDBC {
         }
     }
 
+    /**
+     * Close connection.
+     */
     public static void closeConnection() {
         try {
             if (connection != null) {

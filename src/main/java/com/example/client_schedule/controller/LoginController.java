@@ -3,6 +3,7 @@ package com.example.client_schedule.controller;
 import com.example.client_schedule.MainApplication;
 import com.example.client_schedule.helper.DBContext;
 import jakarta.persistence.Query;
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -73,7 +74,6 @@ public class LoginController implements Initializable {
     private DBContext db;
 
     private String country;
-    private String userName;
 
     /**
      * Instantiates a new Login controller.
@@ -95,7 +95,7 @@ public class LoginController implements Initializable {
 
 
         onLoginAction = e -> {
-            String user = userName = textUser.getText();
+            String user = textUser.getText();
             String pwd = textPwd.getText();
             if (db == null) {
                 msg = _bundle.getString("login.db.error");
@@ -119,6 +119,7 @@ public class LoginController implements Initializable {
                             msg = _bundle.getString("login.successful.text");
                             loginMessage.setText("");
                             logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+                            MainApplication.curUser = user;
                             launchTabForm();
                             // valid login
 //                        return true;
@@ -140,14 +141,14 @@ public class LoginController implements Initializable {
     }
 
     private String loginMessage(String msg) {
-        return String.format("User: %s - %s", userName, msg);
+        return String.format("User: %s - %s", MainApplication.curUser, msg);
     }
 
     private void launchTabForm() throws IOException {
         Stage thiswindow = (Stage)loginButton.getScene().getWindow();
 //        CustomerFormController controller = new CustomerFormController(db, userName);
 //        AppointmentFormController controller = new AppointmentFormController(db, userName);
-        tabsController controller = new tabsController(db, userName);
+        tabsController controller = new tabsController(db);
 //
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("tabs.fxml"), _bundle);
 

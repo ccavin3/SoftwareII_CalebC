@@ -1,5 +1,6 @@
 package com.example.client_schedule.entities;
 
+import com.example.client_schedule.helper.JPAListener;
 import jakarta.persistence.*;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,61 +15,59 @@ import java.util.List;
  * The type Division.
  */
 @Entity
+@EntityListeners(JPAListener.class)
 @Table(name="first_level_divisions")
 
-public class Division {
+public class Division extends baseEntity {
 //region Entity Columns
     @Id
     @FXML
     @Column(name="Division_ID")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    protected Integer id;
-
-    @Transient
-    private IntegerProperty idProperty = new SimpleIntegerProperty();
+    private Integer id;
 
     @FXML
     @Column(name="Division")
-    protected String name;
+    private String name;
 
-    /**
-     * The Created.
-     */
-    @FXML
-    @Column(name="Create_Date")
-    protected LocalDateTime created;
-    /**
-     * The Created by.
-     */
-    @FXML
-    @Column(name="Created_By")
-    protected String createdBy;
-    /**
-     * The Updated.
-     */
-    @FXML
-    @Column(name="Last_Update")
-    protected ZonedDateTime updated;
-    /**
-     * The Updated by.
-     */
-    @FXML
-    @Column(name="Last_Updated_By")
-    protected String updatedBy;
-
+//    /**
+//     * The Created.
+//     */
+//    @FXML
+//    @Column(name="Create_Date")
+//    protected LocalDateTime created;
+//    /**
+//     * The Created by.
+//     */
+//    @FXML
+//    @Column(name="Created_By")
+//    protected String createdBy;
+//    /**
+//     * The Updated.
+//     */
+//    @FXML
+//    @Column(name="Last_Update")
+//    protected ZonedDateTime updated;
+//    /**
+//     * The Updated by.
+//     */
+//    @FXML
+//    @Column(name="Last_Updated_By")
+//    protected String updatedBy;
+//
     @FXML
     @Column(name="Country_ID", insertable=false, updatable=false)
-    protected int countryId;
+    private int countryId;
 
 //endregion
 
 //region ORM
     @ManyToOne()
     @JoinColumn(name="Country_ID")
-    protected Country country;
+    private Country country;
 
     @OneToMany(mappedBy = "division")
-    protected List<Customer> customers = new ArrayList<>();
+    private List<Customer> customers = new ArrayList<>();
 //endregion
 
     /**
@@ -167,9 +166,6 @@ public class Division {
         return id;
     }
 
-    public IntegerProperty getIdProperty() {
-        return this.idProperty;
-    }
     /**
      * Sets id.
      *
@@ -177,7 +173,6 @@ public class Division {
      */
     public void setId(int id) {
         this.id = id;
-        this.idProperty.set(id);
     }
 
     /**

@@ -41,8 +41,6 @@ public abstract class tabController<T> extends TypeToken<T> implements Initializ
 
     protected DBContext db;
 
-    protected String userName;
-
     protected ObservableList<T> rows;
 
     protected ResourceBundle _bundle;
@@ -86,9 +84,8 @@ public abstract class tabController<T> extends TypeToken<T> implements Initializ
     protected VBox tabContent;
 
     public tabController() {}
-    public tabController(DBContext db, String userName) {
+    public tabController(DBContext db) {
         this.db = db;
-        this.userName = userName;
     }
 
     @Override
@@ -103,13 +100,4 @@ public abstract class tabController<T> extends TypeToken<T> implements Initializ
     public void setDb(DBContext db) {
         this.db = db;
     }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
 }

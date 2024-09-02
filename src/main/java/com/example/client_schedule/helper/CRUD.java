@@ -14,10 +14,16 @@ import java.util.stream.Collectors;
 
 public class CRUD<T> extends TypeToken<T>{
 
+    public static EntityManagerFactory emf;
     public static EntityManager em;
 
     public CRUD() {
         super();
+        if (CRUD.em == null) {
+            CRUD.emf = Persistence.createEntityManagerFactory("client_schedule");
+            CRUD.em = CRUD.emf.createEntityManager();
+        }
+        this.fetchFromDB();
     }
 
     private T currentRow;
@@ -47,7 +53,9 @@ public class CRUD<T> extends TypeToken<T>{
         em.remove(currentRow);
     }
 
-    public ObservableList<T> rows() {
+    public ObservableList<T> rows = FXCollections.observableArrayList();
+
+    public void fetchFromDB() {
         try {
             String tableName = ((Table) getGenericClass().getAnnotation(Table.class)).name();
             String fieldnames = readColumns()
@@ -55,14 +63,13 @@ public class CRUD<T> extends TypeToken<T>{
                     .map(f -> f.getName())
                     .collect(Collectors.joining(","));
             String sql = String.format("select t from com.example.client_schedule.entities.%s t", getGenericClass().getSimpleName());
-//            String sql = String.format("select %s from com.example.client_schedule.entities.%s", fieldnames, getGenericClass().getSimpleName());
-//            String sql = String.format("select t from %s t", tableName);
             TypedQuery<T> query = em.createQuery(sql, getGenericClass());
-
-//            Query query = em.createQuery(String.format("select new com.example.client_schedule.entities.%s ( %s )", getType().getClass().getSimpleName(), fieldnames));
-            return FXCollections.observableList(query.getResultList());
+            rows.clear();
+            rows.addAll(query.getResultList());
         } catch(Exception e) {
-            return null;
+            if(e.getMessage() != null) {
+                // do nothing
+            }
         }
     }
 

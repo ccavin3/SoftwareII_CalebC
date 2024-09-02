@@ -20,6 +20,8 @@ import java.util.ResourceBundle;
 
 public class MainApplication extends Application {
 
+    public static String curUser;
+
     @Override
     public void start(Stage stage) throws IOException {
         Locale locale = Locale.getDefault();

@@ -26,16 +26,13 @@ public class tabsController implements Initializable {
 
     protected DBContext db;
 
-    protected String userName;
-
     protected ResourceBundle _bundle;
 
     @FXML
     private TabPane tabPanel;
 
-    public tabsController(DBContext db, String userName) {
+    public tabsController(DBContext db) {
         this.db = db;
-        this.userName = userName;
     }
 
 //    class AppointmentTabController extends tabController<Appointment> {};
@@ -70,8 +67,8 @@ public class tabsController implements Initializable {
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
-        AppointmentFormController appointmentFormController = new AppointmentFormController(this.db, this.userName);
-        CustomerFormController customerFormController = new CustomerFormController(this.db, this.userName);
+        AppointmentFormController appointmentFormController = new AppointmentFormController(this.db);
+        CustomerFormController customerFormController = new CustomerFormController(this.db);
         FXMLLoader apptFxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
         FXMLLoader custFxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         apptFxmlLoader.setController(appointmentFormController);

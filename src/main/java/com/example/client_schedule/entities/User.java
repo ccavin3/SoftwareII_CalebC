@@ -1,5 +1,6 @@
 package com.example.client_schedule.entities;
 
+import com.example.client_schedule.helper.JPAListener;
 import jakarta.persistence.*;
 import javafx.fxml.FXML;
 
@@ -12,54 +13,55 @@ import java.util.List;
  * The type User.
  */
 @Entity
+@EntityListeners(JPAListener.class)
 @Table(name="users")
 
-public class User {
+public class User extends baseEntity {
 //region Entity Columns
     @Id
     @FXML
     @Column(name="User_ID")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    protected int id;
+    private int id;
 
     @FXML
     @Column(name="User_Name")
-    protected String userName;
+    private String userName;
 
     @FXML
     @Column(name="Password")
-    protected String password;
+    private String password;
 
-    /**
-     * The Created.
-     */
-    @FXML
-    @Column(name="Create_Date")
-    protected LocalDateTime created;
-    /**
-     * The Created by.
-     */
-    @FXML
-    @Column(name="Created_By")
-    protected String createdBy;
-    /**
-     * The Updated.
-     */
-    @FXML
-    @Column(name="Last_Update")
-    protected ZonedDateTime updated;
-    /**
-     * The Updated by.
-     */
-    @FXML
-    @Column(name="Last_Updated_By")
-    protected String updatedBy;
-
+//    /**
+//     * The Created.
+//     */
+//    @FXML
+//    @Column(name="Create_Date")
+//    protected LocalDateTime created;
+//    /**
+//     * The Created by.
+//     */
+//    @FXML
+//    @Column(name="Created_By")
+//    protected String createdBy;
+//    /**
+//     * The Updated.
+//     */
+//    @FXML
+//    @Column(name="Last_Update")
+//    protected ZonedDateTime updated;
+//    /**
+//     * The Updated by.
+//     */
+//    @FXML
+//    @Column(name="Last_Updated_By")
+//    protected String updatedBy;
+//
 //endregion
 
 //region ORM relationship
 @OneToMany(mappedBy = "user")
-protected List<Appointment> appointments = new ArrayList<>();
+private List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 

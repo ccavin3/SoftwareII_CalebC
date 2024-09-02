@@ -1,5 +1,7 @@
 package com.example.client_schedule.entities;
 
+import com.example.client_schedule.helper.JPAListener;
+import com.example.client_schedule.helper.TypeToken;
 import javafx.fxml.FXML;
 import jakarta.persistence.*;
 
@@ -42,7 +44,7 @@ public abstract class baseEntity {
      *
      * @return the
      */
-    public LocalDateTime getcreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
@@ -51,7 +53,7 @@ public abstract class baseEntity {
      *
      * @param created the created
      */
-    public void setcreated(LocalDateTime created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
@@ -78,7 +80,7 @@ public abstract class baseEntity {
      *
      * @return the
      */
-    public ZonedDateTime getupdated() {
+    public ZonedDateTime getUpdated() {
         return updated;
     }
 
@@ -87,7 +89,7 @@ public abstract class baseEntity {
      *
      * @param updated the updated
      */
-    public void setupdated(ZonedDateTime updated) {
+    public void setUpdated(ZonedDateTime updated) {
         this.updated = updated;
     }
 
@@ -96,7 +98,7 @@ public abstract class baseEntity {
      *
      * @return the by
      */
-    public String getupdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
@@ -105,7 +107,8 @@ public abstract class baseEntity {
      *
      * @param updatedBy the updated by
      */
-    public void setupdatedBy(String updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.example.client_schedule.entities;
 
+import com.example.client_schedule.helper.JPAListener;
 import javafx.fxml.FXML;
 
 import java.util.ArrayList;
@@ -10,28 +11,29 @@ import jakarta.persistence.*;
  * The type Contact.
  */
 @Entity
+@EntityListeners(JPAListener.class)
 @Table(name="contacts")
 
-public class Contact {
+public class Contact extends baseEntity {
 //region Entity Columns
     @Id
     @FXML
     @Column(name="Contact_ID")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    protected int id;
+    private int id;
 
     @FXML
     @Column(name="Contact_Name")
-    protected String name;
+    private String name;
 
     @FXML
     @Column(name="Email")
-    protected String email;
+    private String email;
 //endregion
 
 //region ORM relationship
     @OneToMany(mappedBy = "contact")
-    protected List<Appointment> appointments = new ArrayList<>();
+    private List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 

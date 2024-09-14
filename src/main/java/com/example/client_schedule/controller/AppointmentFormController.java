@@ -6,8 +6,10 @@ import com.example.client_schedule.entities.*;
 import com.example.client_schedule.helper.DBContext;
 import com.example.client_schedule.helper.JPAListener;
 import jakarta.persistence.Table;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -36,12 +38,13 @@ import javafx.util.converter.*;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Time;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.ResourceBundle;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -243,6 +246,7 @@ public class AppointmentFormController implements Initializable {
     private DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm[:ss] a");
     private DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm[:ss] a");
+    private DateTimeFormatter minformatter = DateTimeFormatter.ofPattern("hh:mm");
 
     private FilteredList<Appointment> appointmentFilteredList;
 
@@ -284,6 +288,8 @@ public class AppointmentFormController implements Initializable {
 //
 //    private TextFormatter<String> eltFormatter;
     private ObservableList<AppointmentFXAdapter> FXAppointments;
+    private final Alert alert = new Alert(Alert.AlertType.NONE);
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
@@ -406,7 +412,7 @@ public class AppointmentFormController implements Initializable {
         revertButton.setOnAction(onRevertAction);
         reportButton.setOnAction(onReportAction);
 
-        tableView.setEditable(false);
+        tableView.setEditable(true);
         addAppointmentColumns();
 
 //        tableView.setRowFactory(tableView -> {
@@ -416,25 +422,38 @@ public class AppointmentFormController implements Initializable {
 //            return row;
 //        });
         addAppointmentRows();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                final LocalDate ld = LocalDate.now();
+                final LocalTime lt = LocalTime.now();
+                Comparator<AppointmentFXAdapter> comparator = Comparator.comparing(AppointmentFXAdapter::getStart).reversed();
+                if (db.appointments.stream().anyMatch(ap -> ap.getStart().toLocalDate().equals(ld) && lt.isBefore(ap.getStart().toLocalTime()) && lt.plusMinutes(15).isAfter(ap.getStart().toLocalTime()))) {
+                    int result =
+                        db.appointments
+                            .stream()
+                            .filter(ap -> ap.getStart().toLocalDate().equals(ld) && lt.isBefore(ap.getStart().toLocalTime()) && lt.plusMinutes(15).isAfter(ap.getStart().toLocalTime()))
+                            .map(ap -> ((int)Duration.between(ap.getStart().toLocalTime(), lt ).toMinutes()))
+                            .min(Integer::compare).get();
+                    Platform.runLater(() -> {
+                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("Appointment alert");
+                        alert.setContentText(String.format("Appointmenet upcoming in %d minutes", result));
+                        alert.showAndWait();
+                        //update UI thread from here.
+                    });
+                }
+            }
+        };
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(
+                task ,
+                0,      //delay before first execution
+                120000L); //time between executions
     }
 
     private void unBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
-//            textTitle.textProperty().removeListener(titleListener);
-//            textAppointmentID.textProperty().removeListener(idListener);
-//            textDescription.textProperty().removeListener(descriptionListener);
-//            textType.textProperty().removeListener(typeListener);
-//            textLocation.textProperty().removeListener(locationListener);
-//            comboBoxContact.valueProperty().removeListener(contactChangeListener);
-//            comboBoxUser.valueProperty().removeListener(userChangeListener);
-//            comboBoxCustomer.valueProperty().removeListener(customerChangeListener);
-//            textStart.textProperty().removeListener(startListener);
-//            textEnd.textProperty().removeListener(endListener);
-//            textStartDate.textProperty().removeListener(startDateListener);
-//            textEndDate.textProperty().removeListener(endDateListener);
-//            textStartTime.textProperty().removeListener(startTimeListener);
-//            textEndTime.textProperty().removeListener(endTimeListener);
-
             textTitle.textProperty().unbindBidirectional(currentAppointment.titleProperty());
             textAppointmentID.textProperty().unbindBidirectional(currentAppointment.idProperty());
             textDescription.textProperty().unbindBidirectional(currentAppointment.descriptionProperty());
@@ -614,7 +633,6 @@ public class AppointmentFormController implements Initializable {
     }
 
     private void addAppointmentColumns() {
-
         TableColumn<AppointmentFXAdapter, Integer> idCol = new TableColumn<>("id");
         TableColumn<AppointmentFXAdapter, String> titleCol = new TableColumn<>(_bundle.getString("label.appointment.title.text"));
         TableColumn<AppointmentFXAdapter, String> descriptionCol = new TableColumn<>(_bundle.getString("label.appointment.description.text"));
@@ -634,28 +652,28 @@ public class AppointmentFormController implements Initializable {
         endCol.getColumns().addAll(endDateCol, endTimeCol);
         appointmentCol.getColumns().addAll(startCol, endCol);
 
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
-        locationCol.setCellValueFactory(new PropertyValueFactory<>("location"));
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-        startDateCol.setCellValueFactory(new PropertyValueFactory<>("startDate"));
-        startTimeCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        endDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
-        endTimeCol.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        startCol.setCellValueFactory(new PropertyValueFactory<>("start"));
-        endCol.setCellValueFactory(new PropertyValueFactory<>("end"));
-        customerCol.setCellValueFactory(new PropertyValueFactory<>("customer"));
-        userCol.setCellValueFactory(new PropertyValueFactory<>("user"));
-        contactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        idCol.setCellValueFactory(new PropertyValueFactory("id"));
+        titleCol.setCellValueFactory(f -> f.getValue().titleProperty());
+        descriptionCol.setCellValueFactory(f -> f.getValue().descriptionProperty());
+        locationCol.setCellValueFactory(f -> f.getValue().locationProperty());
+        typeCol.setCellValueFactory(f -> f.getValue().typeProperty());
+        startDateCol.setCellValueFactory(f -> f.getValue().startDateProperty());
+        startTimeCol.setCellValueFactory(f -> f.getValue().startTimeProperty());
+        endDateCol.setCellValueFactory(f -> f.getValue().endDateProperty());
+        endTimeCol.setCellValueFactory(f -> f.getValue().endTimeProperty());
+        startCol.setCellValueFactory(f -> f.getValue().startProperty());
+        endCol.setCellValueFactory(f -> f.getValue().endProperty());
+        customerCol.setCellValueFactory(f -> f.getValue().customerProperty());
+        userCol.setCellValueFactory(f -> f.getValue().userProperty());
+        contactCol.setCellValueFactory(f -> f.getValue().contactProperty());
 
         idCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
         descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn());
         locationCol.setCellFactory(TextFieldTableCell.forTableColumn());
         typeCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        //startCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        //endCol.setCellFactory(TextFieldTableCell.forTableColumn());
+//        startCol.setCellFactory(TextFieldTableCell.forTableColumn());
+//        endCol.setCellFactory(TextFieldTableCell.forTableColumn());
         startTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter(tformatter,tformatter)));
         startDateCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter(dformatter,dformatter)));
         endTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter(tformatter,tformatter)));

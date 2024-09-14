@@ -613,9 +613,6 @@ public class Appointment extends baseEntity {
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
-        if (this.startDate != null) {
-            this.setStart(this.startDate.atTime(this.startTime));
-        }
     }
 
     public LocalDate getStartDate() {
@@ -624,9 +621,6 @@ public class Appointment extends baseEntity {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
-        if (this.startTime != null) {
-                this.setStart(this.startDate.atTime(this.startTime));
-        }
     }
 
     public LocalTime getEndTime() {
@@ -635,9 +629,6 @@ public class Appointment extends baseEntity {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-        if (this.endDate != null ) {
-            this.setEnd(this.endDate.atTime(this.endTime));
-        }
     }
 
     public LocalDate getEndDate() {
@@ -646,9 +637,6 @@ public class Appointment extends baseEntity {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-        if (this.endTime != null) {
-            this.setEnd(this.endDate.atTime(this.endTime));
-        }
     }
 
     /**

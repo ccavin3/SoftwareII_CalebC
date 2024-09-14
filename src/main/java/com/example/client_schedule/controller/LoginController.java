@@ -156,7 +156,7 @@ public class LoginController implements Initializable {
 //        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 900, 600);
         Stage stage = new Stage();
         stage.setTitle("Schedule Data");
         stage.setScene(scene);

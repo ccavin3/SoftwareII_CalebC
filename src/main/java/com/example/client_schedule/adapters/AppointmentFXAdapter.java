@@ -7,7 +7,9 @@ import com.example.client_schedule.entities.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
+import org.hibernate.loader.ast.spi.Loadable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,18 +27,72 @@ public class AppointmentFXAdapter {
     private final StringProperty description = new SimpleStringProperty();
     private final StringProperty location = new SimpleStringProperty();
     private final StringProperty type = new SimpleStringProperty();
-    private final ObjectProperty<LocalDateTime> start = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalDateTime> end = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDateTime> start;
+    private ObjectProperty<LocalDateTime> end;
     private final IntegerProperty customerId = new SimpleIntegerProperty();
     private final IntegerProperty userId = new SimpleIntegerProperty();
     private final IntegerProperty contactId = new SimpleIntegerProperty();
-    private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalTime> startTime = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalTime> endTime = new SimpleObjectProperty<>();
-    private final ObjectProperty<Customer> customer = new SimpleObjectProperty<>();
-    private final ObjectProperty<User> user = new SimpleObjectProperty<>();
-    private final ObjectProperty<Contact> contact = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> startDate;
+    private ObjectProperty<LocalDate> endDate;
+    private ObjectProperty<LocalTime> startTime;
+    private ObjectProperty<LocalTime> endTime;
+    private ObjectProperty<Customer> customer;
+    private ObjectProperty<User> user;
+    private ObjectProperty<Contact> contact;
+
+    public final void applyStartProperty() {
+        if (start != null) {
+            appointment.setStart(start.get());
+        }
+    }
+
+    public final void applyEndProperty() {
+        if (end != null) {
+            appointment.setEnd(end.get());
+        }
+    }
+
+    public final void applyStartDateProperty() {
+        if (startDate != null) {
+            appointment.setStartDate(startDate.get());
+        }
+    }
+
+    public final void applyEndDateProperty() {
+        if (endDate != null) {
+            appointment.setEndDate(endDate.get());
+        }
+    }
+
+    public final void applyStartTimeProperty() {
+        if (startTime != null) {
+            appointment.setStartTime(startTime.get());
+        }
+    }
+
+    public final void applyEndTimeProperty() {
+        if (endTime != null) {
+            appointment.setEndTime(endTime.get());
+        }
+    }
+
+    public final void applyCustomer() {
+        if (customer != null) {
+            appointment.setCustomer(customer.get());
+        }
+    }
+
+    public final void applyUser() {
+        if (user != null) {
+            appointment.setUser(user.get());
+        }
+    }
+
+    public final void applyContact() {
+        if (contact != null) {
+            appointment.setContact(contact.get());
+        }
+    }
 
     public Integer getId() {
         return id.get();
@@ -64,6 +120,10 @@ public class AppointmentFXAdapter {
         return end.get();
     }
 
+    public void setEnd(LocalDateTime e) {
+        end.set(e);
+    }
+
     public int getCustomerId() {
         return customerId.get();
     }
@@ -77,7 +137,7 @@ public class AppointmentFXAdapter {
     }
 
     public LocalDate getStartDate() {
-        return start.get().toLocalDate();
+        return startDate.get();
     }
 
     public void setStart(LocalDateTime ldt) {
@@ -86,46 +146,53 @@ public class AppointmentFXAdapter {
 
     public void setStartDate(LocalDate ld) {
         startDate.set(ld);
-        start.set(ld.atTime(startTime.get()));
     }
 
     public LocalDate getEndDate() {
-        return end.get().toLocalDate();
+        return endDate.get();
     }
 
     public void setEndDate(LocalDate ld) {
         endDate.set(ld);
-        start.set(ld.atTime(endTime.get()));
     }
     public LocalTime getStartTime() {
-        return start.get().toLocalTime();
+        return startTime.get();
     }
 
     public void setStartTime(LocalTime lt) {
         startTime.set(lt);
-        start.set(startDate.get().atTime(startTime.get()));
     }
 
     public LocalTime getEndTime() {
-        return start.get().toLocalTime();
+        return endTime.get();
     }
 
     public void setEndTime(LocalTime lt) {
         endTime.set(lt);
-        start.set(endDate.get().atTime(endTime.get()));
     }
     public Customer getCustomer() {
         return customer.get();
+    }
+
+    public void setCustomer(Customer c) {
+        customer.set(c);
     }
 
     public User getUser() {
         return user.get();
     }
 
+    public void setUser(User u) {
+        user.set(u);
+    }
+
     public Contact getContact() {
         return contact.get();
     }
 
+    public void setContact(Contact c) {
+        contact.set(c);
+    }
     public IntegerProperty idProperty() {
         id.set(appointment.getId());
         id.addListener((obs, old, wen) -> appointment.setId((Integer) wen));
@@ -157,38 +224,75 @@ public class AppointmentFXAdapter {
     }
 
     public ObjectProperty<LocalDateTime> startProperty() {
-        start.set(appointment.getStart());
-        start.addListener((obs, old, wen) -> appointment.setStart(wen));
-        return start;
+        if (start == null) {
+            start = new SimpleObjectProperty<>(appointment, "start", appointment.getStart()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setStart(get());
+                }
+            };
+        }
+            return start;
     }
 
     public ObjectProperty<LocalDateTime> endProperty() {
-        end.set(appointment.getEnd());
-        end.addListener((obs, old, wen) -> appointment.setEnd(wen));
-        return end;
+        if (end == null) {
+            end = new SimpleObjectProperty<>(appointment, "end", appointment.getEnd()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setEnd(get());
+                }
+            };
+        }
+            return end;
     }
 
+
     public ObjectProperty<LocalDate> startDateProperty() {
-        startDate.set(appointment.getStart().toLocalDate());
-        startDate.addListener((obs, old, wen) -> appointment.setStartDate(wen));
-        return startDate;
+        if (startDate == null) {
+            startDate = new SimpleObjectProperty<>(appointment, "startDate", appointment.getStart().toLocalDate()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setStartDate(get());
+                }
+            };
+        }
+            return startDate;
     }
 
     public ObjectProperty<LocalDate> endDateProperty() {
-        endDate.set(appointment.getStart().toLocalDate());
-        endDate.addListener((obs, old, wen) -> appointment.setEndDate(wen));
+        if (endDate == null) {
+            endDate = new SimpleObjectProperty<>(appointment, "endDate", appointment.getEnd().toLocalDate()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setEndDate(get());
+                }
+            };
+        }
         return endDate;
     }
 
     public ObjectProperty<LocalTime> startTimeProperty() {
-        startTime.set(appointment.getStart().toLocalTime());
-        startTime.addListener((obs, old, wen) -> appointment.setStartTime(wen));
+        if (startTime == null) {
+            startTime = new SimpleObjectProperty<>(appointment, "startTime", appointment.getStart().toLocalTime()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setStartTime(get());
+                }
+            };
+        }
         return startTime;
     }
 
     public ObjectProperty<LocalTime> endTimeProperty() {
-        endTime.set(appointment.getStart().toLocalTime());
-        endTime.addListener((obs, old, wen) -> appointment.setEndTime(wen));
+        if (endTime == null) {
+            endTime = new SimpleObjectProperty<>(appointment, "endTime", appointment.getEnd().toLocalTime()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setEndTime(get());
+                }
+            };
+        }
         return endTime;
     }
 
@@ -211,30 +315,39 @@ public class AppointmentFXAdapter {
     }
 
     public ObjectProperty<Customer> customerProperty() {
-        customer.set(appointment.getCustomer());
-        customer.addListener((obs, old, wen) -> {
-            appointment.setCustomer(wen);
-            appointment.setCustomerId(wen.getId());
-        });
-        return customer;
+        if (customer == null) {
+            customer = new SimpleObjectProperty<>(appointment, "customer", appointment.getCustomer()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setCustomer(get());
+                }
+            };
+        }
+            return customer;
     }
 
     public ObjectProperty<User> userProperty() {
-        user.set(appointment.getUser());
-        user.addListener((obs, old, wen) -> {
-            appointment.setUser(wen);
-            appointment.setUserId(wen.getId());
-        });
-        return user;
+        if (user == null) {
+            user =  new SimpleObjectProperty<>(appointment, "user", appointment.getUser()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setUser(get());
+                }
+            };
+        }
+            return user;
     }
 
     public ObjectProperty<Contact> contactProperty() {
-        contact.set(appointment.getContact());
-        contact.addListener((obs, old, wen) -> {
-            appointment.setContact(wen);
-            appointment.setContactId(wen.getId());
-        });
-        return contact;
+        if (contact == null) {
+            contact = new SimpleObjectProperty<>(appointment, "contact", appointment.getContact()) {
+                @Override
+                protected void invalidated() {
+                    appointment.setContact(get());
+                }
+            };
+        }
+            return contact;
     }
 
     public void update(Appointment wen) {

@@ -8,30 +8,50 @@ public class ContactFXAdapter {
 
     public ContactFXAdapter(Contact contact) {
         this.contact = contact;
-
-        this.id.set(contact.getId());
-        this.id.addListener((obs, old, wen) -> contact.setId((Integer) wen));
-
-        this.name.set(contact.getName());
-        this.name.addListener((obs, old, wen) -> contact.setName(wen));
-
-        this.email.set(contact.getEmail());
-        this.email.addListener((obs, old, wen) -> contact.setEmail(wen));
     }
 
     private final IntegerProperty id = new SimpleIntegerProperty();
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty email = new SimpleStringProperty();
 
+    public Integer getId() {
+        return id.get();
+    }
+    public String getName() {
+        return name.get();
+    }
+
+    public String getEmail() {
+        return email.get();
+    }
+
+    public void setId(Integer id) {
+        this.id.set(id);
+    }
+
+    public void setEmail(String email) {
+        this.email.set(email);
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
     public IntegerProperty idProperty() {
+        id.set(contact.getId());
+        id.addListener((obs, old, wen) -> contact.setId((Integer) wen));
         return id;
     }
 
     public StringProperty nameProperty() {
+        name.set(contact.getName());
+        name.addListener((obs, old, wen) -> contact.setName(wen));
         return name;
     }
 
     public StringProperty emailProperty() {
+        email.set(contact.getEmail());
+        email.addListener((obs, old, wen) -> contact.setEmail(wen));
         return email;
     }
 }

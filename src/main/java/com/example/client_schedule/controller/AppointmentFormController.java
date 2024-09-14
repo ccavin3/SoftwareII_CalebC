@@ -4,14 +4,8 @@ import com.example.client_schedule.MainApplication;
 import com.example.client_schedule.adapters.AppointmentFXAdapter;
 import com.example.client_schedule.entities.*;
 import com.example.client_schedule.helper.DBContext;
-import com.example.client_schedule.helper.JPAListener;
-import jakarta.persistence.Table;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -37,13 +31,11 @@ import javafx.util.converter.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -103,7 +95,7 @@ public class AppointmentFormController implements Initializable {
 //        }
 //    };
 
-    private StringConverter<Integer> IntStringConverter = new StringConverter<Integer>() {
+    private StringConverter<Integer> IntStringConverter = new StringConverter<>() {
         @Override
         public String toString(Integer integer) {
             if (integer == null) return null;
@@ -468,6 +460,10 @@ public class AppointmentFormController implements Initializable {
             textEndDate.textProperty().unbindBidirectional(currentAppointment.endDateProperty());
             textStartTime.textProperty().unbindBidirectional(currentAppointment.startTimeProperty());
             textEndTime.textProperty().unbindBidirectional(currentAppointment.endTimeProperty());
+            startEndDateValid.removeListener(apptDateListener);
+            startEndTimeValid.removeListener(apptListener);
+            WithinWorkingHours.removeListener(workingHourListener);
+            overlapping.removeListener(overlappingApptsListener);
         }
     }
 
@@ -501,6 +497,12 @@ public class AppointmentFormController implements Initializable {
     private ChangeListener<String> endDateListener;
     private ChangeListener<String> startTimeListener;
     private ChangeListener<String> endTimeListener;
+
+    private ChangeListener<Boolean> apptDateListener;
+    private ChangeListener<Boolean> apptListener;
+    private ChangeListener<Boolean> workingHourListener;
+    private ChangeListener<Boolean> overlappingApptsListener;
+
 
     private void reBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
@@ -617,8 +619,142 @@ public class AppointmentFormController implements Initializable {
             textEndDate.textProperty().bindBidirectional(currentAppointment.endDateProperty(), new LocalDateStringConverter(dformatter,dformatter));
             textStartTime.textProperty().bindBidirectional(currentAppointment.startTimeProperty(), new LocalTimeStringConverter(tformatter, tformatter));
             textEndTime.textProperty().bindBidirectional(currentAppointment.endTimeProperty(), new LocalTimeStringConverter(tformatter,tformatter));
+            apptDateListener = new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> obs, Boolean old, Boolean wen) {
+                    if (wen) {
+
+                    } else {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error Dialog");
+                                alert.setHeaderText("Invalid Start or End Date");
+                                alert.setContentText("Start Date must be before or same as End Date");
+                                alert.show();
+                            }
+                        });
+                    }
+                }
+            };
+            apptListener = new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> obs, Boolean old, Boolean wen) {
+                    if (wen) {
+
+                    } else {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error Dialog");
+                                alert.setHeaderText("Invalid Start or End");
+                                alert.setContentText("Appointment must start at least 15 minutes before ending");
+                                alert.show();
+                            }
+                        });
+                    }
+                }
+            };
+            workingHourListener = new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> obs, Boolean old, Boolean wen) {
+                    if (wen) {
+
+                    } else {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error Dialog");
+                                alert.setHeaderText("Invalid Start or End");
+                                alert.setContentText("Appointment must start at least 15 minutes before ending");
+                                alert.show();
+                            }
+                        });
+                    }
+                }
+            };
+            overlappingApptsListener = new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> obs, Boolean old, Boolean wen) {
+                    if (wen) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error Dialog");
+                                alert.setHeaderText("Overlapping appointments");
+                                alert.setContentText("Appointments cannot overlap with other appointments");
+                                alert.show();
+                            }
+                        });
+                    }
+                }
+            };
+            startEndDateValid.addListener(apptDateListener);
+            startEndTimeValid.addListener(apptListener);
+            WithinWorkingHours.addListener(workingHourListener);
+            overlapping.addListener(overlappingApptsListener);
         }
+
     }
+
+    private BooleanBinding overlapping = new BooleanBinding() {
+        {
+            super.bind(textStart.textProperty(), textEnd.textProperty());
+        }
+        @Override
+        protected boolean computeValue() {
+            boolean tsEmpty = textStart.getText().trim().isEmpty();
+            boolean teEmpty = textEnd.getText().trim().isEmpty();
+            LocalDateTime tsDT = LocalDateTime.parse(textStart.getText());
+            LocalDateTime teDT = LocalDateTime.parse(textEnd.getText());
+            FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments,  a -> a.getStartDate().isEqual(tsDT.toLocalDate()));
+            boolean tsOverlap = aFL.stream().anyMatch(a ->
+                tsDT.toLocalTime().isAfter(a.getStartTime()) && tsDT.toLocalTime().isBefore(a.getEndTime())
+                    || teDT.toLocalTime().isAfter(a.getStartTime()) && teDT.toLocalTime().isBefore(a.getEndTime())
+            );
+            return tsOverlap;
+        }
+    };
+
+    private BooleanBinding startEndDateValid = new BooleanBinding() {
+        {
+            super.bind(textStartDate.textProperty(), textEndDate.textProperty());
+        }
+        @Override
+        protected boolean computeValue() {
+            return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
+                    || (LocalDate.parse(textStartDate.getText()).isBefore(LocalDate.parse(textEndDate.getText())))
+                    ||  (LocalDate.parse(textStartDate.getText()).isEqual(LocalDate.parse(textEndDate.getText())));
+        }
+    };
+
+    private BooleanBinding startEndTimeValid = new BooleanBinding() {
+        {
+            super.bind(textStartTime.textProperty(), textEndTime.textProperty());
+        }
+        @Override
+        protected boolean computeValue() {
+            return textStartTime.getText().trim().isEmpty()
+                    || textEndTime.getText().trim().isEmpty()
+                    || LocalDate.parse(textStartDate.getText()).atTime(LocalTime.parse(textStartTime.getText())).plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText()).atTime(LocalTime.parse(textEndTime.getText())))
+                    || LocalDate.parse(textStartDate.getText()).atTime(LocalTime.parse(textStartTime.getText())).plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText()).atTime(LocalTime.parse(textEndTime.getText())));
+        }
+    };
+
+    private BooleanBinding WithinWorkingHours = new BooleanBinding() {
+        {
+            super.bind(textStartTime.textProperty(), textEndTime.textProperty());
+        }
+        @Override
+        protected boolean computeValue() {
+            return LocalTime.parse(textStartTime.getText()).getHour() >= 8 &&
+                    LocalTime.parse(textEndTime.getText()).getHour() < 17;
+        }
+    };
 
     private void addAppointmentRows() {
 //        tableView.setItems(appointmentFilteredList);

@@ -319,7 +319,7 @@ public class CustomerFormController implements Initializable {
 
         divisionCol.setCellFactory(ComboBoxTableCell.forTableColumn(divisionStringConverter, new FilteredList<Division>(db.divisions, p -> true)));
 
-        divisionyCol.setCellFactory(col -> {
+        divisionCol.setCellFactory(col -> {
             ComboBoxTableCell<CustomerFXAdapter, Country> cell = new ComboBoxTableCell<CustomerFXAdapter, Division>() {
                 @Override
                 public void updateItem(Country country, boolean empty) {

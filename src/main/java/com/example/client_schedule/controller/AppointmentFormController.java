@@ -4,6 +4,7 @@ import com.example.client_schedule.MainApplication;
 import com.example.client_schedule.adapters.AppointmentFXAdapter;
 import com.example.client_schedule.entities.*;
 import com.example.client_schedule.helper.DBContext;
+import com.example.client_schedule.helper.ZonedDates;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
@@ -31,14 +32,13 @@ import javafx.util.converter.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+
+import com.example.client_schedule.helper.AppConfig;
 
 /**
  * The type Appointment form controller. This class controls all the functionality for Appointment management.
@@ -462,7 +462,7 @@ public class AppointmentFormController implements Initializable {
             textEndTime.textProperty().unbindBidirectional(currentAppointment.endTimeProperty());
             startEndDateValid.removeListener(apptDateListener);
             startEndTimeValid.removeListener(apptListener);
-            WithinWorkingHours.removeListener(workingHourListener);
+            withinWorkingHours.removeListener(workingHourListener);
             overlapping.removeListener(overlappingApptsListener);
         }
     }
@@ -503,6 +503,10 @@ public class AppointmentFormController implements Initializable {
     private ChangeListener<Boolean> workingHourListener;
     private ChangeListener<Boolean> overlappingApptsListener;
 
+    private BooleanBinding overlapping;
+    private BooleanBinding startEndDateValid;
+    private BooleanBinding startEndTimeValid;
+    private BooleanBinding withinWorkingHours;
 
     private void reBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
@@ -619,6 +623,65 @@ public class AppointmentFormController implements Initializable {
             textEndDate.textProperty().bindBidirectional(currentAppointment.endDateProperty(), new LocalDateStringConverter(dformatter,dformatter));
             textStartTime.textProperty().bindBidirectional(currentAppointment.startTimeProperty(), new LocalTimeStringConverter(tformatter, tformatter));
             textEndTime.textProperty().bindBidirectional(currentAppointment.endTimeProperty(), new LocalTimeStringConverter(tformatter,tformatter));
+
+            overlapping = new BooleanBinding() {
+                {
+                    super.bind(textStart.textProperty(), textEnd.textProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    boolean tsEmpty = textStart.getText().trim().isEmpty();
+                    boolean teEmpty = textEnd.getText().trim().isEmpty();
+                    LocalDateTime tsDT = LocalDateTime.parse(textStart.getText(), dtformatter);
+                    LocalDateTime teDT = LocalDateTime.parse(textEnd.getText(), dtformatter);
+                    FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments, a -> a.getStart().toLocalDate().isEqual(tsDT.toLocalDate()));
+                    boolean tsOverlap = aFL.stream().anyMatch(a ->
+                            tsDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && tsDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
+                                    || teDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && teDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
+                    );
+                    return tsOverlap;
+                }
+            };
+
+            startEndDateValid = new BooleanBinding() {
+                {
+                    super.bind(textStartDate.textProperty(), textEndDate.textProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
+                            || (LocalDate.parse(textStartDate.getText(), dformatter).isBefore(LocalDate.parse(textEndDate.getText(), dformatter)))
+                            ||  (LocalDate.parse(textStartDate.getText(), dformatter).isEqual(LocalDate.parse(textEndDate.getText(), dformatter)));
+                }
+            };
+
+            startEndTimeValid = new BooleanBinding() {
+                {
+                    super.bind(textStartTime.textProperty(), textEndTime.textProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    return textStartTime.getText().trim().isEmpty()
+                            || textEndTime.getText().trim().isEmpty()
+                            || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)))
+                            || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)));
+                }
+            };
+
+            withinWorkingHours = new BooleanBinding() {
+                {
+                    super.bind(textStartTime.textProperty(), textEndTime.textProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    AppConfig cfg = new AppConfig();
+                    ZonedDates ZD = cfg.getZonedDateTime();
+
+                    return LocalTime.parse(textStartTime.getText(), tformatter).getHour() >= ZD.start.toLocalTime().getHour() &&
+                            LocalTime.parse(textEndTime.getText(), tformatter).getHour() < ZD.end.toLocalTime().getHour();
+                }
+            };
+
             apptDateListener = new ChangeListener<Boolean>() {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> obs, Boolean old, Boolean wen) {
@@ -695,66 +758,12 @@ public class AppointmentFormController implements Initializable {
             };
             startEndDateValid.addListener(apptDateListener);
             startEndTimeValid.addListener(apptListener);
-            WithinWorkingHours.addListener(workingHourListener);
+            withinWorkingHours.addListener(workingHourListener);
             overlapping.addListener(overlappingApptsListener);
         }
 
     }
 
-    private BooleanBinding overlapping = new BooleanBinding() {
-        {
-            super.bind(textStart.textProperty(), textEnd.textProperty());
-        }
-        @Override
-        protected boolean computeValue() {
-            boolean tsEmpty = textStart.getText().trim().isEmpty();
-            boolean teEmpty = textEnd.getText().trim().isEmpty();
-            LocalDateTime tsDT = LocalDateTime.parse(textStart.getText());
-            LocalDateTime teDT = LocalDateTime.parse(textEnd.getText());
-            FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments,  a -> a.getStartDate().isEqual(tsDT.toLocalDate()));
-            boolean tsOverlap = aFL.stream().anyMatch(a ->
-                tsDT.toLocalTime().isAfter(a.getStartTime()) && tsDT.toLocalTime().isBefore(a.getEndTime())
-                    || teDT.toLocalTime().isAfter(a.getStartTime()) && teDT.toLocalTime().isBefore(a.getEndTime())
-            );
-            return tsOverlap;
-        }
-    };
-
-    private BooleanBinding startEndDateValid = new BooleanBinding() {
-        {
-            super.bind(textStartDate.textProperty(), textEndDate.textProperty());
-        }
-        @Override
-        protected boolean computeValue() {
-            return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
-                    || (LocalDate.parse(textStartDate.getText()).isBefore(LocalDate.parse(textEndDate.getText())))
-                    ||  (LocalDate.parse(textStartDate.getText()).isEqual(LocalDate.parse(textEndDate.getText())));
-        }
-    };
-
-    private BooleanBinding startEndTimeValid = new BooleanBinding() {
-        {
-            super.bind(textStartTime.textProperty(), textEndTime.textProperty());
-        }
-        @Override
-        protected boolean computeValue() {
-            return textStartTime.getText().trim().isEmpty()
-                    || textEndTime.getText().trim().isEmpty()
-                    || LocalDate.parse(textStartDate.getText()).atTime(LocalTime.parse(textStartTime.getText())).plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText()).atTime(LocalTime.parse(textEndTime.getText())))
-                    || LocalDate.parse(textStartDate.getText()).atTime(LocalTime.parse(textStartTime.getText())).plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText()).atTime(LocalTime.parse(textEndTime.getText())));
-        }
-    };
-
-    private BooleanBinding WithinWorkingHours = new BooleanBinding() {
-        {
-            super.bind(textStartTime.textProperty(), textEndTime.textProperty());
-        }
-        @Override
-        protected boolean computeValue() {
-            return LocalTime.parse(textStartTime.getText()).getHour() >= 8 &&
-                    LocalTime.parse(textEndTime.getText()).getHour() < 17;
-        }
-    };
 
     private void addAppointmentRows() {
 //        tableView.setItems(appointmentFilteredList);
@@ -948,7 +957,7 @@ public class AppointmentFormController implements Initializable {
         try {
             launchReportForm();
         } catch (Exception ex) {
-
+            System.console().writer().println(ex.getMessage());
         }
     }
 
@@ -964,7 +973,7 @@ public class AppointmentFormController implements Initializable {
 //        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setTitle("Schedule Data");
         stage.setScene(scene);

@@ -1,9 +1,7 @@
 package com.example.client_schedule.controller;
 
 import com.example.client_schedule.adapters.AppointmentFXAdapter;
-import com.example.client_schedule.adapters.CountryFXAdapter;
 import com.example.client_schedule.adapters.CustomerFXAdapter;
-import com.example.client_schedule.adapters.DivisionFXAdapter;
 import com.example.client_schedule.entities.Country;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.entities.Division;
@@ -20,7 +18,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -42,7 +39,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 /**
@@ -172,45 +168,15 @@ public class CustomerFormController implements Initializable {
     private ChangeListener<Division> divisionChangeListener;
 
 
+
     private FilteredList<Division> filteredDivisionList;
     private ObservableList<CustomerFXAdapter> FXCustomers;
-    private ObservableList<DivisionFXAdapter> FXDivisions;
-    private ObservableList<CountryFXAdapter> FXCountries;
-
-    private final StringConverter<Division> divisionStringConverter = new StringConverter<Division>() {
-        @Override
-        public String toString(Division division) {
-            if (division == null) {
-                return "";
-            } else {
-                return division.getName();
-            }
-        }
-
-        @Override
-        public Division fromString(String s) {
-            return comboBoxDivision.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
-        }
-    };
-
-    private final StringConverter<Country> countryStringConverter = new StringConverter<Country>() {
-        @Override
-        public String toString(Country country) {
-            return country != null ? country.getName() : ""; // Replace 'getName' with actual method which returns display name
-        }
-
-        @Override
-        public Country fromString(String string) {
-            return db.countries.stream().filter(c -> c.getName().equals(string)).findAny().orElse(null); // Replace 'getName' with actual method which returns display name
-        }
-    };
 
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
-        FXCustomers = FXCollections.observableList(this.db.customers.stream().map(item -> new CustomerFXAdapter(item, db)).collect(Collectors.toList()));
-        FXDivisions = FXCollections.observableList(this.db.divisions.stream().map(item -> new DivisionFXAdapter(item, db)).collect(Collectors.toList()));
-        FXCountries = FXCollections.observableList(this.db.countries.stream().map(item -> new CountryFXAdapter(item, db)).collect(Collectors.toList()));
+        FXCustomers = FXCollections.observableList(this.db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
+
         onCommitAction = e -> dbCommit();
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
@@ -225,17 +191,95 @@ public class CustomerFormController implements Initializable {
         comboBoxCountry.setOnAction(onCountrySelectionAction);
         filteredDivisionList = new FilteredList<>(db.divisions, p -> true);
         comboBoxDivision.setItems(filteredDivisionList);
-        comboBoxDivision.setConverter(divisionStringConverter);
-        comboBoxCountry.setItems(db.countries);
-        comboBoxCountry.setConverter(countryStringConverter);
+        comboBoxDivision.setConverter(new StringConverter<Division>() {
+              @Override
+              public String toString(Division division) {
+                  if (division == null) {
+                      return "";
+                  } else {
+                      return division.getName();
+                  }
+              }
 
-        tableView.setEditable(true);
+              @Override
+              public Division fromString(String s) {
+                  return comboBoxDivision.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
+              }
+          }
+
+        );
+        comboBoxCountry.setItems(db.countries);
+        comboBoxCountry.setConverter(new StringConverter<Country>() {
+            @Override
+            public String toString(Country country) {
+                if (country == null) {
+                    return "";
+                } else {
+                    return country.getName();
+                }
+            }
+
+            @Override
+            public Country fromString(String s) {
+                return comboBoxCountry.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
+            }
+        });
+        tableView.setEditable(false);
         addCustomerColumns();
+//        lambda expression
+
         addCustomerRows();
     }
 
     private void reBind(CustomerFXAdapter currentCustomer) {
         if (currentCustomer != null) {
+//            textID.textProperty().addListener(idListener = new ChangeListener<String>() {
+//                @Override
+//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+//                    currentCustomer.setId(Integer.parseInt(t1));
+//                    tableView.refresh();
+//                }
+//            });
+//
+//            textName.textProperty().addListener(nameListener = new ChangeListener<String>() {
+//                @Override
+//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+//                    currentCustomer.setName(t1);
+//                    tableView.refresh();
+//                }
+//            });
+//
+//            textAddress.textProperty().addListener(addressListener = new ChangeListener<String>() {
+//                @Override
+//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+//                    currentCustomer.addressProperty().set(t1);
+//                    tableView.refresh();
+//                }
+//            });
+//
+//            textPhone.textProperty().addListener(phoneListener = new ChangeListener<String>() {
+//                @Override
+//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+//                    currentCustomer.phoneProperty().set(t1);
+//                    tableView.refresh();
+//                }
+//            });
+//
+//            textPostal.textProperty().addListener(zipListener = new ChangeListener<String>() {
+//                @Override
+//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+//                    currentCustomer.zipProperty().set(t1);
+//                    tableView.refresh();
+//                }
+//            });
+//            comboBoxDivision.valueProperty().addListener(divisionChangeListener = new ChangeListener<Division>() {
+//                @Override
+//                public void changed(ObservableValue<? extends Division> observableValue, Division customer, Division t1) {
+//                    currentCustomer.divisionProperty().set(t1);
+//                    tableView.refresh();
+//                }
+//            });
+
             textID.textProperty().bindBidirectional(currentCustomer.idProperty(), new NumberStringConverter());
             textName.textProperty().bindBidirectional(currentCustomer.nameProperty());
             textAddress.textProperty().bindBidirectional(currentCustomer.addressProperty());
@@ -244,9 +288,14 @@ public class CustomerFormController implements Initializable {
             comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.divisionProperty());
         }
     }
-
     private void unBind(CustomerFXAdapter currentCustomer) {
         if (currentCustomer != null) {
+//            textID.textProperty().removeListener(idListener);
+//            textName.textProperty().removeListener(nameListener);
+//            textAddress.textProperty().removeListener(addressListener);
+//            textPhone.textProperty().removeListener(phoneListener);
+//            textPostal.textProperty().removeListener(zipListener);
+//            comboBoxDivision.valueProperty().removeListener(divisionChangeListener);
 
             textID.textProperty().unbindBidirectional(currentCustomer.idProperty());
             textName.textProperty().unbindBidirectional(currentCustomer.nameProperty());
@@ -272,19 +321,12 @@ public class CustomerFormController implements Initializable {
         tableView.setItems(FXCustomers);
 
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
-                    unBind(old);
-                    reBind(wen);
-                });
-
+            unBind(old);
+//            clearfields();
+            reBind(wen);
+        });
         tableView.getSelectionModel().selectFirst();
-
-        filteredDivisionList.setPredicate(p -> p.getCountryId() == tableView.getSelectionModel()
-                        .selectedItemProperty()
-                        .get()
-                        .divisionProperty()
-                        .get()
-                        .getCountryId()
-        );
+        filteredDivisionList.setPredicate(p -> p.getCountryId() == tableView.getSelectionModel().selectedItemProperty().get().divisionProperty().get().getCountryId());
     }
 
     private void addCustomerColumns() {
@@ -293,18 +335,14 @@ public class CustomerFormController implements Initializable {
         TableColumn<CustomerFXAdapter, String> addressCol = new TableColumn<>(_bundle.getString("label.customer.address.text"));
         TableColumn<CustomerFXAdapter, String> postalCol = new TableColumn<>(_bundle.getString("label.customer.postal.text"));
         TableColumn<CustomerFXAdapter, String> phoneCol = new TableColumn<>(_bundle.getString("label.customer.phone.text"));
-        TableColumn divisionHeaderCol = new TableColumn(_bundle.getString("label.customer.division.text"));
         TableColumn<CustomerFXAdapter, Integer> divisionIdCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
-        TableColumn<CustomerFXAdapter, Country> countryCol = new TableColumn(_bundle.getString("label.country.text"));
         TableColumn<CustomerFXAdapter, Division> divisionCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
-        divisionHeaderCol.getColumns().addAll(countryCol, divisionCol);
 
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
         postalCol.setCellValueFactory(new PropertyValueFactory<>("zip"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        countryCol.setCellValueFactory(new PropertyValueFactory<>("country"));
         divisionCol.setCellValueFactory(new PropertyValueFactory<>("division"));
         divisionIdCol.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
 
@@ -315,44 +353,23 @@ public class CustomerFormController implements Initializable {
         phoneCol.setCellFactory(TextFieldTableCell.forTableColumn());
 //        divisionIdCol.setCellFactory(ComboBoxTableCell.forTableColumn(db.divisions));
 
-        countryCol.setCellFactory(ComboBoxTableCell.forTableColumn(countryStringConverter, db.countries));
-
-        divisionCol.setCellFactory(ComboBoxTableCell.forTableColumn(divisionStringConverter, new FilteredList<Division>(db.divisions, p -> true)));
-
-        divisionCol.setCellFactory(col -> {
-            ComboBoxTableCell<CustomerFXAdapter, Country> cell = new ComboBoxTableCell<CustomerFXAdapter, Division>() {
-                @Override
-                public void updateItem(Country country, boolean empty) {
-                    super.updateItem(country, empty);
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        CustomerFXAdapter item = getTableView().getItems().get(getIndex());
-                        ObservableList<Country> applicableCountries = item.getApplicableCountries(); // use your own method
-                        FilteredList<Country> filteredCountries = new FilteredList<>(applicableCountries);
-
-                        // get the object with which comparison will be made
-                        Division division = item.getDivision(); // use actual method to get the division from the item
-
-                        // set a predicate
-                        filteredCountries.setPredicate(c ->
-                                c.getName().equals(division.getName()) // Replace 'getName' with actual method of Division to compare with
-                        );
-
-                        setItems(filteredCountries);
-                    }
+        divisionCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Division>() {
+            @Override
+            public String toString(Division division) {
+                if (division != null) {
+                    return division.getName();
+                } else {
+                    return "";
                 }
-            };
+            }
 
-            cell.setConverter(countryStringConverter);
-
-            return cell;
-        });
-
-
-
+            @Override
+            public Division fromString(String s) {
+                return null;
+            }
+        }, db.divisions));
         idCol.setVisible(false);
-        tableView.getColumns().addAll(idCol, nameCol, addressCol, postalCol, phoneCol, countryCol, divisionCol);
+        tableView.getColumns().addAll(idCol, nameCol, addressCol, postalCol, phoneCol, divisionCol);
     }
 
     /**
@@ -401,7 +418,7 @@ public class CustomerFormController implements Initializable {
         db.em.getTransaction().rollback();
         db.customerDB.fetchFromDB();
         FXCustomers.clear();
-        FXCustomers.addAll(db.customers.stream().map(item -> new CustomerFXAdapter(item,db)).collect(Collectors.toList()));
+        FXCustomers.addAll(db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
         db.em.getTransaction();
     }
 
@@ -413,7 +430,7 @@ public class CustomerFormController implements Initializable {
         nc.setCreated(LocalDateTime.now());
         db.em.persist(nc);
         db.customers.add(nc);
-        CustomerFXAdapter ncfx = new CustomerFXAdapter(nc,db);
+        CustomerFXAdapter ncfx = new CustomerFXAdapter(nc, this.db);
         FXCustomers.add(ncfx);
         tableView.getSelectionModel().select(ncfx);
     }

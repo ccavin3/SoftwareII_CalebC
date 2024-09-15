@@ -22,4 +22,5 @@ module com.example.client_schedule {
     exports com.example.client_schedule.helper;
 
     opens com.example.client_schedule.adapters to javafx.base;
+    opens com.example.client_schedule.helper to javafx.fxml;
 }

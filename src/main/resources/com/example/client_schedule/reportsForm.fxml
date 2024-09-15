@@ -12,64 +12,58 @@
     <children>
         <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab text="Type/Month">
+                <Tab fx:id = "type_MonthTab" text="Type/Month">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <TableView prefHeight="250.0" prefWidth="600.0">
+                                <TableView fx:id = "type_MonthTV" prefHeight="250.0" prefWidth="600.0">
                                     <columns>
-                                        <TableColumn prefWidth="75.0" text="Month" />
-                                        <TableColumn prefWidth="75.0" text="Type 1" />
-                                        <TableColumn prefWidth="75.0" text="Type 2" />
-                                        <TableColumn prefWidth="75.0" text="Type 3" />
-                                        <TableColumn prefWidth="75.0" text="Type 4" />
+                                        <TableColumn fx:id = "monthColumn" prefWidth="75.0" text="%label.month.text" />
+                                        <TableColumn fx:id = "typeColumn" prefWidth="75.0" text="%label.appointment.type.text" />
+                                        <TableColumn fx:id = "countColumn" prefWidth="75.0" text="%label.count.text" />
                                     </columns>
                                 </TableView>
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Schedule">
+                <Tab fx:id="scheduleTab" text="Schedule">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <TableView prefHeight="250.0" prefWidth="600.0">
+                                <TableView fx:id = "scheduleTV" prefHeight="250.0" prefWidth="600.0">
                                     <columns>
-                                        <TableColumn prefWidth="75.0" text="%label.appointment.id.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.appointment.title.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.appointment.type.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.appointment.description.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.appointment.start.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.appointment.end.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.customer.id.text" />
+                                        <TableColumn fx:id = "appointmentTitleColumn" prefWidth="75.0" text="%label.appointment.title.text" />
+                                        <TableColumn fx:id = "appointmentTypeColumn" prefWidth="75.0" text="%label.appointment.type.text" />
+                                        <TableColumn fx:id = "appointmentDescriptionColumn" prefWidth="75.0" text="%label.appointment.description.text" />
+                                        <TableColumn fx:id = "appointmentStartColumn" prefWidth="75.0" text="%label.appointment.start.text" />
+                                        <TableColumn fx:id = "appointmentEndColumn" prefWidth="75.0" text="%label.appointment.end.text" />
                                     </columns>
                                 </TableView>
-                                <ComboBox layoutX="14.0" layoutY="250.0" prefWidth="150.0" promptText="Contact" />
+                                <ComboBox fx:id="contactComboBox" layoutX="14.0" layoutY="250.0" prefWidth="150.0" promptText="%label.appointment.contact.text" />
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Country">
+                <Tab fx:id="countryTab" text="Country">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <TableView prefHeight="250.0" prefWidth="600.0">
+                                <TableView fx:id = "countryTV" prefHeight="250.0" prefWidth="600.0">
                                     <columns>
-                                        <TableColumn prefWidth="75.0" text="%label.customer.id.text" />
-                                        <TableColumn prefWidth="75.0" text="%label.customer.name.text" />
-                              <TableColumn prefWidth="75.0" text="%label.customer.address.text" />
-                              <TableColumn prefWidth="75.0" text="%label.customer.postal.text" />
-                              <TableColumn prefWidth="75.0" text="%label.customer.phone.text" />
-                              <TableColumn prefWidth="75.0" text="%label.country.text" />
+                                      <TableColumn fx:id = "customerNameColumn" prefWidth="75.0" text="%label.customer.name.text" />
+                                      <TableColumn fx:id = "customerAddressColumn" prefWidth="75.0" text="%label.customer.address.text" />
+                                      <TableColumn fx:id = "customerPostalColumn" prefWidth="75.0" text="%label.customer.postal.text" />
+                                      <TableColumn fx:id = "customerPhoneColumn" prefWidth="75.0" text="%label.customer.phone.text" />
                                     </columns>
                                 </TableView>
-                        <ComboBox layoutX="14.0" layoutY="250.0" prefWidth="150.0" promptText="%label.country.text" />
+                        <ComboBox fx:id="countryComboBox" layoutX="14.0" layoutY="250.0" prefWidth="150.0" promptText="%label.country.text" />
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
             </tabs>
         </TabPane>
-        <Button layoutX="542.0" layoutY="371.0" mnemonicParsing="false" text="Home" translateX="1.0" />
+        <Button fx:id = "homeButton" layoutX="542.0" layoutY="371.0" mnemonicParsing="false" text="Home" translateX="1.0" />
     </children>
 </AnchorPane>

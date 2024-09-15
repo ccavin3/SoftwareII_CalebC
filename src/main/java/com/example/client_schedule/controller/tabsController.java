@@ -84,8 +84,12 @@ public class tabsController implements Initializable {
         Tab appointmentTab = new Tab(_bundle.getString("label.appointment.appointment.text"));
         Tab customerTab = new Tab(_bundle.getString("label.appointment.customer.text"));
         appointmentTab.setContent(apptRoot);
+        appointmentTab.setClosable(false);
         customerTab.setContent(custRoot);
+        customerTab.setClosable(false);
         tabPanel.getTabs().addAll(customerTab, appointmentTab);
+
     }
+
 
 }

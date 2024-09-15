@@ -16,11 +16,18 @@ public class DivisionFXAdapter {
     public ObservableList<Country> countryList;
 
     private DBContext db;
+
+    /**
+     * Main constructor for the DivisionFXAdapter class.
+     *
+     * @param division Division object
+     * @param db       database context
+     */
     public DivisionFXAdapter(Division division, DBContext db) {
         this.division = division;
         this.db = db;
         countryList = FXCollections.observableList(db.countries);
-        divisionList = new FilteredList<>(db.divisions, p-> true);
+        divisionList = new FilteredList<>(db.divisions, p -> true);
     }
 
     private final IntegerProperty id = new SimpleIntegerProperty();
@@ -28,24 +35,44 @@ public class DivisionFXAdapter {
     private final IntegerProperty countryId = new SimpleIntegerProperty();
     private final ObjectProperty<Country> country = new SimpleObjectProperty<>();
 
+    /**
+     * Returns the id property of the division
+     *
+     * @return id property of division
+     */
     public IntegerProperty idProperty() {
         id.set(division.getId());
-        id.addListener((obs, old, wen) -> id.set((Integer)wen));
+        id.addListener((obs, old, wen) -> id.set((Integer) wen));
         return id;
     }
 
+    /**
+     * Returns the name property of the division
+     *
+     * @return name property of division
+     */
     public StringProperty nameProperty() {
         name.set(division.getName());
         name.addListener((obs, old, wen) -> name.set(wen));
         return name;
     }
 
+    /**
+     * Returns the countryId property of the division
+     *
+     * @return countryId property of division
+     */
     public IntegerProperty countryIdProperty() {
         countryId.set(division.getCountryId());
-        countryId.addListener((obs, old, wen) -> countryId.set((Integer)wen));
+        countryId.addListener((obs, old, wen) -> countryId.set((Integer) wen));
         return countryId;
     }
 
+    /**
+     * Returns the country property of the division
+     *
+     * @return country property of division
+     */
     public ObjectProperty<Country> countryProperty() {
         country.set(division.getCountry());
         this.country.addListener((obs, old, wen) -> {

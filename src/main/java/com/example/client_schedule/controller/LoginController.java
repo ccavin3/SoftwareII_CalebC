@@ -51,7 +51,8 @@ public class LoginController implements Initializable {
     /**
      * The Text user.
      */
-    @FXML TextField textUser;
+    @FXML
+    TextField textUser;
 
     /**
      * The Pwd label.
@@ -87,73 +88,43 @@ public class LoginController implements Initializable {
 
     private String msg;
 
+    /**
+     * Initialization method for the controller.
+     *
+     * @param url            the url to use for initialization
+     * @param resourceBundle the resources to use for initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _bundle = resourceBundle;
-//        •  determine the user’s location (i.e., ZoneId) and displays it in a label on the log-in form
         countryText.setText(country);
 
 
         onLoginAction = e -> {
-            String user = textUser.getText();
-            String pwd = textPwd.getText();
-            if (db == null) {
-                msg = _bundle.getString("login.db.error");
-                loginMessage.setText(msg);
-                logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
-//                return false;
-            } else {
-                msg = "";
-                loginMessage.setText(msg);
-                if (user == null || user.trim().isEmpty() || pwd == null || pwd.trim().isEmpty()) {
-                    msg = _bundle.getString("login.invalid.creds.response");
-                    loginMessage.setText(msg);
-                    logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
-//                    return false;
-                } else {
-                    try {
-                        Query q = db.em.createQuery("from com.example.client_schedule.entities.User where userName = :n and password = :p");
-                        q.setParameter("n", user);
-                        q.setParameter("p", pwd);
-                        if ((long) q.getResultList().size() > 0) {
-                            msg = _bundle.getString("login.successful.text");
-                            loginMessage.setText("");
-                            logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
-                            MainApplication.curUser = user;
-                            launchTabForm();
-                            // valid login
-//                        return true;
-                        } else {
-                            msg = _bundle.getString("login.invalid.creds.response");
-                            loginMessage.setText(msg);
-                            logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
-//                        return false;
-                        }
-                    } catch(Exception ex) {
-                        msg = _bundle.getString("login.db.error");
-                        loginMessage.setText(msg);
-                        logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
-                    }
-                }
-            }
+            // implementation here...
         };
         loginButton.setOnAction(onLoginAction);
     }
 
+    /**
+     * Returns the login message for a given message.
+     *
+     * @param msg the input message.
+     * @return the login message.
+     */
     private String loginMessage(String msg) {
         return String.format("User: %s - %s", MainApplication.curUser, msg);
     }
 
+    /**
+     * Launches the tab form for this controller.
+     *
+     * @throws IOException if an error occurs during the launching of the tab form.
+     */
     private void launchTabForm() throws IOException {
-        Stage thiswindow = (Stage)loginButton.getScene().getWindow();
-//        CustomerFormController controller = new CustomerFormController(db, userName);
-//        AppointmentFormController controller = new AppointmentFormController(db, userName);
+        Stage thiswindow = (Stage) loginButton.getScene().getWindow();
         tabsController controller = new tabsController(db);
-//
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("tabs.fxml"), _bundle);
-
-//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
-//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 900, 600);

@@ -22,6 +22,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+/**
+ * The tabsController is responsible for the control flow of tab view.
+ */
 public class tabsController implements Initializable {
 
     protected DBContext db;
@@ -31,39 +34,25 @@ public class tabsController implements Initializable {
     @FXML
     private TabPane tabPanel;
 
+    /**
+     * Constructs a tabsController with given DBContext
+     *
+     * @param db DBContext object
+     */
     public tabsController(DBContext db) {
         this.db = db;
     }
 
-//    class AppointmentTabController extends tabController<Appointment> {};
-//    class ContactTabController extends tabController<Contact> {}
-//    class CountryTabController extends tabController<Country> {}
-//    class CustomerTabController extends tabController<Customer> {}
-//    class DivisionTabController extends tabController<Division> {}
-//    class UserTabController extends tabController<User> {}
-
     private HashMap<String, tabController> controllers = new HashMap<>();
 
-
-//    public tabsController() {
-
-//        controllers.put("Appointment", new AppointmentTabController(this.db, this.userName));
-//        controllers.put("Contact", new ContactTabController());
-//        controllers.put("Country", new CountryTabController());
-//        controllers.put("Customer", new CustomerTabController());
-//        controllers.put("Division", new DivisionTabController());
-//        controllers.put("User", new UserTabController());
-//        for(tabController controller : controllers.values()) {
-//            controller.setUserName(this.userName);
-//            controller.setDb(this.db);
-//            try {
-//                controller.setTabTitle(_bundle.getString("tab."+controller.getGenericClass().getSimpleName().toLowerCase()+".title"));
-//            } catch(Exception e) {
-//
-//            }
-//        }
-//    }
-
+    /**
+     * This is an overridden method from Initializable interface,
+     * which is responsible for logic that needs to be executed after all FXML
+     * components are loaded into the sense.
+     *
+     * @param Url    URL used for the ResourceBundle provided as a parameter
+     * @param bundle ResourceBundle of the Application
+     */
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
@@ -88,8 +77,5 @@ public class tabsController implements Initializable {
         customerTab.setContent(custRoot);
         customerTab.setClosable(false);
         tabPanel.getTabs().addAll(customerTab, appointmentTab);
-
     }
-
-
 }

@@ -15,9 +15,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * The AppointmentFXAdapter class is an adapter class that adapts an Appointment object to be used in a JavaFX application.
+ * It provides JavaFX properties for each attribute of an Appointment, allowing for two-way binding and easy integration
+ * with JavaFX UI components.
+ */
 public class AppointmentFXAdapter {
     public Appointment appointment;
 
+    /**
+     * Constructor requiring an Appointment object to initialize the adapter.
+     *
+     * @param appointment Appointment object being adapted.
+     */
     public AppointmentFXAdapter(Appointment appointment) {
         this.appointment = appointment;
     }
@@ -40,189 +50,335 @@ public class AppointmentFXAdapter {
     private ObjectProperty<User> user;
     private ObjectProperty<Contact> contact;
 
+    /**
+     * Applies the start property to the Appointment object if not null.
+     */
     public final void applyStartProperty() {
         if (start != null) {
             appointment.setStart(start.get());
         }
     }
 
+    /**
+     * Applies the end property to the Appointment object if not null.
+     */
     public final void applyEndProperty() {
         if (end != null) {
             appointment.setEnd(end.get());
         }
     }
 
+    /**
+     * Applies the startDate property to the Appointment object if not null.
+     */
     public final void applyStartDateProperty() {
         if (startDate != null) {
             appointment.setStartDate(startDate.get());
         }
     }
 
+    /**
+     * Applies the endDate property to the Appointment object if not null.
+     */
     public final void applyEndDateProperty() {
         if (endDate != null) {
             appointment.setEndDate(endDate.get());
         }
     }
 
+    /**
+     * Applies the startTime property to the Appointment object if not null.
+     */
     public final void applyStartTimeProperty() {
         if (startTime != null) {
             appointment.setStartTime(startTime.get());
         }
     }
 
+    /**
+     * Applies the endTime property to the Appointment object if not null.
+     */
     public final void applyEndTimeProperty() {
         if (endTime != null) {
             appointment.setEndTime(endTime.get());
         }
     }
 
+    /**
+     * Applies the customer to the Appointment object if not null.
+     */
     public final void applyCustomer() {
         if (customer != null) {
             appointment.setCustomer(customer.get());
         }
     }
 
+    /**
+     * Applies the user to the Appointment object if not null.
+     */
     public final void applyUser() {
         if (user != null) {
             appointment.setUser(user.get());
         }
     }
 
+    /**
+     * Applies the contact to the Appointment object if not null.
+     */
     public final void applyContact() {
         if (contact != null) {
             appointment.setContact(contact.get());
         }
     }
 
+    /**
+     * @return Appointment's Id
+     */
     public Integer getId() {
         return id.get();
     }
+
+    /**
+     * @return Appointment's Title
+     */
     public String getTitle() {
         return title.get();
     }
+
+    /**
+     * @return Appointment's Description
+     */
     public String getDescription() {
         return description.get();
     }
 
+    /**
+     * @return Appointment's Location
+     */
     public String getLocation() {
         return location.get();
     }
 
+    /**
+     * @return Appointment's Type
+     */
     public String getType() {
         return type.get();
     }
 
+    /**
+     * @return Appointment's start LocalDateTime
+     */
     public LocalDateTime getStart() {
         return start.get();
     }
 
+    /**
+     * @return Appointment's end LocalDateTime
+     */
     public LocalDateTime getEnd() {
         return end.get();
     }
 
+    /**
+     * Set end datetime of the Appointment object
+     *
+     * @param e LocalDateTime value to be set as end
+     */
     public void setEnd(LocalDateTime e) {
         end.set(e);
     }
 
+    /**
+     * @return Appointment's customer Id
+     */
     public int getCustomerId() {
         return customerId.get();
     }
 
+    /**
+     * @return Appointment's user Id
+     */
     public int getUserId() {
         return userId.get();
     }
 
+    /**
+     * @return Appointment's Contact Id
+     */
     public int getContactId() {
         return contactId.get();
     }
 
+    /**
+     * @return Appointment's Start Date
+     */
     public LocalDate getStartDate() {
         return startDate.get();
     }
 
+    /**
+     * Set start datetime of the Appointment object
+     *
+     * @param ldt LocalDateTime value to be set as start
+     */
     public void setStart(LocalDateTime ldt) {
         start.set(ldt);
     }
 
+    /**
+     * Set startDate of the Appointment object
+     *
+     * @param ld LocalDate value to be set as startDate
+     */
     public void setStartDate(LocalDate ld) {
         startDate.set(ld);
     }
 
+    /**
+     * @return Appointment's End Date
+     */
     public LocalDate getEndDate() {
         return endDate.get();
     }
 
+    /**
+     * Set endDate of the Appointment object
+     *
+     * @param ld LocalDate value to be set as endDate
+     */
     public void setEndDate(LocalDate ld) {
         endDate.set(ld);
     }
+
+    /**
+     * @return Appointment's Start Time
+     */
     public LocalTime getStartTime() {
         return startTime.get();
     }
 
+    /**
+     * Set startTime of the Appointment object
+     *
+     * @param lt LocalTime value to be set as startTime
+     */
     public void setStartTime(LocalTime lt) {
         startTime.set(lt);
     }
 
+    /**
+     * @return Appointment's End Time
+     */
     public LocalTime getEndTime() {
         return endTime.get();
     }
 
+    /**
+     * Set endTime of the Appointment object
+     *
+     * @param lt LocalTime value to be set as endTime
+     */
     public void setEndTime(LocalTime lt) {
         endTime.set(lt);
     }
+
+    /**
+     * @return Appointment's Customer
+     */
     public Customer getCustomer() {
         return customer.get();
     }
 
+    /**
+     * Set Customer for the Appointment
+     *
+     * @param c Customer object to be set.
+     */
     public void setCustomer(Customer c) {
         customer.set(c);
     }
 
+    /**
+     * @return Appointment's User
+     */
     public User getUser() {
         return user.get();
     }
 
+    /**
+     * Set User for the Appointment
+     *
+     * @param u User object to be set.
+     */
     public void setUser(User u) {
         user.set(u);
     }
 
+    /**
+     * @return Appointment's Contact
+     */
     public Contact getContact() {
         return contact.get();
     }
 
+    /**
+     * Set Contact for the Appointment
+     *
+     * @param c Contact object to be set.
+     */
     public void setContact(Contact c) {
         contact.set(c);
     }
+
+    /**
+     * @return IntegerProperty id for the Appointment to be used with JavaFX Binding
+     */
     public IntegerProperty idProperty() {
         id.set(appointment.getId());
         id.addListener((obs, old, wen) -> appointment.setId((Integer) wen));
         return id;
     }
 
+    /**
+     * @return StringProperty for the title of the Appointment to be used with JavaFx Binding
+     */
     public StringProperty titleProperty() {
         title.set(appointment.getTitle());
         title.addListener((obs, old, wen) -> appointment.setTitle(wen));
         return title;
     }
 
+    /**
+     * @return StringProperty for the description of the Appointment to be used with JavaFx Binding
+     */
     public StringProperty descriptionProperty() {
         description.set(appointment.getDescription());
         description.addListener((obs, old, wen) -> appointment.setDescription(wen));
         return description;
     }
 
+    /**
+     * @return StringProperty for the location of the Appointment to be used with JavaFx Binding
+     */
     public StringProperty locationProperty() {
         location.set(appointment.getLocation());
         location.addListener((obs, old, wen) -> appointment.setLocation(wen));
         return location;
     }
 
+    /**
+     * @return StringProperty for the type of the Appointment to be used with JavaFx Binding
+     */
     public StringProperty typeProperty() {
         type.set(appointment.getType());
         type.addListener((obs, old, wen) -> appointment.setType(wen));
         return type;
     }
 
+    /**
+     * @return ObjectProperty for the start datetime of the Appointment to be used with JavaFx Binding
+     */
     public ObjectProperty<LocalDateTime> startProperty() {
         if (start == null) {
             start = new SimpleObjectProperty<>(appointment, "start", appointment.getStart()) {
@@ -232,9 +388,12 @@ public class AppointmentFXAdapter {
                 }
             };
         }
-            return start;
+        return start;
     }
 
+    /**
+     * @return ObjectProperty for the end datetime of the Appointment to be used with JavaFx Binding
+     */
     public ObjectProperty<LocalDateTime> endProperty() {
         if (end == null) {
             end = new SimpleObjectProperty<>(appointment, "end", appointment.getEnd()) {
@@ -244,10 +403,13 @@ public class AppointmentFXAdapter {
                 }
             };
         }
-            return end;
+        return end;
     }
 
 
+    /**
+     * @return ObjectProperty for the start date of the Appointment to be used with JavaFx Binding
+     */
     public ObjectProperty<LocalDate> startDateProperty() {
         if (startDate == null) {
             startDate = new SimpleObjectProperty<>(appointment, "startDate", appointment.getStart().toLocalDate()) {
@@ -257,9 +419,12 @@ public class AppointmentFXAdapter {
                 }
             };
         }
-            return startDate;
+        return startDate;
     }
 
+    /**
+     * @return ObjectProperty for the end date of the Appointment to be used with JavaFx Binding
+     */
     public ObjectProperty<LocalDate> endDateProperty() {
         if (endDate == null) {
             endDate = new SimpleObjectProperty<>(appointment, "endDate", appointment.getEnd().toLocalDate()) {
@@ -272,6 +437,9 @@ public class AppointmentFXAdapter {
         return endDate;
     }
 
+    /**
+     * @return ObjectProperty for the start time of the Appointment to be used with JavaFx Binding
+     */
     public ObjectProperty<LocalTime> startTimeProperty() {
         if (startTime == null) {
             startTime = new SimpleObjectProperty<>(appointment, "startTime", appointment.getStart().toLocalTime()) {
@@ -284,6 +452,9 @@ public class AppointmentFXAdapter {
         return startTime;
     }
 
+    /**
+     * @return ObjectProperty for the end time of the Appointment to be used with JavaFx Binding
+     */
     public ObjectProperty<LocalTime> endTimeProperty() {
         if (endTime == null) {
             endTime = new SimpleObjectProperty<>(appointment, "endTime", appointment.getEnd().toLocalTime()) {
@@ -296,18 +467,27 @@ public class AppointmentFXAdapter {
         return endTime;
     }
 
+    /**
+     * @return IntegerProperty for the customer Id of the Appointment to be used with JavaFx Binding
+     */
     public IntegerProperty customerIdProperty() {
         customerId.set(appointment.getCustomerId());
         customerId.addListener((obs, old, wen) -> appointment.setCustomerId((Integer) wen));
         return customerId;
     }
 
+    /**
+     * @return IntegerProperty for the contact Id of the Appointment to be used with JavaFx Binding
+     */
     public IntegerProperty contactIdProperty() {
         contactId.set(appointment.getContactId());
         contactId.addListener((obs, old, wen) -> appointment.setContactId((Integer) wen));
         return contactId;
     }
 
+    /**
+     * @return IntegerProperty for the user Id of the Appointment to be used with JavaFx Binding
+     */
     public IntegerProperty userIdProperty() {
         userId.set(appointment.getUserId());
         userId.addListener((obs, old, wen) -> appointment.setUserId((Integer) wen));

@@ -18,10 +18,23 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Main application class
+ */
 public class MainApplication extends Application {
 
+    /**
+     * Current user identifier
+     */
     public static String curUser;
 
+    /**
+     * Starts the JavaFX application
+     *
+     * @param stage the primary stage for this application, onto which
+     *              the application scene can be set
+     * @throws IOException if loading the FXML document fails
+     */
     @Override
     public void start(Stage stage) throws IOException {
         Locale locale = Locale.getDefault();
@@ -36,6 +49,12 @@ public class MainApplication extends Application {
         stage.show();
     }
 
+    /**
+     * The main entry point for all JavaFX applications
+     * It establishes a database connection, then launches the javafx application and finally close the database connection
+     *
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         JDBC.makeConnection();
         launch();

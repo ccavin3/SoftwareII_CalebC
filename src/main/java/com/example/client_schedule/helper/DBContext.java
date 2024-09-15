@@ -5,16 +5,82 @@ import jakarta.persistence.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
+/**
+ * Context for Database operations.
+ */
 public class DBContext {
 
-    @PersistenceContext(unitName="client_schedule")
+    /**
+     * Entity manager for managing entities.
+     */
+    @PersistenceContext(unitName = "client_schedule")
     public EntityManager em;
 
-    public DBContext(){
+    /**
+     * AppointmentDB instance for appointment related operations.
+     */
+    public AppointmentDB appointmentDB = new AppointmentDB();
+
+    /**
+     * CustomerDB instance for customer related operations.
+     */
+    public CustomerDB customerDB = new CustomerDB();
+
+    /**
+     * CountryDB instance for country related operations.
+     */
+    public CountryDB countryDB = new CountryDB();
+
+    /**
+     * ContactDB instance for contact related operations.
+     */
+    public ContactDB contactDB = new ContactDB();
+
+    /**
+     * DivisionDB instance for division related operations.
+     */
+    public DivisionDB divisionDB = new DivisionDB();
+
+    /**
+     * UserDB instance for user related operations.
+     */
+    public UserDB userDB = new UserDB();
+
+    /**
+     * ObservableList for storing users.
+     */
+    public ObservableList<User> users;
+
+    /**
+     * ObservableList for storing divisions.
+     */
+    public ObservableList<Division> divisions;
+
+    /**
+     * ObservableList for storing customers.
+     */
+    public ObservableList<Customer> customers;
+
+    /**
+     * ObservableList for storing countries.
+     */
+    public ObservableList<Country> countries;
+
+    /**
+     * ObservableList for storing contacts.
+     */
+    public ObservableList<Contact> contacts;
+
+    /**
+     * ObservableList for storing appointments.
+     */
+    public ObservableList<Appointment> appointments;
+
+    /**
+     * Constructor for DBContext. Initialises entity manager and populates the ObservableLists
+     * by fetching data from DB.
+     */
+    public DBContext() {
         em = CRUD.em;
         em.setFlushMode(FlushModeType.COMMIT);
         em.getTransaction().begin();
@@ -26,24 +92,9 @@ public class DBContext {
             countries = countryDB.rows;
             contacts = contactDB.rows;
             appointments = appointmentDB.rows;
-        }
-        catch (Exception e) {
-            if (e.getMessage() != null) {}
+        } catch (Exception e) {
+            if (e.getMessage() != null) {
+            }
         }
     }
-
-    public AppointmentDB appointmentDB = new AppointmentDB();
-    public CustomerDB customerDB = new CustomerDB();
-    public CountryDB countryDB = new CountryDB();
-    public ContactDB contactDB = new ContactDB();
-    public DivisionDB divisionDB = new DivisionDB();
-    public UserDB userDB = new UserDB();
-
-    public ObservableList<User> users;
-    public ObservableList<Division> divisions;
-    public ObservableList<Customer> customers;
-    public ObservableList<Country> countries;
-    public ObservableList<Contact> contacts;
-    public ObservableList<Appointment> appointments;
-
 }

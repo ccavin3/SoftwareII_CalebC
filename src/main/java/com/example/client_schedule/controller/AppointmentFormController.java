@@ -41,9 +41,12 @@ import java.util.stream.Collectors;
 import com.example.client_schedule.helper.AppConfig;
 
 /**
- * The type Appointment form controller. This class controls all the functionality for Appointment management.
+ * The AppointmentFormController class is responsible for managing the appointment form view and its behavior.
  */
 public class AppointmentFormController implements Initializable {
+    /**
+     * This class represents a controller for the AppointmentFormController.
+     */
     public AppointmentFormController(DBContext db) {
         this.db = db;
     }
@@ -94,7 +97,10 @@ public class AppointmentFormController implements Initializable {
 //            return LocalDateTime.parse(s, dtformatter);
 //        }
 //    };
-
+    /**
+     * This variable is a StringConverter object used to convert between Integer and String representations.
+     * It is implemented as an anonymous class that overrides the methods of the StringConverter interface.
+     */
     private StringConverter<Integer> IntStringConverter = new StringConverter<>() {
         @Override
         public String toString(Integer integer) {
@@ -241,7 +247,23 @@ public class AppointmentFormController implements Initializable {
     private DateTimeFormatter minformatter = DateTimeFormatter.ofPattern("hh:mm");
 
     private FilteredList<Appointment> appointmentFilteredList;
-
+    /**
+     * Represents a formatter for validating and formatting date input in a text field.
+     * The formatter performs the following tasks:
+     * - Validates that the input matches the format "dd-MM-yyyy" (day-month-year) for dates.
+     * - Validates that the input consists only of digits for numbers.
+     * - Clears the text if it does not match the required format or is neither a date nor a number.
+     * - Ensures that no selected text is removed when input is cleared.
+     *
+     * The formatter is implemented as a UnaryOperator<TextFormatter.Change> which takes a Change object as input and returns a modified Change object as output.
+     *
+     * Example usage:
+     *
+     * TextField dateTextField = new TextField();
+     * TextFormatter<Change> formatter = new TextFormatter<>(dateValidationFormatter);
+     * dateTextField.setTextFormatter(formatter);
+     *
+     */
     private UnaryOperator<TextFormatter.Change> dateValidationFormatter = change -> {
         if (change.getControlNewText().matches("(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-((19|2[0-9])[0-9]{2})")) {
             return change;  // if change is a date
@@ -256,7 +278,19 @@ public class AppointmentFormController implements Initializable {
             return change;
         }
     };
-
+    /**
+     * Represents a UnaryOperator that formats and validates time input.
+     *
+     * The timeValidationFormatter is used as a TextFormatter.Change transformation function.
+     * It checks if the new text matches a valid time format (1-12 hours followed by minutes and am/pm),
+     * or if the new text is a number. If the new text does not match any of these conditions,
+     * it clears the text and sets the range to not remove any selected text.
+     *
+     * This formatter is primarily used for time input validation in a UI form.
+     *
+     * @see TextFormatter
+     * @see LocalTimeStringConverter
+     */
     private UnaryOperator<TextFormatter.Change> timeValidationFormatter = change -> {
         if (change.getControlNewText().matches("/^ *(1[0-2]|[1-9]):[0-5][0-9] *(a|p|A|P)(m|M) *$/")) {
             return change; //if change is a LocalTime
@@ -282,6 +316,12 @@ public class AppointmentFormController implements Initializable {
     private ObservableList<AppointmentFXAdapter> FXAppointments;
     private final Alert alert = new Alert(Alert.AlertType.NONE);
 
+    /**
+     * Initializes the controller by setting up the UI components and event handlers.
+     *
+     * @param url       The location used to resolve relative paths for the root object.
+     * @param bundle    The resource bundle containing the localized strings.
+     */
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
@@ -444,6 +484,12 @@ public class AppointmentFormController implements Initializable {
                 120000L); //time between executions
     }
 
+    /**
+     * Unbinds the properties of the given AppointmentFXAdapter object from the corresponding UI elements.
+     * The UI will no longer be updated when the properties of the AppointmentFXAdapter change.
+     *
+     * @param currentAppointment The AppointmentFXAdapter object to unbind.
+     */
     private void unBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
             textTitle.textProperty().unbindBidirectional(currentAppointment.titleProperty());
@@ -467,6 +513,23 @@ public class AppointmentFormController implements Initializable {
         }
     }
 
+    /**
+     * Clears the fields in the UI form.
+     * The following fields are cleared:
+     *     - textTitle
+     *     - textAppointmentID
+     *     - textType
+     *     - textLocation
+     *     - comboBoxCustomer
+     *     - comboBoxContact
+     *     - comboBoxUser
+     *     - textStart
+     *     - textEnd
+     *     - textStartDate
+     *     - textStartTime
+     *     - textEndDate
+     *     - textEndTime
+     */
     private void clearfields() {
         textTitle.clear();
         textAppointmentID.clear();
@@ -508,6 +571,12 @@ public class AppointmentFormController implements Initializable {
     private BooleanBinding startEndTimeValid;
     private BooleanBinding withinWorkingHours;
 
+    /**
+     * Binds the properties of the given AppointmentFXAdapter to the corresponding UI elements.
+     * Updates the UI when the properties of the AppointmentFXAdapter change.
+     *
+     * @param currentAppointment The AppointmentFXAdapter object to bind
+     */
     private void reBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
 //            textTitle.textProperty().addListener(titleListener = new ChangeListener<String>() {
@@ -764,7 +833,10 @@ public class AppointmentFormController implements Initializable {
 
     }
 
-
+    /**
+     * Clears the existing rows in the table view and adds new rows based on FXAppointments list.
+     * The table view is then bound to the selected appointment item.
+     */
     private void addAppointmentRows() {
 //        tableView.setItems(appointmentFilteredList);
         tableView.getItems().clear();
@@ -777,6 +849,13 @@ public class AppointmentFormController implements Initializable {
         tableView.getSelectionModel().selectFirst();
     }
 
+    /**
+     * Adds columns to the appointment table view.
+     * Columns include id, title, description, location, type, start date and time, end date and time,
+     * customer, user, and contact.
+     * The cell factories and value factories are also set for each column.
+     * ComboBoxTableCell is used for the customer, user, and contact columns.
+     */
     private void addAppointmentColumns() {
         TableColumn<AppointmentFXAdapter, Integer> idCol = new TableColumn<>("id");
         TableColumn<AppointmentFXAdapter, String> titleCol = new TableColumn<>(_bundle.getString("label.appointment.title.text"));
@@ -909,11 +988,19 @@ public class AppointmentFormController implements Initializable {
         this.userName = userName;
     }
 
+    /**
+     * Commits changes to tables.
+     *
+     */
     private void dbCommit() {
         db.em.getTransaction().commit();
         db.em.getTransaction().begin();
     }
 
+    /**
+     * Reverts changes
+     *
+     */
     private void dbRevert() {
         FXAppointments.forEach(item -> {
             unBind(item);
@@ -925,6 +1012,9 @@ public class AppointmentFormController implements Initializable {
         db.em.getTransaction().begin();
     }
 
+    /**
+     * add new appointment record
+     */
     private void recordAdd() {
         Appointment na = new Appointment();
         na.setContactId(db.contacts.stream().findFirst().get().getId());
@@ -946,6 +1036,9 @@ public class AppointmentFormController implements Initializable {
         tableView.getSelectionModel().select(nafx);
     }
 
+    /**
+     * Removes the selected appointment record from the table view, database, and FXAppointments list.
+     */
     private void recordRemove() {
         AppointmentFXAdapter delAppointment = tableView.getSelectionModel().getSelectedItem();
         db.appointments.remove(delAppointment.appointment);
@@ -953,6 +1046,10 @@ public class AppointmentFormController implements Initializable {
         FXAppointments.remove(delAppointment);
     }
 
+    /**
+     * Launches the report form.
+     * If an exception occurs during the launching of the report form, the exception message is printed to the console.
+     */
     private void launchReport() {
         try {
             launchReportForm();
@@ -961,6 +1058,16 @@ public class AppointmentFormController implements Initializable {
         }
     }
 
+    /**
+     * Launches the report form.
+     *
+     * This method is responsible for launching the report form. It creates an instance of the ReportsController class
+     * with the provided DBContext object. It then loads the fxml file "reportsForm.fxml" using an FXMLLoader and sets
+     * the controller to the ReportsController instance. The loaded root node is then set as the scene of a new stage
+     * and the stage is displayed.
+     *
+     * @throws IOException if an I/O error occurs while loading the fxml file
+     */
     private void launchReportForm() throws IOException {
         Stage thiswindow = (Stage)reportButton.getScene().getWindow();
 //        CustomerFormController controller = new CustomerFormController(db, userName);

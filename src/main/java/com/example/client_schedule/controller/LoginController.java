@@ -97,11 +97,52 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _bundle = resourceBundle;
+//        •  determine the user’s location (i.e., ZoneId) and displays it in a label on the log-in form
         countryText.setText(country);
 
 
         onLoginAction = e -> {
-            // implementation here...
+            String user = textUser.getText();
+            String pwd = textPwd.getText();
+            if (db == null) {
+                msg = _bundle.getString("login.db.error");
+                loginMessage.setText(msg);
+                logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+//                return false;
+            } else {
+                msg = "";
+                loginMessage.setText(msg);
+                if (user == null || user.trim().isEmpty() || pwd == null || pwd.trim().isEmpty()) {
+                    msg = _bundle.getString("login.invalid.creds.response");
+                    loginMessage.setText(msg);
+                    logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+//                    return false;
+                } else {
+                    try {
+                        Query q = db.em.createQuery("from com.example.client_schedule.entities.User where userName = :n and password = :p");
+                        q.setParameter("n", user);
+                        q.setParameter("p", pwd);
+                        if ((long) q.getResultList().size() > 0) {
+                            msg = _bundle.getString("login.successful.text");
+                            loginMessage.setText("");
+                            logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+                            MainApplication.curUser = user;
+                            launchTabForm();
+                            // valid login
+//                        return true;
+                        } else {
+                            msg = _bundle.getString("login.invalid.creds.response");
+                            loginMessage.setText(msg);
+                            logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+//                        return false;
+                        }
+                    } catch(Exception ex) {
+                        msg = _bundle.getString("login.db.error");
+                        loginMessage.setText(msg);
+                        logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+                    }
+                }
+            }
         };
         loginButton.setOnAction(onLoginAction);
     }

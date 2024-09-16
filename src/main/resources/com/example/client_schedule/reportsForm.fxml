@@ -33,11 +33,13 @@
                             <children>
                                 <TableView fx:id = "scheduleTV" prefHeight="250.0" prefWidth="600.0">
                                     <columns>
+                                        <TableColumn fx:id = "appointmentIdColumn" prefWidth="75.0" text="%label.appointment.id.text" />
                                         <TableColumn fx:id = "appointmentTitleColumn" prefWidth="75.0" text="%label.appointment.title.text" />
                                         <TableColumn fx:id = "appointmentTypeColumn" prefWidth="75.0" text="%label.appointment.type.text" />
                                         <TableColumn fx:id = "appointmentDescriptionColumn" prefWidth="75.0" text="%label.appointment.description.text" />
                                         <TableColumn fx:id = "appointmentStartColumn" prefWidth="75.0" text="%label.appointment.start.text" />
                                         <TableColumn fx:id = "appointmentEndColumn" prefWidth="75.0" text="%label.appointment.end.text" />
+                                        <TableColumn fx:id = "customerIdColumn" prefWidth="75.0" text="%label.customer.id.text" />
                                     </columns>
                                 </TableView>
                                 <ComboBox fx:id="contactComboBox" layoutX="14.0" layoutY="250.0" prefWidth="150.0" promptText="%label.appointment.contact.text" />
@@ -51,6 +53,7 @@
                             <children>
                                 <TableView fx:id = "countryTV" prefHeight="250.0" prefWidth="600.0">
                                     <columns>
+                                      <TableColumn fx:id=  "countryTabCustomerIdColumn" prefWidth="75.0" text="%label.customer.id.text" />
                                       <TableColumn fx:id = "customerNameColumn" prefWidth="75.0" text="%label.customer.name.text" />
                                       <TableColumn fx:id = "customerAddressColumn" prefWidth="75.0" text="%label.customer.address.text" />
                                       <TableColumn fx:id = "customerPostalColumn" prefWidth="75.0" text="%label.customer.postal.text" />

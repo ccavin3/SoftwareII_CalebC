@@ -166,7 +166,7 @@ public class CustomerFormController implements Initializable {
     private ChangeListener<String> phoneListener;
     private ChangeListener<String> zipListener;
     private ChangeListener<Division> divisionChangeListener;
-
+    private AppointmentFormController appointmentFormController;
 
 
     private FilteredList<Division> filteredDivisionList;
@@ -175,6 +175,7 @@ public class CustomerFormController implements Initializable {
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
+        appointmentFormController = tabsController.getInstance().getAppointmentFormController();
         FXCustomers = FXCollections.observableList(this.db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
 
         onCommitAction = e -> dbCommit();
@@ -231,70 +232,17 @@ public class CustomerFormController implements Initializable {
 
     private void reBind(CustomerFXAdapter currentCustomer) {
         if (currentCustomer != null) {
-//            textID.textProperty().addListener(idListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentCustomer.setId(Integer.parseInt(t1));
-//                    tableView.refresh();
-//                }
-//            });
-//
-//            textName.textProperty().addListener(nameListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentCustomer.setName(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//
-//            textAddress.textProperty().addListener(addressListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentCustomer.addressProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//
-//            textPhone.textProperty().addListener(phoneListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentCustomer.phoneProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//
-//            textPostal.textProperty().addListener(zipListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentCustomer.zipProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            comboBoxDivision.valueProperty().addListener(divisionChangeListener = new ChangeListener<Division>() {
-//                @Override
-//                public void changed(ObservableValue<? extends Division> observableValue, Division customer, Division t1) {
-//                    currentCustomer.divisionProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-
             textID.textProperty().bindBidirectional(currentCustomer.idProperty(), new NumberStringConverter());
             textName.textProperty().bindBidirectional(currentCustomer.nameProperty());
             textAddress.textProperty().bindBidirectional(currentCustomer.addressProperty());
             textPhone.textProperty().bindBidirectional(currentCustomer.phoneProperty());
             textPostal.textProperty().bindBidirectional(currentCustomer.zipProperty());
             comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.divisionProperty());
+            comboBoxCountry.valueProperty().bindBidirectional(currentCustomer.countryProperty());
         }
     }
     private void unBind(CustomerFXAdapter currentCustomer) {
         if (currentCustomer != null) {
-//            textID.textProperty().removeListener(idListener);
-//            textName.textProperty().removeListener(nameListener);
-//            textAddress.textProperty().removeListener(addressListener);
-//            textPhone.textProperty().removeListener(phoneListener);
-//            textPostal.textProperty().removeListener(zipListener);
-//            comboBoxDivision.valueProperty().removeListener(divisionChangeListener);
-
             textID.textProperty().unbindBidirectional(currentCustomer.idProperty());
             textName.textProperty().unbindBidirectional(currentCustomer.nameProperty());
             textAddress.textProperty().unbindBidirectional(currentCustomer.addressProperty());
@@ -418,6 +366,7 @@ public class CustomerFormController implements Initializable {
         FXCustomers.clear();
         FXCustomers.addAll(db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
         db.em.getTransaction();
+        appointmentFormController.dbRevert();
     }
 
     private void recordAdd() {
@@ -435,9 +384,21 @@ public class CustomerFormController implements Initializable {
 
     private void recordRemove() {
         CustomerFXAdapter delCustomer = tableView.getSelectionModel().getSelectedItem();
+        delCustomer.getAppointments().forEach(a -> {
+            AppointmentFXAdapter fxa = appointmentFormController.FXAppointments.stream().filter(ap -> ap.getId() == a.getId()).findFirst().orElse(null);
+            appointmentFormController.recordRemove(fxa);
+        });
         db.customers.remove(delCustomer.customer);
         db.em.remove(delCustomer.customer);
         FXCustomers.remove(delCustomer);
+        //alert to show customer was removed
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Customer Removed");
+            alert.setHeaderText(null);
+            alert.setContentText(String.format("Customer %s has been successfully removed.", delCustomer.getName()));
+            alert.showAndWait();
+        });
     }
 
     private void getComboDivisionId(ActionEvent e) {

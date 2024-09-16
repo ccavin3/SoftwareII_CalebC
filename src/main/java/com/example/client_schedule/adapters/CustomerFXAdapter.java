@@ -1,8 +1,6 @@
 package com.example.client_schedule.adapters;
 
-import com.example.client_schedule.entities.Country;
-import com.example.client_schedule.entities.Customer;
-import com.example.client_schedule.entities.Division;
+import com.example.client_schedule.entities.*;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.helper.DBContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -14,6 +12,7 @@ import javafx.collections.transformation.SortedList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 public class CustomerFXAdapter {
 
@@ -47,6 +46,15 @@ public class CustomerFXAdapter {
     private final ObjectProperty<Division> division = new SimpleObjectProperty<>();
     private final ObjectProperty<Country> country = new SimpleObjectProperty<>();
     private final IntegerProperty divisionId = new SimpleIntegerProperty();
+
+    /**
+     * Gets appointments.
+     *
+     * @return the appointments
+     */
+    public List<Appointment> getAppointments() {
+        return customer.getAppointments();
+    }
 
     /**
      * Getter for customer's id.

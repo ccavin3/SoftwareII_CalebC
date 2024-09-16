@@ -272,7 +272,7 @@ public class AppointmentFormController implements Initializable {
 //    private TextFormatter<String> eldFormatter;
 //
 //    private TextFormatter<String> eltFormatter;
-    private ObservableList<AppointmentFXAdapter> FXAppointments;
+    public ObservableList<AppointmentFXAdapter> FXAppointments;
     private final Alert alert = new Alert(Alert.AlertType.NONE);
 
     /**
@@ -281,12 +281,7 @@ public class AppointmentFormController implements Initializable {
      * @param url       The location used to resolve relative paths for the root object.
      * @param bundle    The resource bundle containing the localized strings.
      *
-     * LAMBDA:
-     *  lines 309-313
-     * the ActionEvent e can be sent to the local method if needed
-     * otherwise the method will be called without parameter.
-     * e.g.  onFooAction = e -> fooHandler(e);  // parameter required
-     * or onFooAction = e -> fooHandler();  // no parameter required
+     * @lambda initialize lines 309-313 the ActionEvent e can be sent to the local method if needed otherwise the method will be called without parameter. e.g.  onFooAction = e -> fooHandler(e);  // parameter required or onFooAction = e -> fooHandler();  // no parameter required
      *
      */
     @Override
@@ -300,10 +295,7 @@ public class AppointmentFormController implements Initializable {
 
         /**
          * redirect onaction handlers to local method
-         * LAMBDA: the ActionEvent e can be sent to the local method if needed
-         * otherwise the method will be called without parameter.
-         * e.g.  onFooAction = e -> fooHandler(e);  // parameter required
-         * or onFooAction = e -> fooHandler();  // no parameter required
+         * @lambda ActionEvent  the ActionEvent e can be sent to the local method if needed  otherwise the method will be called without parameter. e.g.  onFooAction = e -> fooHandler(e);  // parameter required or onFooAction = e -> fooHandler();  // no parameter required
          */
 
         onCommitAction = e -> dbCommit();
@@ -824,7 +816,7 @@ public class AppointmentFormController implements Initializable {
      * Reverts changes
      *
      */
-    private void dbRevert() {
+    public void dbRevert() {
         FXAppointments.forEach(item -> {
             unBind(item);
         });
@@ -864,6 +856,10 @@ public class AppointmentFormController implements Initializable {
      */
     private void recordRemove() {
         AppointmentFXAdapter delAppointment = tableView.getSelectionModel().getSelectedItem();
+        recordRemove(delAppointment);
+    }
+
+    public void recordRemove(AppointmentFXAdapter delAppointment) {
         db.appointments.remove(delAppointment.appointment);
         db.em.remove(delAppointment.appointment);
         FXAppointments.remove(delAppointment);

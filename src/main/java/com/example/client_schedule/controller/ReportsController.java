@@ -41,6 +41,8 @@ public class ReportsController implements Initializable {
     @FXML
     private TableView<Customer> countryTV;
     @FXML
+    private TableColumn<Customer, Integer> countryTabCustomerIdColumn;
+    @FXML
     private TableColumn<Customer, String> customerNameColumn;
     @FXML
     private TableColumn<Customer, String> customerAddressColumn;
@@ -52,6 +54,8 @@ public class ReportsController implements Initializable {
     @FXML
     private TableView<Appointment> scheduleTV;
     @FXML
+    private TableColumn<Appointment, Integer> appointmentIdColumn;
+    @FXML
     private TableColumn<Appointment, String> appointmentTitleColumn;
     @FXML
     private TableColumn<Appointment, String> appointmentTypeColumn;
@@ -61,6 +65,8 @@ public class ReportsController implements Initializable {
     private TableColumn<Appointment, LocalDateTime> appointmentStartColumn;
     @FXML
     private TableColumn<Appointment, LocalDateTime> appointmentEndColumn;
+    @FXML
+    private TableColumn<Appointment, Integer> customerIdColumn;
 
     @FXML
     private TableView<apptReportFXAdapter> type_MonthTV;
@@ -175,13 +181,17 @@ public class ReportsController implements Initializable {
         countColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
 
         //Schedule TV
+        appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         appointmentTitleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         appointmentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         appointmentDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         appointmentStartColumn.setCellValueFactory(new PropertyValueFactory<>("start"));
         appointmentEndColumn.setCellValueFactory(new PropertyValueFactory<>("end"));
+        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
+
 
         //Country TV
+        countryTabCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         customerPostalColumn.setCellValueFactory(new PropertyValueFactory<>("zip"));
@@ -210,10 +220,7 @@ public class ReportsController implements Initializable {
 
     /**
      * Filters appointments by selected contact.
-     * LAMBDA:
-     * line 219
-     * This changes the predicate controlling the filter.
-     * If the resultant comparison evaluates to true, the row will be included in the subset
+     * @lambda filterContacts  line 219 This changes the predicate controlling the filter. If the resultant comparison evaluates to true, the row will be included in the subset
      */
     public void filterContacts() {
         flAppointmentsByContact.setPredicate(p -> p.getContactId() == contactComboBox.getSelectionModel().getSelectedItem().getId());

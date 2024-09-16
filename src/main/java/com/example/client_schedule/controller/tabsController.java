@@ -27,6 +27,32 @@ import java.util.ResourceBundle;
  */
 public class tabsController implements Initializable {
 
+    private static tabsController single_instance = null;
+
+    // create a static method to get instance
+    public static tabsController getInstance()
+    {
+        if (single_instance == null)
+            single_instance = new tabsController();
+        return single_instance;
+    }
+    private AppointmentFormController appointmentFormController;
+    private CustomerFormController customerFormController;
+
+
+    public void setAppointmentFormController(AppointmentFormController controller){
+        this.appointmentFormController = controller;
+    }
+    public void setCustomerFormController(CustomerFormController controller){
+        this.customerFormController = controller;
+    }
+    public AppointmentFormController getAppointmentFormController(){
+        return appointmentFormController;
+    }
+    public CustomerFormController getCustomerFormController(){
+        return customerFormController;
+    }
+
     protected DBContext db;
 
     protected ResourceBundle _bundle;
@@ -41,7 +67,9 @@ public class tabsController implements Initializable {
      */
     public tabsController(DBContext db) {
         this.db = db;
+        this.single_instance = this;
     }
+    public tabsController() {}
 
     private HashMap<String, tabController> controllers = new HashMap<>();
 
@@ -56,8 +84,8 @@ public class tabsController implements Initializable {
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
-        AppointmentFormController appointmentFormController = new AppointmentFormController(this.db);
-        CustomerFormController customerFormController = new CustomerFormController(this.db);
+        appointmentFormController = new AppointmentFormController(this.db);
+        customerFormController = new CustomerFormController(this.db);
         FXMLLoader apptFxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
         FXMLLoader custFxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         apptFxmlLoader.setController(appointmentFormController);

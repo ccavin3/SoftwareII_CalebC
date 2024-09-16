@@ -56,47 +56,6 @@ public class AppointmentFormController implements Initializable {
     private DBContext db;
     private String userName;
 
-//    private StringConverter<LocalDate> localDateStringConverter = new StringConverter<LocalDate>() {
-//        @Override
-//        public String toString(LocalDate d) {
-//            if (d == null) return "";
-//            return dformatter.format(d);
-//        }
-//
-//        @Override
-//        public LocalDate fromString(String s) {
-//            if (s == null || s.trim().isEmpty()) return null;
-//            return LocalDate.parse(s, dformatter);
-//        }
-//    };
-//
-//    private StringConverter<LocalTime> timeConverter = new StringConverter<LocalTime>() {
-//        @Override
-//        public String toString(LocalTime t) {
-//            if (t == null) return "";
-//            return tformatter.format(t);
-//        }
-//
-//        @Override
-//        public LocalTime fromString(String s) {
-//            if (s == null || s.trim().isEmpty()) return null;
-//            return LocalTime.parse(s, tformatter);
-//        }
-//    };
-//
-//    private StringConverter<LocalDateTime> dateTimeConverter = new StringConverter<LocalDateTime>() {
-//        @Override
-//        public String toString(LocalDateTime t) {
-//            if (t == null) return "";
-//            return dtformatter.format(t);
-//        }
-//
-//        @Override
-//        public LocalDateTime fromString(String s) {
-//            if (s == null || s.trim().isEmpty()) return null;
-//            return LocalDateTime.parse(s, dtformatter);
-//        }
-//    };
     /**
      * This variable is a StringConverter object used to convert between Integer and String representations.
      * It is implemented as an anonymous class that overrides the methods of the StringConverter interface.
@@ -321,68 +280,38 @@ public class AppointmentFormController implements Initializable {
      *
      * @param url       The location used to resolve relative paths for the root object.
      * @param bundle    The resource bundle containing the localized strings.
+     *
+     * LAMBDA:
+     *  lines 309-313
+     * the ActionEvent e can be sent to the local method if needed
+     * otherwise the method will be called without parameter.
+     * e.g.  onFooAction = e -> fooHandler(e);  // parameter required
+     * or onFooAction = e -> fooHandler();  // no parameter required
+     *
      */
     @Override
-    public void initialize(URL Url, ResourceBundle bundle) {
+    public void initialize(URL url, ResourceBundle bundle) {
         this._bundle = bundle;
         FXAppointments = FXCollections.observableList(this.db.appointments.stream().map(item -> new AppointmentFXAdapter(item)).collect(Collectors.toList()));
         appointmentFilteredList = new FilteredList<>(db.appointments, p -> true);
 
-//        dateStringConverter = new StringConverter<String>() {
-//            @Override
-//            public String toString(String localDate) {
-//                return localDate;
-//            }
-//
-//            @Override
-//            public String fromString(String s) {
-//                return LocalDate.parse(s).format(dformatter);
-//            }
-//        };
-//        timeStringConverter = new StringConverter<String>() {
-//            @Override
-//            public String toString(String localTime) {
-//                return localTime;
-//            }
-//
-//            @Override
-//            public String fromString(String s) {
-//                return LocalTime.parse(s).format(tformatter);
-//            }
-//        };
         StringConverter<LocalDate> dateStringConverter = new LocalDateStringConverter(dformatter,dformatter);
         StringConverter<LocalTime> timeStringConverter = new LocalTimeStringConverter(tformatter,tformatter);
 
-//        sldFormatter = new TextFormatter<>(
-//                dateStringConverter,   //converter
-//                LocalDate.now().format(dformatter),        //default value
-//                dateValidationFormatter
-//        );
-//        sltFormatter = new TextFormatter<>(
-//                timeStringConverter,   //converter
-//                LocalTime.now().format(tformatter),        //default value
-//                timeValidationFormatter
-//        );
-//        eldFormatter = new TextFormatter<>(
-//                dateStringConverter,   //converter
-//                LocalDate.now().format(dformatter),        //default value
-//                dateValidationFormatter
-//        );
-//        eltFormatter = new TextFormatter<>(
-//                timeStringConverter,   //converter
-//                LocalTime.now().format(tformatter),        //default value
-//                timeValidationFormatter
-//        );
+        /**
+         * redirect onaction handlers to local method
+         * LAMBDA: the ActionEvent e can be sent to the local method if needed
+         * otherwise the method will be called without parameter.
+         * e.g.  onFooAction = e -> fooHandler(e);  // parameter required
+         * or onFooAction = e -> fooHandler();  // no parameter required
+         */
+
         onCommitAction = e -> dbCommit();
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
         onReportAction = e -> launchReport();
 
-//        textStartDate.setTextFormatter(sldFormatter);
-//        textEndDate.setTextFormatter(eldFormatter);
-//        textStartTime.setTextFormatter(sltFormatter);
-//        textEndTime.setTextFormatter(eltFormatter);
 
         comboBoxContact.setItems(db.contacts);
         comboBoxContact.setConverter(new StringConverter<Contact>() {
@@ -447,12 +376,6 @@ public class AppointmentFormController implements Initializable {
         tableView.setEditable(true);
         addAppointmentColumns();
 
-//        tableView.setRowFactory(tableView -> {
-//            TableRow<Appointment> row = new TableRow<>();
-//            ObjectProperty<Appointment> opMsg = row.itemProperty();
-//            Appointment tmpMsg = opMsg.get();
-//            return row;
-//        });
         addAppointmentRows();
         TimerTask task = new TimerTask() {
             @Override
@@ -579,104 +502,6 @@ public class AppointmentFormController implements Initializable {
      */
     private void reBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
-//            textTitle.textProperty().addListener(titleListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.titleProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            textAppointmentID.textProperty().addListener(idListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.idProperty().set(Integer.parseInt(t1));
-//                    tableView.refresh();
-//                }
-//            });
-//            textDescription.textProperty().addListener(descriptionListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.descriptionProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            textType.textProperty().addListener(typeListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.typeProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            textLocation.textProperty().addListener(locationListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.locationProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            comboBoxCustomer.valueProperty().addListener(customerChangeListener = new ChangeListener<Customer>() {
-//                @Override
-//                public void changed(ObservableValue<? extends Customer> observableValue, Customer customer, Customer t1) {
-//                    currentAppointment.customerProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            comboBoxUser.valueProperty().addListener(userChangeListener = new ChangeListener<User>() {
-//                @Override
-//                public void changed(ObservableValue<? extends User> observableValue, User user, User t1) {
-//                    currentAppointment.userProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            comboBoxContact.valueProperty().addListener(contactChangeListener = new ChangeListener<Contact>() {
-//                @Override
-//                public void changed(ObservableValue<? extends Contact> observableValue, Contact contact, Contact t1) {
-//                    currentAppointment.contactProperty().set(t1);
-//                    tableView.refresh();
-//                }
-//            });
-//            textStart.textProperty().addListener(startListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.startProperty().set(LocalDateTime.parse(t1, dtformatter));
-//                    tableView.refresh();
-//                }
-//            });
-//            textEnd.textProperty().addListener(endListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.endProperty().set(LocalDateTime.parse(t1, dtformatter));
-//                    tableView.refresh();
-//                }
-//            });
-//            textStartDate.textProperty().addListener(startDateListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.startDateProperty().set(LocalDate.parse(t1, dformatter));
-//                    tableView.refresh();
-//                }
-//            });
-//            textEndDate.textProperty().addListener(endDateListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.endDateProperty().set(LocalDate.parse(t1, dformatter));
-//                    tableView.refresh();
-//                }
-//            });
-//            textStartTime.textProperty().addListener(startTimeListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.startTimeProperty().set(LocalTime.parse(t1, tformatter));
-//                    tableView.refresh();
-//                }
-//            });
-//            textEndTime.textProperty().addListener(endTimeListener = new ChangeListener<String>() {
-//                @Override
-//                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-//                    currentAppointment.endTimeProperty().set(LocalTime.parse(t1, tformatter));
-//                    tableView.refresh();
-//                }
-//            });
             textTitle.textProperty().bindBidirectional(currentAppointment.titleProperty());
             textAppointmentID.textProperty().bindBidirectional(currentAppointment.idProperty(), new NumberStringConverter());
             textDescription.textProperty().bindBidirectional(currentAppointment.descriptionProperty());
@@ -896,8 +721,6 @@ public class AppointmentFormController implements Initializable {
         descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn());
         locationCol.setCellFactory(TextFieldTableCell.forTableColumn());
         typeCol.setCellFactory(TextFieldTableCell.forTableColumn());
-//        startCol.setCellFactory(TextFieldTableCell.forTableColumn());
-//        endCol.setCellFactory(TextFieldTableCell.forTableColumn());
         startTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter(tformatter,tformatter)));
         startDateCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter(dformatter,dformatter)));
         endTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter(tformatter,tformatter)));

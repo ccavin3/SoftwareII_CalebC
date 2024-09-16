@@ -210,6 +210,10 @@ public class ReportsController implements Initializable {
 
     /**
      * Filters appointments by selected contact.
+     * LAMBDA:
+     * line 219
+     * This changes the predicate controlling the filter.
+     * If the resultant comparison evaluates to true, the row will be included in the subset
      */
     public void filterContacts() {
         flAppointmentsByContact.setPredicate(p -> p.getContactId() == contactComboBox.getSelectionModel().getSelectedItem().getId());

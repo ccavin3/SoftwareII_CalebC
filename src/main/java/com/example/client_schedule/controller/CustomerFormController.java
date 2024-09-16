@@ -226,8 +226,6 @@ public class CustomerFormController implements Initializable {
         });
         tableView.setEditable(false);
         addCustomerColumns();
-//        lambda expression
-
         addCustomerRows();
     }
 

@@ -20,6 +20,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import java.net.URL;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.Level;
@@ -97,9 +100,17 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _bundle = resourceBundle;
-//        •  determine the user’s location (i.e., ZoneId) and displays it in a label on the log-in form
-        countryText.setText(country);
-
+//      determine the user’s location (i.e., ZoneId) and displays it in a label on the log-in form       •  determine the user’s location (i.e., ZoneId) and displays it in a label on the log-in form        // Get the system's default ZoneId        ZoneId zoneId = ZoneId.systemDefault();        // Get the current date and time in the system's ZoneId        ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);        // Format the date and time in a readable format        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");        // Display the Zone ID, country, and the formatted current date-time in the label        countryText.setText(String.format("%s (Zone: %s, Time: %s)",                country,                zoneId,                zonedDateTime.format(formatter)        ));
+        ZoneId zoneId = ZoneId.systemDefault();
+        // Get the current date and time in the system's ZoneID
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);
+        // Format the date and time in a readable format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
+        // Display the Zone ID, country, and the formatted current date-time in the label
+        countryText.setText(String.format("%s (Zone: %s, Time: %s)",
+                country,
+                zoneId,
+                zonedDateTime.format(formatter)));
 
         onLoginAction = e -> {
             String user = textUser.getText();

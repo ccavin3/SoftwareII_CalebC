@@ -365,7 +365,7 @@ public class AppointmentFormController implements Initializable {
         revertButton.setOnAction(onRevertAction);
         reportButton.setOnAction(onReportAction);
 
-        tableView.setEditable(true);
+        tableView.setEditable(false);
         addAppointmentColumns();
 
         addAppointmentRows();

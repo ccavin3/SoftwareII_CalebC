@@ -650,19 +650,25 @@ public class AppointmentFormController implements Initializable {
 
     }
 
+    private ChangeListener<AppointmentFXAdapter> rowSelectionListener = new ChangeListener<AppointmentFXAdapter>() {
+        @Override
+        public void changed(ObservableValue<? extends AppointmentFXAdapter> observableValue, AppointmentFXAdapter old, AppointmentFXAdapter wen) {
+            unBind(old);
+            //            clearfields();
+            reBind(wen);
+        }
+    };
+
     /**
      * Clears the existing rows in the table view and adds new rows based on FXAppointments list.
      * The table view is then bound to the selected appointment item.
      */
     private void addAppointmentRows() {
 //        tableView.setItems(appointmentFilteredList);
-        tableView.getItems().clear();
+        tableView.getSelectionModel().selectedItemProperty().removeListener(rowSelectionListener);
+//        tableView.getItems().clear();
         tableView.setItems(FXAppointments);
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
-            unBind(old);
-//            clearfields();
-            reBind(wen);
-        });
+        tableView.getSelectionModel().selectedItemProperty().addListener(rowSelectionListener);
         tableView.getSelectionModel().selectFirst();
     }
 
@@ -824,6 +830,7 @@ public class AppointmentFormController implements Initializable {
         db.appointmentDB.fetchFromDB();
         FXAppointments.clear();
         FXAppointments.addAll(db.appointments.stream().map(item -> new AppointmentFXAdapter(item)).collect(Collectors.toList()));
+        addAppointmentRows();
         db.em.getTransaction().begin();
     }
 

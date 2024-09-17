@@ -4,15 +4,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * The type Type token.
+ * Class to represent the actual type arguments for the parameters of the generic superclass.
  *
- * @param <T> the type parameter
+ * @param <T> Type of the object to represent.
  */
 public abstract class TypeToken<T> {
     private Type type;
 
     /**
-     * Instantiates a new Type token.
+     * Constructor to initialize the type of the generic superclass.
      */
     protected TypeToken() {
         Type superClass = getClass().getGenericSuperclass();
@@ -20,19 +20,19 @@ public abstract class TypeToken<T> {
     }
 
     /**
-     * Gets type.
+     * Method to get the type of the generic superclass.
      *
-     * @return the type
+     * @return type of the generic superclass.
      */
     public Type getType() {
         return type;
     }
 
     /**
-     * Gets generic class.
+     * Method to get the generic class of the type token.
      *
-     * @return the generic class
-     * @throws ClassNotFoundException the class not found exception
+     * @return Class representation of the type token.
+     * @throws ClassNotFoundException if the class cannot be located
      */
     public Class getGenericClass() throws ClassNotFoundException {
         return Class.forName(getType().getTypeName());

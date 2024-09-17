@@ -3,6 +3,7 @@ package com.example.client_schedule.controller;
 import com.example.client_schedule.MainApplication;
 import com.example.client_schedule.helper.DBContext;
 import jakarta.persistence.Query;
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,9 +21,6 @@ import java.io.IOException;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +51,8 @@ public class LoginController implements Initializable {
     /**
      * The Text user.
      */
-    @FXML TextField textUser;
+    @FXML
+    TextField textUser;
 
     /**
      * The Pwd label.
@@ -76,12 +75,10 @@ public class LoginController implements Initializable {
     private DBContext db;
 
     private String country;
-    private String userName;
 
     /**
      * Instantiates a new Login controller.
      *
-     * @param db      the db
      * @param country the country
      */
     public LoginController(DBContext db, String country) {
@@ -91,6 +88,12 @@ public class LoginController implements Initializable {
 
     private String msg;
 
+    /**
+     * Initialization method for the controller.
+     *
+     * @param url            the url to use for initialization
+     * @param resourceBundle the resources to use for initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _bundle = resourceBundle;
@@ -99,7 +102,7 @@ public class LoginController implements Initializable {
 
 
         onLoginAction = e -> {
-            String user = userName = textUser.getText();
+            String user = textUser.getText();
             String pwd = textPwd.getText();
             if (db == null) {
                 msg = _bundle.getString("login.db.error");
@@ -123,6 +126,7 @@ public class LoginController implements Initializable {
                             msg = _bundle.getString("login.successful.text");
                             loginMessage.setText("");
                             logger.log(Level.forName("LOGIN", 350), loginMessage(msg));
+                            MainApplication.curUser = user;
                             launchTabForm();
                             // valid login
 //                        return true;
@@ -143,49 +147,32 @@ public class LoginController implements Initializable {
         loginButton.setOnAction(onLoginAction);
     }
 
+    /**
+     * Returns the login message for a given message.
+     *
+     * @param msg the input message.
+     * @return the login message.
+     */
     private String loginMessage(String msg) {
-        return String.format("User: %s - %s", userName, msg);
+        return String.format("User: %s - %s", MainApplication.curUser, msg);
     }
 
-
-
-    private void checkForAppointment(){
-//         check DB for appointment
-
-    }
-
+    /**
+     * Launches the tab form for this controller.
+     *
+     * @throws IOException if an error occurs during the launching of the tab form.
+     */
     private void launchTabForm() throws IOException {
-
-        Runnable appointmentCheckRunnable = new Runnable() {
-            public void run() {
-                checkForAppointment();
-            }
-        };
-
-        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-        exec.scheduleAtFixedRate(appointmentCheckRunnable , 0, 1, TimeUnit.MINUTES);
-
-        Stage thiswindow = (Stage)loginButton.getScene().getWindow();
-//        CustomerFormController controller = new CustomerFormController(db, userName);
-//        AppointmentFormController controller = new AppointmentFormController(db, userName);
-        tabsController controller = new tabsController(db, userName);
-//
+        Stage thiswindow = (Stage) loginButton.getScene().getWindow();
+        tabsController controller = new tabsController(db);
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("tabs.fxml"), _bundle);
-
-//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
-//        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         fxmlLoader.setController(controller);
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 900, 600);
         Stage stage = new Stage();
         stage.setTitle("Schedule Data");
         stage.setScene(scene);
         stage.show();
         thiswindow.close();
-
-
-        };
-
-
     }
 }

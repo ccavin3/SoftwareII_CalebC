@@ -23,73 +23,69 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 /**
- * The type Tabs controller.
+ * The tabsController is responsible for the control flow of tab view.
  */
 public class tabsController implements Initializable {
 
-    /**
-     * The Db.
-     */
+    private static tabsController single_instance = null;
+
+    // create a static method to get instance
+    public static tabsController getInstance()
+    {
+        if (single_instance == null)
+            single_instance = new tabsController();
+        return single_instance;
+    }
+    private AppointmentFormController appointmentFormController;
+    private CustomerFormController customerFormController;
+
+
+    public void setAppointmentFormController(AppointmentFormController controller){
+        this.appointmentFormController = controller;
+    }
+    public void setCustomerFormController(CustomerFormController controller){
+        this.customerFormController = controller;
+    }
+    public AppointmentFormController getAppointmentFormController(){
+        return appointmentFormController;
+    }
+    public CustomerFormController getCustomerFormController(){
+        return customerFormController;
+    }
+
     protected DBContext db;
 
-    /**
-     * The User name.
-     */
-    protected String userName;
-
-    /**
-     * The Bundle.
-     */
     protected ResourceBundle _bundle;
 
     @FXML
     private TabPane tabPanel;
 
     /**
-     * Instantiates a new Tabs controller.
+     * Constructs a tabsController with given DBContext
      *
-     * @param db       the db
-     * @param userName the user name
+     * @param db DBContext object
      */
-    public tabsController(DBContext db, String userName) {
+    public tabsController(DBContext db) {
         this.db = db;
-        this.userName = userName;
+        this.single_instance = this;
     }
-
-//    class AppointmentTabController extends tabController<Appointment> {};
-//    class ContactTabController extends tabController<Contact> {}
-//    class CountryTabController extends tabController<Country> {}
-//    class CustomerTabController extends tabController<Customer> {}
-//    class DivisionTabController extends tabController<Division> {}
-//    class UserTabController extends tabController<User> {}
+    public tabsController() {}
 
     private HashMap<String, tabController> controllers = new HashMap<>();
 
-
-//    public tabsController() {
-
-//        controllers.put("Appointment", new AppointmentTabController(this.db, this.userName));
-//        controllers.put("Contact", new ContactTabController());
-//        controllers.put("Country", new CountryTabController());
-//        controllers.put("Customer", new CustomerTabController());
-//        controllers.put("Division", new DivisionTabController());
-//        controllers.put("User", new UserTabController());
-//        for(tabController controller : controllers.values()) {
-//            controller.setUserName(this.userName);
-//            controller.setDb(this.db);
-//            try {
-//                controller.setTabTitle(_bundle.getString("tab."+controller.getGenericClass().getSimpleName().toLowerCase()+".title"));
-//            } catch(Exception e) {
-//
-//            }
-//        }
-//    }
-
+    /**
+     * This is an overridden method from Initializable interface,
+     * which is responsible for logic that needs to be executed after all FXML
+     * components are loaded into the sense.
+     *
+     * @param Url    URL used for the ResourceBundle provided as a parameter
+     * @param bundle ResourceBundle of the Application
+     */
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
-        AppointmentFormController appointmentFormController = new AppointmentFormController(this.db, this.userName);
-        CustomerFormController customerFormController = new CustomerFormController(this.db, this.userName);
+        appointmentFormController = new AppointmentFormController(this.db);
+        customerFormController = new CustomerFormController(this.db);
         FXMLLoader apptFxmlLoader = new FXMLLoader(MainApplication.class.getResource("appointmentForm.fxml"), _bundle);
         FXMLLoader custFxmlLoader = new FXMLLoader(MainApplication.class.getResource("customerForm.fxml"), _bundle);
         apptFxmlLoader.setController(appointmentFormController);
@@ -105,8 +101,9 @@ public class tabsController implements Initializable {
         Tab appointmentTab = new Tab(_bundle.getString("label.appointment.appointment.text"));
         Tab customerTab = new Tab(_bundle.getString("label.appointment.customer.text"));
         appointmentTab.setContent(apptRoot);
+        appointmentTab.setClosable(false);
         customerTab.setContent(custRoot);
+        customerTab.setClosable(false);
         tabPanel.getTabs().addAll(customerTab, appointmentTab);
     }
-
 }

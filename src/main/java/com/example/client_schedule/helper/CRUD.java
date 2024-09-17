@@ -13,32 +13,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The type Crud.
+ * Helper class for CRUD operations.
  *
- * @param <T> the type parameter
+ * @param <T> the Entity class type
  */
-public class CRUD<T> extends TypeToken<T>{
+public class CRUD<T> extends TypeToken<T> {
 
-    /**
-     * The constant em.
-     */
+    public static EntityManagerFactory emf;
     public static EntityManager em;
 
     /**
-     * Instantiates a new Crud.
+     * Default constructor for the CRUD helper class.
+     * Establishes connection with the persistence layer if not already established.
      */
     public CRUD() {
         super();
+        if (CRUD.em == null) {
+            CRUD.emf = Persistence.createEntityManagerFactory("client_schedule");
+            CRUD.em = CRUD.emf.createEntityManager();
+        }
+        this.fetchFromDB();
     }
 
     private T currentRow;
 
     /**
-     * Gets current row.
+     * Returns the current row in the database.
      *
-     * @param <T> the type parameter
-     * @return the current row
-     * @throws ClassNotFoundException the class not found exception
+     * @return T, the current row in the database.
+     * @throws ClassNotFoundException if the entity class was not found.
      */
     public <T> T getCurrentRow() throws ClassNotFoundException {
         Class<T> clz = (Class<T>) Class.forName(getType().getTypeName());
@@ -46,55 +49,52 @@ public class CRUD<T> extends TypeToken<T>{
     }
 
     /**
-     * Sets current row.
+     * Sets the current entity in the CRUD operations.
      *
-     * @param curRow the cur row
+     * @param curRow the entity to be set.
      */
     public void setCurrentRow(T curRow) {
         currentRow = curRow;
     }
 
     /**
-     * Add.
+     * Adds the current entity to the database.
      */
     public void add() {
         em.persist(currentRow);
     }
 
     /**
-     * Add.
+     * Adds a specific entity to the database.
      *
-     * @param <T> the type parameter
-     * @param row the row
+     * @param row the entity to be added.
      */
     public <T> void add(T row) {
         em.persist(row);
     }
 
     /**
-     * Delete.
+     * Deletes a specific entity from the database.
      *
-     * @param <T> the type parameter
-     * @param row the row
+     * @param row the entity to be deleted.
      */
     public <T> void delete(T row) {
-
         em.remove(row);
     }
 
     /**
-     * Delete.
+     * Deletes the current entity from the database.
      */
     public void delete() {
         em.remove(currentRow);
     }
 
+    public ObservableList<T> rows = FXCollections.observableArrayList();
+
     /**
-     * Rows observable list.
-     *
-     * @return the observable list
+     * Updates the list of rows with the current rows in the database.
      */
-    public ObservableList<T> rows() {
+    public void fetchFromDB() {
         try {
             String tableName = ((Table) getGenericClass().getAnnotation(Table.class)).name();
             String fieldnames = readColumns()
@@ -102,22 +102,21 @@ public class CRUD<T> extends TypeToken<T>{
                     .map(f -> f.getName())
                     .collect(Collectors.joining(","));
             String sql = String.format("select t from com.example.client_schedule.entities.%s t", getGenericClass().getSimpleName());
-//            String sql = String.format("select %s from com.example.client_schedule.entities.%s", fieldnames, getGenericClass().getSimpleName());
-//            String sql = String.format("select t from %s t", tableName);
             TypedQuery<T> query = em.createQuery(sql, getGenericClass());
-
-//            Query query = em.createQuery(String.format("select new com.example.client_schedule.entities.%s ( %s )", getType().getClass().getSimpleName(), fieldnames));
-            return FXCollections.observableList(query.getResultList());
-        } catch(Exception e) {
-            return null;
+            rows.clear();
+            rows.addAll(query.getResultList());
+        } catch (Exception e) {
+            if (e.getMessage() != null) {
+                // do nothing
+            }
         }
     }
 
     /**
-     * Read columns observable list.
+     * Retrieves all columns with annotation "Column" from the entity.
      *
-     * @return the observable list
-     * @throws ClassNotFoundException the class not found exception
+     * @return an ObservableList of all columns in the entity.
+     * @throws ClassNotFoundException if the entity class was not found.
      */
     protected ObservableList<Field> readColumns() throws ClassNotFoundException {
         List<Field> fields = readAllColumns(new LinkedList<Field>(), getGenericClass());
@@ -126,12 +125,12 @@ public class CRUD<T> extends TypeToken<T>{
     }
 
     /**
-     * Read all columns list.
+     * Returns all columns of the entity, including those of superclasses.
      *
-     * @param fields the fields
-     * @param type   the type
-     * @return the list
-     * @throws ClassNotFoundException the class not found exception
+     * @param fields List of fields to populate.
+     * @param type   Class type of the entity.
+     * @return A List of all columns of the entity.
+     * @throws ClassNotFoundException if the entity class was not found.
      */
     protected List<Field> readAllColumns(List<Field> fields, final Class<?> type) throws ClassNotFoundException {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));

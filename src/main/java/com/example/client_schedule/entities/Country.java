@@ -1,5 +1,6 @@
 package com.example.client_schedule.entities;
 
+import com.example.client_schedule.helper.JPAListener;
 import jakarta.persistence.*;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,62 +15,51 @@ import java.util.List;
  * The type Country.
  */
 @Entity
+@EntityListeners(JPAListener.class)
 @Table(name="countries")
 
-public class Country {
-    /**
-     * The Id.
-     */
+public class Country extends baseEntity {
 //region Entity Columns
     @Id
     @FXML
     @Column(name="Country_ID")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    protected Integer id;
+    private Integer id;
 
-    @Transient
-    private IntegerProperty idProperty = new SimpleIntegerProperty();
-
-    /**
-     * The Name.
-     */
     @FXML
     @Column(name="Country")
-    protected String name;
+    private String name;
 
-    /**
-     * The Created.
-     */
-    @FXML
-    @Column(name="Create_Date")
-    protected LocalDateTime created;
-    /**
-     * The Created by.
-     */
-    @FXML
-    @Column(name="Created_By")
-    protected String createdBy;
-    /**
-     * The Updated.
-     */
-    @FXML
-    @Column(name="Last_Update")
-    protected ZonedDateTime updated;
-    /**
-     * The Updated by.
-     */
-    @FXML
-    @Column(name="Last_Updated_By")
-    protected String updatedBy;
-
+//    /**
+//     * The Created.
+//     */
+//    @FXML
+//    @Column(name="Create_Date")
+//    private LocalDateTime created;
+//    /**
+//     * The Created by.
+//     */
+//    @FXML
+//    @Column(name="Created_By")
+//    private String createdBy;
+//    /**
+//     * The Updated.
+//     */
+//    @FXML
+//    @Column(name="Last_Update")
+//    private ZonedDateTime updated;
+//    /**
+//     * The Updated by.
+//     */
+//    @FXML
+//    @Column(name="Last_Updated_By")
+//    private String updatedBy;
+//
 //endregion
 
-    /**
-     * The Divisions.
-     */
 //region ORM
     @OneToMany(mappedBy = "country")
-    protected List<Division> divisions = new ArrayList<>();
+    private List<Division> divisions = new ArrayList<>();
 //endregion
 
     /**
@@ -130,22 +120,12 @@ public class Country {
     }
 
     /**
-     * Gets id property.
-     *
-     * @return the id property
-     */
-    public IntegerProperty getIdProperty() {
-        return this.idProperty;
-    }
-
-    /**
      * Sets id.
      *
      * @param id the id
      */
     public void setId(int id) {
         this.id = id;
-        this.idProperty.set(id);
     }
 
 

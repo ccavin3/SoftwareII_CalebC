@@ -1,15 +1,22 @@
 package com.example.client_schedule.controller;
 
+import com.example.client_schedule.adapters.AppointmentFXAdapter;
+import com.example.client_schedule.adapters.CustomerFXAdapter;
 import com.example.client_schedule.entities.Country;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.entities.Division;
 import com.example.client_schedule.helper.DBContext;
+import com.example.client_schedule.helper.JPAListener;
+import jakarta.persistence.Query;
+import jakarta.persistence.metamodel.EntityType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -36,16 +44,9 @@ import javafx.util.converter.NumberStringConverter;
 /**
  * The Customer form controller. This class controls all the functionality for Customer management.
  */
-public class CustomerFormController extends Customer implements Initializable {
-    /**
-     * Instantiates a new Customer form controller.
-     *
-     * @param db       the db
-     * @param userName the user name
-     */
-    public CustomerFormController(DBContext db, String userName) {
+public class CustomerFormController implements Initializable {
+    public CustomerFormController(DBContext db) {
         this.db = db;
-        this.userName = userName;
     }
 
     private ResourceBundle _bundle;
@@ -88,7 +89,7 @@ public class CustomerFormController extends Customer implements Initializable {
     private TextField textPhone;
 
     @FXML
-    private TableView<Customer> tableView;
+    private TableView<CustomerFXAdapter> tableView;
 
     @FXML
     private StackPane tableArea;
@@ -159,10 +160,23 @@ public class CustomerFormController extends Customer implements Initializable {
     @FXML
     private EventHandler<ActionEvent> onCountrySelectionAction;
 
+    private ChangeListener<String> idListener;
+    private ChangeListener<String> nameListener;
+    private ChangeListener<String> addressListener;
+    private ChangeListener<String> phoneListener;
+    private ChangeListener<String> zipListener;
+    private ChangeListener<Division> divisionChangeListener;
+    private AppointmentFormController appointmentFormController;
+
+
     private FilteredList<Division> filteredDivisionList;
+    private ObservableList<CustomerFXAdapter> FXCustomers;
+
     @Override
     public void initialize(URL Url, ResourceBundle bundle) {
         this._bundle = bundle;
+        appointmentFormController = tabsController.getInstance().getAppointmentFormController();
+        FXCustomers = FXCollections.observableList(this.db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
 
         onCommitAction = e -> dbCommit();
         onRevertAction = e -> dbRevert();
@@ -211,36 +225,30 @@ public class CustomerFormController extends Customer implements Initializable {
                 return comboBoxCountry.getItems().stream().filter(ap -> ap.getName().equals(s)).findFirst().orElse(null);
             }
         });
-        tableView.setEditable(true);
+        tableView.setEditable(false);
         addCustomerColumns();
-//        lambda expression
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
-                unBind(old);
-                clearfields();
-                reBind(wen);
-        });
-
         addCustomerRows();
     }
 
-    private void reBind(Customer currentCustomer) {
+    private void reBind(CustomerFXAdapter currentCustomer) {
         if (currentCustomer != null) {
-            textID.textProperty().bindBidirectional(currentCustomer.getIdProperty(), new NumberStringConverter());
-            textName.textProperty().bindBidirectional(currentCustomer.getNameProperty());
-            textAddress.textProperty().bindBidirectional(currentCustomer.getAddressProperty());
-            textPhone.textProperty().bindBidirectional(currentCustomer.getPhoneProperty());
-            textPostal.textProperty().bindBidirectional(currentCustomer.getZipProperty());
-            comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.getDivisionProperty());
+            textID.textProperty().bindBidirectional(currentCustomer.idProperty(), new NumberStringConverter());
+            textName.textProperty().bindBidirectional(currentCustomer.nameProperty());
+            textAddress.textProperty().bindBidirectional(currentCustomer.addressProperty());
+            textPhone.textProperty().bindBidirectional(currentCustomer.phoneProperty());
+            textPostal.textProperty().bindBidirectional(currentCustomer.zipProperty());
+            comboBoxDivision.valueProperty().bindBidirectional(currentCustomer.divisionProperty());
+            comboBoxCountry.valueProperty().bindBidirectional(currentCustomer.countryProperty());
         }
     }
-    private void unBind(Customer currentCustomer) {
+    private void unBind(CustomerFXAdapter currentCustomer) {
         if (currentCustomer != null) {
-            textID.textProperty().unbindBidirectional(currentCustomer.getIdProperty());
-            textName.textProperty().unbindBidirectional(currentCustomer.getNameProperty());
-            textAddress.textProperty().unbindBidirectional(currentCustomer.getAddressProperty());
-            textPhone.textProperty().unbindBidirectional(currentCustomer.getPhoneProperty());
-            textPostal.textProperty().unbindBidirectional(currentCustomer.getZipProperty());
-            comboBoxDivision.valueProperty().unbindBidirectional(currentCustomer.getDivisionProperty());
+            textID.textProperty().unbindBidirectional(currentCustomer.idProperty());
+            textName.textProperty().unbindBidirectional(currentCustomer.nameProperty());
+            textAddress.textProperty().unbindBidirectional(currentCustomer.addressProperty());
+            textPhone.textProperty().unbindBidirectional(currentCustomer.phoneProperty());
+            textPostal.textProperty().unbindBidirectional(currentCustomer.zipProperty());
+            comboBoxDivision.valueProperty().unbindBidirectional(currentCustomer.divisionProperty());
         }
     }
 
@@ -250,25 +258,31 @@ public class CustomerFormController extends Customer implements Initializable {
         textAddress.clear();
         textPhone.clear();
         textPostal.clear();
-        comboBoxDivision.setValue(null);
-        comboBoxCountry.setValue(null);
+        comboBoxDivision.getSelectionModel().selectFirst();
+        comboBoxCountry.getSelectionModel().selectFirst();
     }
 
     private void addCustomerRows() {
-        tableView.setItems(db.customers);
-        tableView.getSelectionModel().select(tableView.getItems().stream().findFirst().orElse(null));
-//        comboBoxCountry.setValue(tableView.getSelectionModel().selectedItemProperty().get().getDivisionProperty().get().getCountry());
-        filteredDivisionList.setPredicate(p -> p.getCountryId() == tableView.getSelectionModel().selectedItemProperty().get().getDivision().getCountryId());
+        tableView.getItems().clear();
+        tableView.setItems(FXCustomers);
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
+            unBind(old);
+//            clearfields();
+            reBind(wen);
+        });
+        tableView.getSelectionModel().selectFirst();
+        filteredDivisionList.setPredicate(p -> p.getCountryId() == tableView.getSelectionModel().selectedItemProperty().get().divisionProperty().get().getCountryId());
     }
 
     private void addCustomerColumns() {
-        TableColumn<Customer, Integer> idCol = new TableColumn<>("id");
-        TableColumn<Customer, String> nameCol = new TableColumn<>(_bundle.getString("label.customer.name.text"));
-        TableColumn<Customer, String> addressCol = new TableColumn<>(_bundle.getString("label.customer.address.text"));
-        TableColumn<Customer, String> postalCol = new TableColumn<>(_bundle.getString("label.customer.postal.text"));
-        TableColumn<Customer, String> phoneCol = new TableColumn<>(_bundle.getString("label.customer.phone.text"));
-        TableColumn<Customer, Integer> divisionIdCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
-        TableColumn<Customer, Division> divisionCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
+        TableColumn<CustomerFXAdapter, Integer> idCol = new TableColumn<>("id");
+        TableColumn<CustomerFXAdapter, String> nameCol = new TableColumn<>(_bundle.getString("label.customer.name.text"));
+        TableColumn<CustomerFXAdapter, String> addressCol = new TableColumn<>(_bundle.getString("label.customer.address.text"));
+        TableColumn<CustomerFXAdapter, String> postalCol = new TableColumn<>(_bundle.getString("label.customer.postal.text"));
+        TableColumn<CustomerFXAdapter, String> phoneCol = new TableColumn<>(_bundle.getString("label.customer.phone.text"));
+        TableColumn<CustomerFXAdapter, Integer> divisionIdCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
+        TableColumn<CustomerFXAdapter, Division> divisionCol = new TableColumn<>(_bundle.getString("label.customer.division.text"));
 
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -288,7 +302,11 @@ public class CustomerFormController extends Customer implements Initializable {
         divisionCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Division>() {
             @Override
             public String toString(Division division) {
-                return division.getName();
+                if (division != null) {
+                    return division.getName();
+                } else {
+                    return "";
+                }
             }
 
             @Override
@@ -342,27 +360,51 @@ public class CustomerFormController extends Customer implements Initializable {
     }
 
     private void dbRevert() {
+        FXCustomers.forEach(item -> unBind(item));
         db.em.getTransaction().rollback();
+        db.customerDB.fetchFromDB();
+        FXCustomers.clear();
+        FXCustomers.addAll(db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
         db.em.getTransaction();
+        appointmentFormController.dbRevert();
     }
 
     private void recordAdd() {
         Customer nc = new Customer();
-        nc.setDivisionId(1);
+        nc.setDivisionId(db.divisions.stream().findFirst().get().getId());
+        nc.setDivision(db.divisions.stream().findFirst().orElse(null));
         nc.setCreatedBy(userName);
         nc.setCreated(LocalDateTime.now());
         db.em.persist(nc);
         db.customers.add(nc);
-        reBind(nc);
+        CustomerFXAdapter ncfx = new CustomerFXAdapter(nc, this.db);
+        FXCustomers.add(ncfx);
+        tableView.getSelectionModel().select(ncfx);
     }
 
     private void recordRemove() {
-        db.customers.remove(tableView.getSelectionModel().getSelectedItem());;
+        CustomerFXAdapter delCustomer = tableView.getSelectionModel().getSelectedItem();
+        delCustomer.getAppointments().forEach(a -> {
+            AppointmentFXAdapter fxa = appointmentFormController.FXAppointments.stream().filter(ap -> ap.getId() == a.getId()).findFirst().orElse(null);
+            appointmentFormController.recordRemove(fxa);
+        });
+        db.customers.remove(delCustomer.customer);
+        db.em.remove(delCustomer.customer);
+        FXCustomers.remove(delCustomer);
+        //alert to show customer was removed
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Customer Removed");
+            alert.setHeaderText(null);
+            alert.setContentText(String.format("Customer %s has been successfully removed.", delCustomer.getName()));
+            alert.showAndWait();
+        });
     }
 
     private void getComboDivisionId(ActionEvent e) {
         Division i = ((Division)((ComboBox)e.getSource()).getSelectionModel().getSelectedItem());
-        setDivisionId(i.getId());
+        tableView.getSelectionModel().getSelectedItem().divisionIdProperty().set(i.getId());
+        tableView.getSelectionModel().getSelectedItem().divisionProperty().set(i);
     }
 
     private void getComboCountryId(ActionEvent e) {

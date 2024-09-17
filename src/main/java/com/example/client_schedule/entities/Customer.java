@@ -1,10 +1,14 @@
 package com.example.client_schedule.entities;
 
+import com.example.client_schedule.helper.JPAListener;
 import jakarta.persistence.*;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -15,123 +19,71 @@ import java.util.List;
  * The type Customer.
  */
 @Entity
+@EntityListeners(JPAListener.class)
 @Table(name="customers")
 
-public class Customer {
-    /**
-     * The Id.
-     */
+public class Customer extends baseEntity {
 //region Entity Columns
     @Id
     @FXML
     @Column(name="Customer_ID")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public Integer id;
+     private Integer id;
 
-    @Transient
-    private IntegerProperty idProperty = new SimpleIntegerProperty();
-
-    /**
-     * The Name.
-     */
     @FXML
     @Column(name="Customer_Name")
-    public String name;
+    private String name;
 
-    @Transient
-    private StringProperty nameProperty = new SimpleStringProperty();
-
-    /**
-     * The Address.
-     */
     @FXML
     @Column(name="Address")
-    public String address;
+    private String address;
 
-    @Transient
-    private StringProperty addressProperty = new SimpleStringProperty();
-
-    /**
-     * The Zip.
-     */
     @FXML
     @Column(name="Postal_Code")
-    public String zip;
+    private String zip;
 
-    @Transient
-    private StringProperty zipProperty = new SimpleStringProperty();
-
-    /**
-     * The Phone.
-     */
     @FXML
     @Column(name="Phone")
-    public String phone;
+    private String phone;
 
-    @Transient
-    private StringProperty phoneProperty = new SimpleStringProperty();
-
-    /**
-     * The Created.
-     */
+//    /**
+//     * The Created.
+//     */
+//    @FXML
+//    @Column(name="Create_Date")
+//    public LocalDateTime created;
+//    /**
+//     * The Created by.
+//     */
+//    @FXML
+//    @Column(name="Created_By")
+//    public String createdBy;
+//    /**
+//     * The Updated.
+//     */
+//    @FXML
+//    @Column(name="Last_Update")
+//    public ZonedDateTime updated;
+//    /**
+//     * The Updated by.
+//     */
+//    @FXML
+//    @Column(name="Last_Updated_By")
+//    public String updatedBy;
+//
     @FXML
-    @Column(name="Create_Date")
-    public LocalDateTime created;
-    /**
-     * The Created by.
-     */
-    @FXML
-    @Column(name="Created_By")
-    public String createdBy;
-    /**
-     * The Updated.
-     */
-    @FXML
-    @Column(name="Last_Update")
-    public ZonedDateTime updated;
-    /**
-     * The Updated by.
-     */
-    @FXML
-    @Column(name="Last_Updated_By")
-    public String updatedBy;
-
-    /**
-     * The Division id.
-     */
-    @FXML
-    @Column(name="Division_ID")
-    public Integer divisionId;
-
-    @Transient
-    private IntegerProperty divisionIdProperty = new SimpleIntegerProperty();
+    @Column(name="Division_ID", insertable = false, updatable = false)
+    private Integer divisionId;
 
 //endregion
 
-    private void setListeners(Division division) {
-        this.getDivisionIdProperty().bindBidirectional(division.getIdProperty());
-    }
-
-    private void unSetListeners(Division division) {
-        this.getDivisionIdProperty().bindBidirectional(division.getIdProperty());
-    }
-
-    /**
-     * The Division.
-     */
-//region ORM
+    //region ORM
     @ManyToOne
-    @JoinColumn(name="Division_ID", insertable = false, updatable = false)
-    public Division division;
+    @JoinColumn(name="Division_ID", nullable = false)
+    private Division division;
 
-    @Transient
-    private ObjectProperty<Division> divisionProperty = new SimpleObjectProperty<>();
-
-    /**
-     * The Appointments.
-     */
     @OneToMany(mappedBy = "customer")
-    public List<Appointment> appointments = new ArrayList<>();
+    private List<Appointment> appointments = new ArrayList<>();
 
 //endregion
 
@@ -227,16 +179,6 @@ public class Customer {
      */
     public void setId(int id) {
         this.id = id;
-        this.idProperty.set(id);
-    }
-
-    /**
-     * Gets id property.
-     *
-     * @return the id property
-     */
-    public IntegerProperty getIdProperty() {
-        return this.idProperty;
     }
 
     /**
@@ -249,22 +191,12 @@ public class Customer {
     }
 
     /**
-     * Gets name property.
-     *
-     * @return the name property
-     */
-    public StringProperty getNameProperty() {
-        return nameProperty;
-    }
-
-    /**
      * Sets name.
      *
      * @param name the name
      */
     public void setName(String name) {
         this.name = name;
-        this.nameProperty.set(name);
     }
 
     /**
@@ -277,22 +209,12 @@ public class Customer {
     }
 
     /**
-     * Gets address property.
-     *
-     * @return the address property
-     */
-    public StringProperty getAddressProperty() {
-        return this.addressProperty;
-    }
-
-    /**
      * Sets address.
      *
      * @param address the address
      */
     public void setAddress(String address) {
         this.address = address;
-        this.addressProperty.set(address);
     }
 
     /**
@@ -305,22 +227,12 @@ public class Customer {
     }
 
     /**
-     * Gets zip property.
-     *
-     * @return the zip property
-     */
-    public StringProperty getZipProperty() {
-        return this.zipProperty;
-    }
-
-    /**
      * Sets zip.
      *
      * @param zip the zip
      */
     public void setZip(String zip) {
         this.zip = zip;
-        this.zipProperty.set(zip);
     }
 
     /**
@@ -333,22 +245,12 @@ public class Customer {
     }
 
     /**
-     * Gets phone property.
-     *
-     * @return the phone property
-     */
-    public StringProperty getPhoneProperty() {
-        return this.phoneProperty;
-    }
-
-    /**
      * Sets phone.
      *
      * @param phone the phone
      */
     public void setPhone(String phone) {
         this.phone = phone;
-        this.phoneProperty.set(phone);
     }
 
     /**
@@ -361,24 +263,12 @@ public class Customer {
     }
 
     /**
-     * Gets division property.
-     *
-     * @return the division property
-     */
-    public ObjectProperty<Division> getDivisionProperty() {
-        return this.divisionProperty;
-    }
-
-    /**
      * Sets division.
      *
      * @param division the division
      */
     public void setDivision(Division division) {
-        unSetListeners(this.division);
-        setListeners(division);
         this.division = division;
-        this.divisionProperty.set(division);
     }
 
     /**
@@ -500,22 +390,12 @@ public class Customer {
     }
 
     /**
-     * Gets division id property.
-     *
-     * @return the division id property
-     */
-    public IntegerProperty getDivisionIdProperty() {
-        return this.divisionIdProperty;
-    }
-
-    /**
      * Sets division id.
      *
      * @param divisionId the division id
      */
     public void setDivisionId(int divisionId) {
         this.divisionId = divisionId;
-        this.divisionIdProperty.set(divisionId);
     }
 
 

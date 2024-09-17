@@ -846,7 +846,7 @@ public class AppointmentFormController implements Initializable {
         na.setUserId(db.users.stream().findFirst().get().getId());
         na.setUser(db.users.stream().findFirst().orElse(null));
         na.setStart(LocalDateTime.now());
-        na.setEnd(LocalDateTime.now());
+        na.setEnd(LocalDateTime.now().plusMinutes(15));
         na.setStartDate(LocalDate.now());
         na.setEndDate(LocalDate.now());
         na.setStartTime(LocalTime.now());

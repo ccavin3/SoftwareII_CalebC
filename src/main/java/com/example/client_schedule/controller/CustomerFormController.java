@@ -262,15 +262,20 @@ public class CustomerFormController implements Initializable {
         comboBoxCountry.getSelectionModel().selectFirst();
     }
 
+    private ChangeListener<CustomerFXAdapter> rowChangeListener = new ChangeListener<CustomerFXAdapter>() {
+        @Override
+        public void changed(ObservableValue<? extends CustomerFXAdapter> observableValue, CustomerFXAdapter old, CustomerFXAdapter wen) {
+            unBind(old);
+            reBind(wen);
+        }
+    };
+
     private void addCustomerRows() {
-        tableView.getItems().clear();
+//        tableView.getItems().clear();
+        tableView.getSelectionModel().selectedItemProperty().removeListener(rowChangeListener);
         tableView.setItems(FXCustomers);
 
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, wen) -> {
-            unBind(old);
-//            clearfields();
-            reBind(wen);
-        });
+        tableView.getSelectionModel().selectedItemProperty().addListener(rowChangeListener);
         tableView.getSelectionModel().selectFirst();
         filteredDivisionList.setPredicate(p -> p.getCountryId() == tableView.getSelectionModel().selectedItemProperty().get().divisionProperty().get().getCountryId());
     }
@@ -365,6 +370,7 @@ public class CustomerFormController implements Initializable {
         db.customerDB.fetchFromDB();
         FXCustomers.clear();
         FXCustomers.addAll(db.customers.stream().map(item -> new CustomerFXAdapter(item, this.db)).collect(Collectors.toList()));
+        addCustomerRows();
         db.em.getTransaction();
         appointmentFormController.dbRevert();
     }

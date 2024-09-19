@@ -405,9 +405,9 @@ public class AppointmentFormController implements Initializable {
                             .map(ap -> ((int)Duration.between(ap.getStart().toLocalTime(), lt ).toMinutes()))
                             .min(Integer::compare).get();
                     Platform.runLater(() -> {
-                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("Appointment alert");
-                        alert.setContentText(String.format("Appointment upcoming in %d minutes", result));
+//                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle(_bundle.getString("alert.appointment.text"));
+                        alert.setContentText(String.format(_bundle.getString("alert.appointment.upcoming.text"), result));
                         alert.getButtonTypes().setAll(ButtonType.OK);
                         alert.showAndWait();
                         //update UI thread from here.
@@ -415,9 +415,9 @@ public class AppointmentFormController implements Initializable {
                 }
                 else {
                     Platform.runLater(() -> {
-                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("Appointment alert");
-                        alert.setContentText(String.format("No upcoming appointments"));
+//                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle(_bundle.getString("alert.appointment.text"));
+                        alert.setContentText(String.format(_bundle.getString("alert.appointment.noupcoming.text")));
                         alert.getButtonTypes().setAll(ButtonType.OK);
                         alert.showAndWait();
                     });

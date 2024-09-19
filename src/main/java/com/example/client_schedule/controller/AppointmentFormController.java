@@ -7,6 +7,9 @@ import com.example.client_schedule.helper.DBContext;
 import com.example.client_schedule.helper.ZonedDates;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -34,7 +37,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -200,12 +205,22 @@ public class AppointmentFormController implements Initializable {
     @FXML
     protected VBox tabContent;
 
+
+    @FXML
+    private RadioButton weekRadioButton, monthRadioButton, allRadioButton;
+
+    @FXML
+    private ToggleGroup filterGroup;
+
+
+
     private DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private DateTimeFormatter tformatter = DateTimeFormatter.ofPattern("hh:mm[:ss] a");
     private DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm[:ss] a");
     private DateTimeFormatter minformatter = DateTimeFormatter.ofPattern("hh:mm");
 
-    private FilteredList<Appointment> appointmentFilteredList;
+    private FilteredList<AppointmentFXAdapter> appointmentFilteredList;
+
     /**
      * Represents a formatter for validating and formatting date input in a text field.
      * The formatter performs the following tasks:
@@ -288,7 +303,7 @@ public class AppointmentFormController implements Initializable {
     public void initialize(URL url, ResourceBundle bundle) {
         this._bundle = bundle;
         FXAppointments = FXCollections.observableList(this.db.appointments.stream().map(item -> new AppointmentFXAdapter(item)).collect(Collectors.toList()));
-        appointmentFilteredList = new FilteredList<>(db.appointments, p -> true);
+        appointmentFilteredList = new FilteredList<AppointmentFXAdapter>(FXAppointments, p -> true);
 
         StringConverter<LocalDate> dateStringConverter = new LocalDateStringConverter(dformatter,dformatter);
         StringConverter<LocalTime> timeStringConverter = new LocalTimeStringConverter(tformatter,tformatter);
@@ -303,7 +318,6 @@ public class AppointmentFormController implements Initializable {
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
         onReportAction = e -> launchReport();
-
 
         comboBoxContact.setItems(db.contacts);
         comboBoxContact.setConverter(new StringConverter<Contact>() {
@@ -397,7 +411,34 @@ public class AppointmentFormController implements Initializable {
                 task ,
                 0,      //delay before first execution
                 120000L); //time between executions
+
+
+        filterGroup = new ToggleGroup();
+        weekRadioButton.setToggleGroup(filterGroup);
+        monthRadioButton.setToggleGroup(filterGroup);
+        allRadioButton.setToggleGroup(filterGroup);
+
+        filterGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+            System.out.println("New Toggle Selected: " + (newToggle != null ? ((RadioButton) newToggle).getText() : "null"));
+
+            if (newToggle != null) {
+                tableView.refresh(); // Refresh the TableView if needed
+                if (newToggle == weekRadioButton) {
+                    System.out.println("Week filter applied");
+                    applyDateFilter(filterByWeek());
+                } else if (newToggle == monthRadioButton) {
+                    System.out.println("Month filter applied");
+                    applyDateFilter(filterByMonth());
+                } else if (newToggle == allRadioButton) {
+                    System.out.println("All filter applied");
+                    resetFilter();
+                }
+            }
+        });
+
     }
+
+
 
     /**
      * Unbinds the properties of the given AppointmentFXAdapter object from the corresponding UI elements.
@@ -481,11 +522,13 @@ public class AppointmentFormController implements Initializable {
     private ChangeListener<Boolean> workingHourListener;
     private ChangeListener<Boolean> overlappingApptsListener;
 
+
+
+
     private BooleanBinding overlapping;
     private BooleanBinding startEndDateValid;
     private BooleanBinding startEndTimeValid;
     private BooleanBinding withinWorkingHours;
-
     /**
      * Binds the properties of the given AppointmentFXAdapter to the corresponding UI elements.
      * Updates the UI when the properties of the AppointmentFXAdapter change.
@@ -559,6 +602,7 @@ public class AppointmentFormController implements Initializable {
                     super.bind(textStartTime.textProperty(), textEndTime.textProperty());
                 }
                 @Override
+
                 protected boolean computeValue() {
                     AppConfig cfg = new AppConfig();
                     ZonedDates ZD = cfg.getZonedDateTime();
@@ -617,8 +661,8 @@ public class AppointmentFormController implements Initializable {
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
                                 alert.setTitle("Error Dialog");
-                                alert.setHeaderText("Invalid Start or End");
-                                alert.setContentText("Appointment must start at least 15 minutes before ending");
+                                alert.setHeaderText("Outside of Business Hours");
+                                alert.setContentText("Appointment must be within business hours (8:00 a.m. to 10:00 p.m. ET, including weekends)");
                                 alert.show();
                             }
                         });
@@ -642,6 +686,8 @@ public class AppointmentFormController implements Initializable {
                     }
                 }
             };
+
+
             startEndDateValid.addListener(apptDateListener);
             startEndTimeValid.addListener(apptListener);
             withinWorkingHours.addListener(workingHourListener);
@@ -649,6 +695,7 @@ public class AppointmentFormController implements Initializable {
         }
 
     }
+
 
     private ChangeListener<AppointmentFXAdapter> rowSelectionListener = new ChangeListener<AppointmentFXAdapter>() {
         @Override
@@ -664,10 +711,10 @@ public class AppointmentFormController implements Initializable {
      * The table view is then bound to the selected appointment item.
      */
     private void addAppointmentRows() {
-//        tableView.setItems(appointmentFilteredList);
+        tableView.setItems(appointmentFilteredList);
         tableView.getSelectionModel().selectedItemProperty().removeListener(rowSelectionListener);
 //        tableView.getItems().clear();
-        tableView.setItems(FXAppointments);
+        //tableView.setItems(FXAppointments);
         tableView.getSelectionModel().selectedItemProperty().addListener(rowSelectionListener);
         tableView.getSelectionModel().selectFirst();
     }
@@ -680,21 +727,27 @@ public class AppointmentFormController implements Initializable {
      * ComboBoxTableCell is used for the customer, user, and contact columns.
      */
     private void addAppointmentColumns() {
-        TableColumn<AppointmentFXAdapter, Integer> idCol = new TableColumn<>("id");
+        TableColumn<AppointmentFXAdapter, Integer> idCol = new TableColumn<>(_bundle.getString("label.appointment.id.text"));
         TableColumn<AppointmentFXAdapter, String> titleCol = new TableColumn<>(_bundle.getString("label.appointment.title.text"));
         TableColumn<AppointmentFXAdapter, String> descriptionCol = new TableColumn<>(_bundle.getString("label.appointment.description.text"));
         TableColumn<AppointmentFXAdapter, String> locationCol = new TableColumn<>(_bundle.getString("label.appointment.location.text"));
         TableColumn<AppointmentFXAdapter, String> typeCol = new TableColumn<>(_bundle.getString("label.appointment.type.text"));
         TableColumn<AppointmentFXAdapter, LocalDateTime> startCol = new TableColumn<>(_bundle.getString("label.appointment.start.text"));
         TableColumn<AppointmentFXAdapter, LocalDateTime> endCol = new TableColumn<>(_bundle.getString("label.appointment.end.text"));
+
         TableColumn<AppointmentFXAdapter, Customer> customerCol = new TableColumn<>(_bundle.getString("label.appointment.customer.text"));
+        TableColumn<AppointmentFXAdapter, Integer> customerIdCol = new TableColumn<>(_bundle.getString("label.customer.id.text"));
+
         TableColumn<AppointmentFXAdapter, User> userCol = new TableColumn<>(_bundle.getString("label.appointment.user.text"));
+        TableColumn<AppointmentFXAdapter, Integer> userIdCol = new TableColumn<>(_bundle.getString("label.user.id.text"));
+
         TableColumn<AppointmentFXAdapter, Contact> contactCol = new TableColumn<>(_bundle.getString("label.appointment.contact.text"));
         TableColumn appointmentCol = new TableColumn(_bundle.getString("label.appointment.appointment.text"));
         TableColumn<AppointmentFXAdapter, LocalDate> startDateCol = new TableColumn(_bundle.getString("label.appointment.date.text"));
         TableColumn<AppointmentFXAdapter, LocalTime> startTimeCol = new TableColumn(_bundle.getString("label.appointment.time.text"));
         TableColumn<AppointmentFXAdapter, LocalDate> endDateCol = new TableColumn(_bundle.getString("label.appointment.date.text"));
         TableColumn<AppointmentFXAdapter, LocalTime> endTimeCol = new TableColumn(_bundle.getString("label.appointment.time.text"));
+
         startCol.getColumns().addAll(startDateCol, startTimeCol);
         endCol.getColumns().addAll(endDateCol, endTimeCol);
         appointmentCol.getColumns().addAll(startCol, endCol);
@@ -710,9 +763,15 @@ public class AppointmentFormController implements Initializable {
         endTimeCol.setCellValueFactory(f -> f.getValue().endTimeProperty());
         startCol.setCellValueFactory(f -> f.getValue().startProperty());
         endCol.setCellValueFactory(f -> f.getValue().endProperty());
+
         customerCol.setCellValueFactory(f -> f.getValue().customerProperty());
+        customerIdCol.setCellValueFactory(new PropertyValueFactory("customerId"));
+
         userCol.setCellValueFactory(f -> f.getValue().userProperty());
+        userIdCol.setCellValueFactory(new PropertyValueFactory("userId"));
+
         contactCol.setCellValueFactory(f -> f.getValue().contactProperty());
+
 
         idCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -723,6 +782,11 @@ public class AppointmentFormController implements Initializable {
         startDateCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter(dformatter,dformatter)));
         endTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter(tformatter,tformatter)));
         endDateCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter(dformatter,dformatter)));
+        customerIdCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        userIdCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        customerCol.setCellValueFactory(f -> f.getValue().customerProperty());
+        userCol.setCellValueFactory(f -> f.getValue().userProperty());
+        contactCol.setCellValueFactory(f -> f.getValue().contactProperty());
 
         customerCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Customer>() {
             @Override
@@ -769,8 +833,41 @@ public class AppointmentFormController implements Initializable {
             }
         }, db.users));
 
-        idCol.setVisible(false);
-        tableView.getColumns().addAll(idCol, titleCol, descriptionCol, locationCol, typeCol, appointmentCol, customerCol, userCol, contactCol);
+        customerCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Customer>() {
+            @Override
+            public String toString(Customer customer) {
+                if (customer == null) {
+                    return db.customers.stream().findFirst().get().getName();
+                }
+                return customer.getName();
+            }
+
+            @Override
+            public Customer fromString(String s) {
+                return db.customers.stream().filter(c -> c.getName().equals(s)).findFirst().orElse(null);
+            }
+        }, db.customers));
+
+
+
+        contactCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Contact>() {
+            @Override
+            public String toString(Contact contact) {
+                if (contact == null) {
+                    return db.contacts.stream().findFirst().get().getName();
+                }
+                return contact.getName();
+            }
+
+            @Override
+            public Contact fromString(String s) {
+                return db.contacts.stream().filter(c -> c.getName().equals(s)).findFirst().orElse(null);
+            }
+        }, db.contacts));
+
+
+        idCol.setVisible(true);
+        tableView.getColumns().addAll(idCol, titleCol, descriptionCol, locationCol, typeCol, appointmentCol, customerCol, customerIdCol, userCol, userIdCol, contactCol);
     }
 
     /**
@@ -816,6 +913,7 @@ public class AppointmentFormController implements Initializable {
     private void dbCommit() {
         db.em.getTransaction().commit();
         db.em.getTransaction().begin();
+        //tableView.refresh();
     }
 
     /**
@@ -863,7 +961,19 @@ public class AppointmentFormController implements Initializable {
      */
     private void recordRemove() {
         AppointmentFXAdapter delAppointment = tableView.getSelectionModel().getSelectedItem();
+        final Integer apptId = delAppointment.getId();
+        final String apptType = delAppointment.getType();
+
         recordRemove(delAppointment);
+        //alert to show customer was removed
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Appointment Removed");
+            alert.setHeaderText(null);
+            alert.setContentText(String.format("Appointment ID %d (%s) has been successfully removed.", apptId, apptType));
+
+            alert.showAndWait();
+        });
     }
 
     public void recordRemove(AppointmentFXAdapter delAppointment) {
@@ -882,6 +992,53 @@ public class AppointmentFormController implements Initializable {
         } catch (Exception ex) {
             System.console().writer().println(ex.getMessage());
         }
+    }
+
+
+
+
+    // Method to apply filter
+    private void applyDateFilter(Predicate<AppointmentFXAdapter> dateFilter) {
+        appointmentFilteredList.setPredicate(dateFilter);
+    }
+
+    private Predicate<AppointmentFXAdapter> filterByWeek() {
+        LocalDate now = LocalDate.now();
+        LocalDate startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        return appointment -> {
+            LocalDate appointmentDate = appointment.getStartDate();
+            return !appointmentDate.isBefore(startOfWeek) && !appointmentDate.isAfter(endOfWeek);
+        };
+    }
+
+    private Predicate<AppointmentFXAdapter> filterByMonth() {
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+
+        return appointment -> {
+            LocalDate appointmentDate = appointment.getStartDate();
+            YearMonth appointmentMonth = YearMonth.from(appointmentDate);
+            return appointmentMonth.equals(currentMonth);
+        };
+    }
+
+    // Reset the date filters (only apply the additional filters)
+    private void resetFilter() {
+        appointmentFilteredList.setPredicate(appointment -> true);
+    }
+
+
+    // Helper method to create a date range filter
+    private Predicate<AppointmentFXAdapter> createDateFilterPredicate(LocalDate startDate, LocalDate endDate) {
+        return appointment -> {
+            LocalDate appointmentDate = appointment.getStart().toLocalDate(); // Assuming getStart() returns LocalDateTime
+            boolean isInRange = (appointmentDate != null) &&
+                    (!appointmentDate.isBefore(startDate) && !appointmentDate.isAfter(endDate));
+            System.out.println("Filtering appointment on date " + appointmentDate + ": " + isInRange);
+            return isInRange;
+        };
     }
 
     /**

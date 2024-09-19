@@ -13,6 +13,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleButton?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <VBox>
@@ -23,6 +25,13 @@
                 <HBox fx:id="addInsert" alignment="CENTER_LEFT">
                     <Button fx:id="insertButton" maxHeight="40" text="%button.insert.text" />
                     <Button fx:id="deleteButton" text="%button.delete.text" />
+                </HBox>
+                <HBox fx:id="monthWeekHbox" alignment="CENTER_LEFT">
+
+                    <RadioButton fx:id="monthRadioButton" text="%label.month.text" />
+                    <RadioButton fx:id="weekRadioButton" text="%label.week.text" />
+                    <RadioButton fx:id="allRadioButton" text="%label.all.text" />
+
                 </HBox>
                 <HBox maxHeight="50" prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS" />
                 <HBox fx:id="commitRevert" alignment="CENTER_RIGHT" maxHeight="40">
@@ -57,8 +66,8 @@
             <RowConstraints minHeight="1.0" prefHeight="1.0" />
             </rowConstraints>
             <Label text="%label.appointment.id.text" />
-            <Label text="%label.user.id.text" GridPane.rowIndex="1" />
-            <Label text="%label.customer.id.text" GridPane.rowIndex="2" />
+            <Label text="%label.user.text" GridPane.rowIndex="1" />
+            <Label text="%label.appointment.customer.text" GridPane.rowIndex="2" />
             <Label text="%label.appointment.title.text" GridPane.rowIndex="3" />
             <Label text="%label.appointment.description.text" GridPane.rowIndex="4" />
             <Label text="%label.appointment.location.text" GridPane.rowIndex="5" />

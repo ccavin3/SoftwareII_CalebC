@@ -193,21 +193,21 @@ public class AppointmentFXAdapter {
      * @return Appointment's customer Id
      */
     public int getCustomerId() {
-        return customerId.get();
+        return customer.get().getId();
     }
 
     /**
      * @return Appointment's user Id
      */
     public int getUserId() {
-        return userId.get();
+        return user.get().getId();
     }
 
     /**
      * @return Appointment's Contact Id
      */
     public int getContactId() {
-        return contactId.get();
+        return contact.get().getId();
     }
 
     /**
@@ -296,7 +296,7 @@ public class AppointmentFXAdapter {
      * @param c Customer object to be set.
      */
     public void setCustomer(Customer c) {
-        customer.set(c);
+        customerId.set(c.getId());
     }
 
     /**
@@ -471,7 +471,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the customer Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty customerIdProperty() {
-        customerId.set(appointment.getCustomerId());
+        customerId.set(appointment.getCustomer().getId());
         customerId.addListener((obs, old, wen) -> appointment.setCustomerId((Integer) wen));
         return customerId;
     }
@@ -480,7 +480,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the contact Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty contactIdProperty() {
-        contactId.set(appointment.getContactId());
+        contactId.set(appointment.getContact().getId());
         contactId.addListener((obs, old, wen) -> appointment.setContactId((Integer) wen));
         return contactId;
     }
@@ -489,7 +489,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the user Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty userIdProperty() {
-        userId.set(appointment.getUserId());
+        userId.set(appointment.getUser().getId());
         userId.addListener((obs, old, wen) -> appointment.setUserId((Integer) wen));
         return userId;
     }

@@ -125,7 +125,7 @@ public class CustomerFXAdapter {
      * @return the customer's division id.
      */
     public Integer getDivisionId() {
-        return divisionId.get();
+        return division.get().getId();
     }
 
     /**

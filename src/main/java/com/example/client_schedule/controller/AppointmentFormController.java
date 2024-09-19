@@ -304,7 +304,7 @@ public class AppointmentFormController implements Initializable {
     public void initialize(URL url, ResourceBundle bundle) {
         this._bundle = bundle;
         FXAppointments = FXCollections.observableList(this.db.appointments.stream().map(item -> new AppointmentFXAdapter(item)).collect(Collectors.toList()));
-        appointmentFilteredList = new FilteredList<AppointmentFXAdapter>(FXAppointments, p -> true);
+        appointmentFilteredList = new FilteredList<>(FXAppointments, p -> true);
 
         StringConverter<LocalDate> dateStringConverter = new LocalDateStringConverter(dformatter,dformatter);
         StringConverter<LocalTime> timeStringConverter = new LocalTimeStringConverter(tformatter,tformatter);
@@ -338,7 +338,14 @@ public class AppointmentFormController implements Initializable {
         });
         comboBoxContact.getSelectionModel().selectFirst();
 
+
         comboBoxUser.setItems(db.users);
+
+        comboBoxUser.setOnShowing(event -> {
+            // Refresh the contents of the ComboBox when it is expanded
+            comboBoxUser.setItems(FXCollections.observableArrayList(db.users));
+        });
+
         comboBoxUser.setConverter(new StringConverter<User>() {
             @Override
             public String toString(User user) {
@@ -362,22 +369,26 @@ public class AppointmentFormController implements Initializable {
 
         comboBoxCustomer.setItems(db.customers);
 
+        comboBoxCustomer.setOnShowing(event -> {
+            // Refresh the contents of the ComboBox when it is expanded
+            comboBoxCustomer.setItems(FXCollections.observableArrayList(db.customers));
+        });
+
         comboBoxCustomer.setConverter(new StringConverter<Customer>() {
             @Override
             public String toString(Customer customer) {
-                // Display the customer id and name concatenated, e.g., "123 - John Doe"
                 return (customer != null) ? customer.getId() + " - " + customer.getName() : "";
             }
 
             @Override
             public Customer fromString(String string) {
-                // If you need to support selecting based on string input, implement logic here
-                return db.customers.stream()
+                return comboBoxCustomer.getItems().stream()
                         .filter(c -> (c.getId() + " - " + c.getName()).equals(string))
                         .findFirst()
                         .orElse(null);
             }
         });
+
 
         comboBoxCustomer.getSelectionModel().selectFirst();
 
@@ -564,6 +575,7 @@ public class AppointmentFormController implements Initializable {
 
             textLocation.textProperty().bindBidirectional(currentAppointment.locationProperty());
             comboBoxCustomer.valueProperty().bindBidirectional(currentAppointment.customerProperty());
+
             comboBoxContact.valueProperty().bindBidirectional(currentAppointment.contactProperty());
             comboBoxUser.valueProperty().bindBidirectional(currentAppointment.userProperty());
             textStart.textProperty().bindBidirectional(currentAppointment.startProperty(), new LocalDateTimeStringConverter(dtformatter,dtformatter));
@@ -829,7 +841,7 @@ public class AppointmentFormController implements Initializable {
         endCol.setCellValueFactory(f -> f.getValue().endProperty());
 
         customerCol.setCellValueFactory(f -> f.getValue().customerProperty());
-        customerIdCol.setCellValueFactory(new PropertyValueFactory("customerId"));
+        customerIdCol.setCellValueFactory(f -> f.getValue().customerIdProperty().asObject());
 
         userCol.setCellValueFactory(f -> f.getValue().userProperty());
         userIdCol.setCellValueFactory(new PropertyValueFactory("userId"));
@@ -848,9 +860,7 @@ public class AppointmentFormController implements Initializable {
         endDateCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter(dformatter,dformatter)));
         customerIdCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         userIdCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        customerCol.setCellValueFactory(f -> f.getValue().customerProperty());
-        userCol.setCellValueFactory(f -> f.getValue().userProperty());
-        contactCol.setCellValueFactory(f -> f.getValue().contactProperty());
+
 
         customerCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Customer>() {
             @Override
@@ -866,6 +876,21 @@ public class AppointmentFormController implements Initializable {
                 return db.customers.stream().filter(c -> c.getName().equals(s)).findFirst().orElse(null);
             }
         }, db.customers));
+        customerCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Customer>() {
+            @Override
+            public String toString(Customer customer) {
+                return (customer != null) ? customer.getName() : "";
+            }
+
+            @Override
+            public Customer fromString(String string) {
+                return db.customers.stream()
+                        .filter(c -> c.getName().equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }, db.customers));
+
 
         contactCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Contact>() {
             @Override
@@ -896,39 +921,6 @@ public class AppointmentFormController implements Initializable {
                 return db.users.stream().filter(u -> u.getUserName().equals(s)).findFirst().orElse(null);
             }
         }, db.users));
-
-        customerCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Customer>() {
-            @Override
-            public String toString(Customer customer) {
-                if (customer == null) {
-                    return db.customers.stream().findFirst().get().getName();
-                }
-                return customer.getName();
-            }
-
-            @Override
-            public Customer fromString(String s) {
-                return db.customers.stream().filter(c -> c.getName().equals(s)).findFirst().orElse(null);
-            }
-        }, db.customers));
-
-
-
-        contactCol.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<Contact>() {
-            @Override
-            public String toString(Contact contact) {
-                if (contact == null) {
-                    return db.contacts.stream().findFirst().get().getName();
-                }
-                return contact.getName();
-            }
-
-            @Override
-            public Contact fromString(String s) {
-                return db.contacts.stream().filter(c -> c.getName().equals(s)).findFirst().orElse(null);
-            }
-        }, db.contacts));
-
 
         idCol.setVisible(true);
         tableView.getColumns().addAll(idCol, titleCol, descriptionCol, locationCol, typeCol, appointmentCol, customerCol, customerIdCol, userCol, userIdCol, contactCol);
@@ -977,7 +969,7 @@ public class AppointmentFormController implements Initializable {
     private void dbCommit() {
         db.em.getTransaction().commit();
         db.em.getTransaction().begin();
-        //tableView.refresh();
+        tableView.refresh();
     }
 
     /**

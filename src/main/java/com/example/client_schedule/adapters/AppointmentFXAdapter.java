@@ -300,8 +300,9 @@ public class AppointmentFXAdapter {
      * @param c Customer object to be set.
      */
     public void setCustomer(Customer c) {
-        customerId.set(c.getId());
+        customerId.set(c != null ? c.getId() : 0);
         customer.set(c);
+
     }
 
     /**
@@ -317,7 +318,7 @@ public class AppointmentFXAdapter {
      * @param u User object to be set.
      */
     public void setUser(User u) {
-        userId.set(u.getId());
+        userId.set(u != null ? u.getId() : 0);
         user.set(u);
     }
 
@@ -334,7 +335,7 @@ public class AppointmentFXAdapter {
      * @param c Contact object to be set.
      */
     public void setContact(Contact c) {
-        contactId.set(c.getId());
+        contactId.set(c != null ? c.getId() : 0);
         contact.set(c);
     }
 
@@ -478,7 +479,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the customer Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty customerIdProperty() {
-        customerId.set(appointment.getCustomer().getId());
+        customerId.set(appointment.getCustomer() != null ? appointment.getCustomer().getId() : 0);
         customerId.addListener((obs, old, wen) -> appointment.setCustomerId((Integer) wen));
         return customerId;
     }
@@ -487,7 +488,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the contact Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty contactIdProperty() {
-        contactId.set(appointment.getContact().getId());
+        contactId.set(appointment.getContact() != null ? appointment.getContact().getId() : 0);
         contactId.addListener((obs, old, wen) -> appointment.setContactId((Integer) wen));
         return contactId;
     }
@@ -496,7 +497,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the user Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty userIdProperty() {
-        userId.set(appointment.getUser().getId());
+        userId.set(appointment.getUser() != null ? appointment.getUser().getId() : 0);
         userId.addListener((obs, old, wen) -> appointment.setUserId((Integer) wen));
         return userId;
     }
@@ -507,6 +508,8 @@ public class AppointmentFXAdapter {
                 @Override
                 protected void invalidated() {
                     appointment.setCustomer(get());
+                    customerId.set(get() != null ? get().getId() : 0);
+
                 }
             };
         }
@@ -519,6 +522,7 @@ public class AppointmentFXAdapter {
                 @Override
                 protected void invalidated() {
                     appointment.setUser(get());
+                    userId.set(get() != null ? get().getId() : 0);
                 }
             };
         }
@@ -531,6 +535,7 @@ public class AppointmentFXAdapter {
                 @Override
                 protected void invalidated() {
                     appointment.setContact(get());
+                    contactId.set(get() != null ? get().getId() : 0);
                 }
             };
         }

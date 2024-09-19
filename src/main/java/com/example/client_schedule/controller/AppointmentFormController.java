@@ -343,7 +343,7 @@ public class AppointmentFormController implements Initializable {
             @Override
             public String toString(User user) {
                 if (user != null) {
-                    return user.getUserName();
+                    return user.getId() + " - " + user.getUserName();
                 } else {
                     return "";
                 }
@@ -351,27 +351,34 @@ public class AppointmentFormController implements Initializable {
 
             @Override
             public User fromString(String s) {
-                return comboBoxUser.getItems().stream().filter(ap -> ap.getUserName().equals(s)).findFirst().orElse(null);
+                return comboBoxUser.getItems().stream()
+                        .filter(ap -> (ap.getId() + " - " + ap.getUserName()).equals(s))
+                        .findFirst()
+                        .orElse(null);
             }
         });
+
         comboBoxUser.getSelectionModel().selectFirst();
 
         comboBoxCustomer.setItems(db.customers);
+
         comboBoxCustomer.setConverter(new StringConverter<Customer>() {
             @Override
             public String toString(Customer customer) {
-                if (customer != null) {
-                    return customer.getName();
-                } else {
-                    return "";
-                }
+                // Display the customer id and name concatenated, e.g., "123 - John Doe"
+                return (customer != null) ? customer.getId() + " - " + customer.getName() : "";
             }
 
             @Override
-            public Customer fromString(String s) {
-                return db.customers.stream().filter(c -> c.getName().equals(s)).findFirst().orElse(null);
+            public Customer fromString(String string) {
+                // If you need to support selecting based on string input, implement logic here
+                return db.customers.stream()
+                        .filter(c -> (c.getId() + " - " + c.getName()).equals(string))
+                        .findFirst()
+                        .orElse(null);
             }
         });
+
         comboBoxCustomer.getSelectionModel().selectFirst();
 
         deleteButton.setOnAction(onDeleteAction);
@@ -398,11 +405,21 @@ public class AppointmentFormController implements Initializable {
                             .map(ap -> ((int)Duration.between(ap.getStart().toLocalTime(), lt ).toMinutes()))
                             .min(Integer::compare).get();
                     Platform.runLater(() -> {
-                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("Appointment alert");
-                        alert.setContentText(String.format("Appointmenet upcoming in %d minutes", result));
+//                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle(_bundle.getString("alert.appointment.text"));
+                        alert.setContentText(String.format(_bundle.getString("alert.appointment.upcoming.text"), result));
+                        alert.getButtonTypes().setAll(ButtonType.OK);
                         alert.showAndWait();
                         //update UI thread from here.
+                    });
+                }
+                else {
+                    Platform.runLater(() -> {
+//                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle(_bundle.getString("alert.appointment.text"));
+                        alert.setContentText(String.format(_bundle.getString("alert.appointment.noupcoming.text")));
+                        alert.getButtonTypes().setAll(ButtonType.OK);
+                        alert.showAndWait();
                     });
                 }
             }

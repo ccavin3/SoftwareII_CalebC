@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -516,16 +517,20 @@ public class AppointmentFormController implements Initializable {
                 }
                 @Override
                 protected boolean computeValue() {
-                    boolean tsEmpty = textStart.getText().trim().isEmpty();
-                    boolean teEmpty = textEnd.getText().trim().isEmpty();
-                    LocalDateTime tsDT = LocalDateTime.parse(textStart.getText(), dtformatter);
-                    LocalDateTime teDT = LocalDateTime.parse(textEnd.getText(), dtformatter);
-                    FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments, a -> a.getStart().toLocalDate().isEqual(tsDT.toLocalDate()));
-                    boolean tsOverlap = aFL.stream().anyMatch(a ->
-                            tsDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && tsDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
-                                    || teDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && teDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
-                    );
-                    return tsOverlap;
+                    try {
+                        boolean tsEmpty = textStart.getText().trim().isEmpty();
+                        boolean teEmpty = textEnd.getText().trim().isEmpty();
+                        LocalDateTime tsDT = LocalDateTime.parse(textStart.getText(), dtformatter);
+                        LocalDateTime teDT = LocalDateTime.parse(textEnd.getText(), dtformatter);
+                        FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments, a -> a.getStart().toLocalDate().isEqual(tsDT.toLocalDate()));
+                        boolean tsOverlap = aFL.stream().anyMatch(a ->
+                                tsDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && tsDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
+                                        || teDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && teDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
+                        );
+                        return tsOverlap;
+                    } catch (DateTimeParseException dtp) {
+                        return false;
+                    }
                 }
             };
 
@@ -535,9 +540,13 @@ public class AppointmentFormController implements Initializable {
                 }
                 @Override
                 protected boolean computeValue() {
-                    return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
-                            || (LocalDate.parse(textStartDate.getText(), dformatter).isBefore(LocalDate.parse(textEndDate.getText(), dformatter)))
-                            ||  (LocalDate.parse(textStartDate.getText(), dformatter).isEqual(LocalDate.parse(textEndDate.getText(), dformatter)));
+                    try {
+                        return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
+                                || (LocalDate.parse(textStartDate.getText(), dformatter).isBefore(LocalDate.parse(textEndDate.getText(), dformatter)))
+                                ||  (LocalDate.parse(textStartDate.getText(), dformatter).isEqual(LocalDate.parse(textEndDate.getText(), dformatter)));
+                    } catch (DateTimeParseException dte) {
+                        return true;
+                    }
                 }
             };
 
@@ -547,10 +556,14 @@ public class AppointmentFormController implements Initializable {
                 }
                 @Override
                 protected boolean computeValue() {
-                    return textStartTime.getText().trim().isEmpty()
-                            || textEndTime.getText().trim().isEmpty()
-                            || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)))
-                            || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)));
+                    try {
+                        return textStartTime.getText().trim().isEmpty()
+                                || textEndTime.getText().trim().isEmpty()
+                                || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)))
+                                || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)));
+                    } catch (DateTimeParseException dte) {
+                        return true;
+                    }
                 }
             };
 
@@ -560,11 +573,15 @@ public class AppointmentFormController implements Initializable {
                 }
                 @Override
                 protected boolean computeValue() {
-                    AppConfig cfg = new AppConfig();
-                    ZonedDates ZD = cfg.getZonedDateTime();
+                    try {
+                        AppConfig cfg = new AppConfig();
+                        ZonedDates ZD = cfg.getZonedDateTime();
 
-                    return LocalTime.parse(textStartTime.getText(), tformatter).getHour() >= ZD.start.toLocalTime().getHour() &&
-                            LocalTime.parse(textEndTime.getText(), tformatter).getHour() < ZD.end.toLocalTime().getHour();
+                        return LocalTime.parse(textStartTime.getText(), tformatter).getHour() >= ZD.start.toLocalTime().getHour() &&
+                                LocalTime.parse(textEndTime.getText(), tformatter).getHour() < ZD.end.toLocalTime().getHour();
+                    } catch (DateTimeParseException dte) {
+                        return true;
+                    }
                 }
             };
 

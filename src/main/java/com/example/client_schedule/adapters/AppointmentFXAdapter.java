@@ -193,21 +193,21 @@ public class AppointmentFXAdapter {
      * @return Appointment's customer Id
      */
     public int getCustomerId() {
-        return customerId.get();
+        return customer.get().getId();
     }
 
     /**
      * @return Appointment's user Id
      */
     public int getUserId() {
-        return userId.get();
+        return user.get().getId();
     }
 
     /**
      * @return Appointment's Contact Id
      */
     public int getContactId() {
-        return contactId.get();
+        return contact.get().getId();
     }
 
     /**
@@ -233,6 +233,7 @@ public class AppointmentFXAdapter {
      */
     public void setStartDate(LocalDate ld) {
         startDate.set(ld);
+        start.set(ld.atTime(startTime.get()));
     }
 
     /**
@@ -249,6 +250,7 @@ public class AppointmentFXAdapter {
      */
     public void setEndDate(LocalDate ld) {
         endDate.set(ld);
+        end.set(ld.atTime(endTime.get()));
     }
 
     /**
@@ -265,6 +267,7 @@ public class AppointmentFXAdapter {
      */
     public void setStartTime(LocalTime lt) {
         startTime.set(lt);
+        start.set(startDate.get().atTime(lt));
     }
 
     /**
@@ -281,6 +284,7 @@ public class AppointmentFXAdapter {
      */
     public void setEndTime(LocalTime lt) {
         endTime.set(lt);
+        end.set(endDate.get().atTime(lt));
     }
 
     /**
@@ -296,6 +300,7 @@ public class AppointmentFXAdapter {
      * @param c Customer object to be set.
      */
     public void setCustomer(Customer c) {
+        customerId.set(c.getId());
         customer.set(c);
     }
 
@@ -312,6 +317,7 @@ public class AppointmentFXAdapter {
      * @param u User object to be set.
      */
     public void setUser(User u) {
+        userId.set(u.getId());
         user.set(u);
     }
 
@@ -328,6 +334,7 @@ public class AppointmentFXAdapter {
      * @param c Contact object to be set.
      */
     public void setContact(Contact c) {
+        contactId.set(c.getId());
         contact.set(c);
     }
 

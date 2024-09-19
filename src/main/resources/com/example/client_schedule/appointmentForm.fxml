@@ -66,8 +66,8 @@
             <RowConstraints minHeight="1.0" prefHeight="1.0" />
             </rowConstraints>
             <Label text="%label.appointment.id.text" />
-            <Label text="%label.user.text" GridPane.rowIndex="1" />
-            <Label text="%label.appointment.customer.text" GridPane.rowIndex="2" />
+            <Label text="%label.user.id.text" GridPane.rowIndex="1" />
+            <Label text="%label.customer.id.text" GridPane.rowIndex="2" />
             <Label text="%label.appointment.title.text" GridPane.rowIndex="3" />
             <Label text="%label.appointment.description.text" GridPane.rowIndex="4" />
             <Label text="%label.appointment.location.text" GridPane.rowIndex="5" />

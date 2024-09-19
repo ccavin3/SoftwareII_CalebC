@@ -400,9 +400,9 @@ public class CustomerFormController implements Initializable {
         //alert to show customer was removed
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Customer Removed");
+            alert.setTitle(_bundle.getString("alert.customerremoved.title"));
             alert.setHeaderText(null);
-            alert.setContentText(String.format("Customer %s has been successfully removed.", delCustomer.getName()));
+            alert.setContentText(String.format(_bundle.getString("alert.customerremoved.content"), delCustomer.getName()));
             alert.showAndWait();
         });
     }

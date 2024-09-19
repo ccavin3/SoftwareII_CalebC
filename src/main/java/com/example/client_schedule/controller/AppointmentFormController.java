@@ -7,9 +7,6 @@ import com.example.client_schedule.helper.DBContext;
 import com.example.client_schedule.helper.ZonedDates;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -302,6 +299,7 @@ public class AppointmentFormController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
+
         this._bundle = bundle;
         FXAppointments = FXCollections.observableList(this.db.appointments.stream().map(item -> new AppointmentFXAdapter(item)).collect(Collectors.toList()));
         appointmentFilteredList = new FilteredList<>(FXAppointments, p -> true);
@@ -407,34 +405,58 @@ public class AppointmentFormController implements Initializable {
             public void run() {
                 final LocalDate ld = LocalDate.now();
                 final LocalTime lt = LocalTime.now();
+
+                // Get the logged-in user's ID
+                int loggedInUserId = getUserIdByUserName(userName); // Replace with actual method to get user ID
+
                 Comparator<AppointmentFXAdapter> comparator = Comparator.comparing(AppointmentFXAdapter::getStart).reversed();
-                if (db.appointments.stream().anyMatch(ap -> ap.getStart().toLocalDate().equals(ld) && lt.isBefore(ap.getStart().toLocalTime()) && lt.plusMinutes(15).isAfter(ap.getStart().toLocalTime()))) {
-                    int result =
-                        db.appointments
+
+                // Check for upcoming appointments filtered by the logged-in user
+                boolean hasUpcomingAppointments = db.appointments.stream()
+                        .filter(ap -> ap.getUser().getId() == loggedInUserId) // Filter by user
+                        .anyMatch(ap -> ap.getStart().toLocalDate().equals(ld) &&
+                                lt.isBefore(ap.getStart().toLocalTime()) &&
+                                lt.plusMinutes(15).isAfter(ap.getStart().toLocalTime()));
+
+                if (hasUpcomingAppointments) {
+                    int result = db.appointments
                             .stream()
-                            .filter(ap -> ap.getStart().toLocalDate().equals(ld) && lt.isBefore(ap.getStart().toLocalTime()) && lt.plusMinutes(15).isAfter(ap.getStart().toLocalTime()))
-                            .map(ap -> ((int)Duration.between(ap.getStart().toLocalTime(), lt ).toMinutes()))
-                            .min(Integer::compare).get();
+                            .filter(ap -> ap.getUser().getId() == loggedInUserId) // Filter by user
+                            .filter(ap -> ap.getStart().toLocalDate().equals(ld) &&
+                                    lt.isBefore(ap.getStart().toLocalTime()) &&
+                                    lt.plusMinutes(15).isAfter(ap.getStart().toLocalTime()))
+                            .map(ap -> (int) Duration.between(ap.getStart().toLocalTime(), lt).toMinutes())
+                            .min(Integer::compare)
+                            .orElse(0); // Default to 0 if no minimum found
+
                     Platform.runLater(() -> {
-//                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
                         alert.setTitle(_bundle.getString("alert.appointment.text"));
                         alert.setContentText(String.format(_bundle.getString("alert.appointment.upcoming.text"), result));
                         alert.getButtonTypes().setAll(ButtonType.OK);
                         alert.showAndWait();
-                        //update UI thread from here.
                     });
-                }
-                else {
+                } else {
                     Platform.runLater(() -> {
-//                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
                         alert.setTitle(_bundle.getString("alert.appointment.text"));
-                        alert.setContentText(String.format(_bundle.getString("alert.appointment.noupcoming.text")));
+                        alert.setContentText(_bundle.getString("alert.appointment.noupcoming.text"));
                         alert.getButtonTypes().setAll(ButtonType.OK);
                         alert.showAndWait();
                     });
                 }
             }
+
+            private int getUserIdByUserName(String userName) {
+                // Implement this method to retrieve the user ID based on the logged-in userName
+                return db.users.stream()
+                        .filter(user -> user.getUserName().equals(userName))
+                        .findFirst()
+                        .map(User::getId)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+            }
         };
+
+// Example method to get the user ID from userName
+
         Timer t = new Timer();
         t.scheduleAtFixedRate(
                 task ,
@@ -698,9 +720,9 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Error Dialog");
-                                alert.setHeaderText("Invalid Start or End Date");
-                                alert.setContentText("Start Date must be before or same as End Date");
+                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setHeaderText(_bundle.getString("error.invalidstartenddate.header.text"));
+                                alert.setContentText(_bundle.getString("error.invalidstartenddate.content.text"));
                                 alert.show();
                             }
                         });
@@ -717,9 +739,9 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Error Dialog");
-                                alert.setHeaderText("Invalid Start or End");
-                                alert.setContentText("Appointment must start at least 15 minutes before ending");
+                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setHeaderText(_bundle.getString("error.invalidstartendtime.header.text"));
+                                alert.setContentText(_bundle.getString("error.invalid.sttartendtime.content.text"));
                                 alert.show();
                             }
                         });
@@ -736,9 +758,9 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Error Dialog");
-                                alert.setHeaderText("Outside of Business Hours");
-                                alert.setContentText("Appointment must be within business hours (8:00 a.m. to 10:00 p.m. ET, including weekends)");
+                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setHeaderText(_bundle.getString("error.businesshours.header.text"));
+                                alert.setContentText(_bundle.getString("error.businesshours.content.text"));
                                 alert.show();
                             }
                         });
@@ -753,9 +775,9 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Error Dialog");
-                                alert.setHeaderText("Overlapping appointments");
-                                alert.setContentText("Appointments cannot overlap with other appointments");
+                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setHeaderText(_bundle.getString("error.overlapping.header.text"));
+                                alert.setContentText(_bundle.getString("error.overlapping.content.text"));
                                 alert.show();
                             }
                         });
@@ -1024,9 +1046,9 @@ public class AppointmentFormController implements Initializable {
         //alert to show customer was removed
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Appointment Removed");
+            alert.setTitle(_bundle.getString("alert.appointmentremove.title"));
             alert.setHeaderText(null);
-            alert.setContentText(String.format("Appointment ID %d (%s) has been successfully removed.", apptId, apptType));
+            alert.setContentText(String.format(_bundle.getString("alert.appointmentremove.content"), apptId, apptType));
 
             alert.showAndWait();
         });

@@ -407,7 +407,7 @@ public class AppointmentFormController implements Initializable {
                 final LocalTime lt = LocalTime.now();
 
                 // Get the logged-in user's ID
-                int loggedInUserId = getUserIdByUserName(userName); // Replace with actual method to get user ID
+                int loggedInUserId = getUserIdByUserName(MainApplication.curUser); // Replace with actual method to get user ID
 
                 Comparator<AppointmentFXAdapter> comparator = Comparator.comparing(AppointmentFXAdapter::getStart).reversed();
 
@@ -435,14 +435,15 @@ public class AppointmentFormController implements Initializable {
                         alert.getButtonTypes().setAll(ButtonType.OK);
                         alert.showAndWait();
                     });
-                } else {
-                    Platform.runLater(() -> {
-                        alert.setTitle(_bundle.getString("alert.appointment.text"));
-                        alert.setContentText(_bundle.getString("alert.appointment.noupcoming.text"));
-                        alert.getButtonTypes().setAll(ButtonType.OK);
-                        alert.showAndWait();
-                    });
                 }
+//                else {
+//                    Platform.runLater(() -> {
+//                        alert.setTitle(_bundle.getString("alert.appointment.text"));
+//                        alert.setContentText(_bundle.getString("alert.appointment.noupcoming.text"));
+//                        alert.getButtonTypes().setAll(ButtonType.OK);
+//                        alert.showAndWait();
+//                    }
+//                    );
             }
 
             private int getUserIdByUserName(String userName) {

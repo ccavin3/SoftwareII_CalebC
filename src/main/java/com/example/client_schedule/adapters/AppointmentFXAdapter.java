@@ -478,7 +478,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the customer Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty customerIdProperty() {
-        customerId.set(appointment.getCustomerId());
+        customerId.set(appointment.getCustomer().getId());
         customerId.addListener((obs, old, wen) -> appointment.setCustomerId((Integer) wen));
         return customerId;
     }
@@ -487,7 +487,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the contact Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty contactIdProperty() {
-        contactId.set(appointment.getContactId());
+        contactId.set(appointment.getContact().getId());
         contactId.addListener((obs, old, wen) -> appointment.setContactId((Integer) wen));
         return contactId;
     }
@@ -496,7 +496,7 @@ public class AppointmentFXAdapter {
      * @return IntegerProperty for the user Id of the Appointment to be used with JavaFx Binding
      */
     public IntegerProperty userIdProperty() {
-        userId.set(appointment.getUserId());
+        userId.set(appointment.getUser().getId());
         userId.addListener((obs, old, wen) -> appointment.setUserId((Integer) wen));
         return userId;
     }

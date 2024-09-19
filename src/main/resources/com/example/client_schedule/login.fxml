@@ -11,7 +11,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <Label fx:id="countryLabel" text="%label.country.text" AnchorPane.topAnchor="5" AnchorPane.leftAnchor="10" wrapText="true" maxWidth="300" />
+    <Label fx:id="countryLabel" text="%label.timezone.text" AnchorPane.topAnchor="5" AnchorPane.leftAnchor="10" wrapText="true" maxWidth="300" />
     <Label fx:id="countryText" AnchorPane.topAnchor="5" AnchorPane.leftAnchor="85" wrapText="true" maxWidth="300" disable="true" />
     <Label fx:id="usernameLabel" text="%label.user.text" AnchorPane.topAnchor="35" AnchorPane.leftAnchor="10" wrapText="true" maxWidth="300" />
     <TextField fx:id="textUser" AnchorPane.topAnchor="35" AnchorPane.leftAnchor="85" />

@@ -281,7 +281,7 @@ public class CustomerFormController implements Initializable {
     }
 
     private void addCustomerColumns() {
-        TableColumn<CustomerFXAdapter, Integer> idCol = new TableColumn<>("id");
+        TableColumn<CustomerFXAdapter, Integer> idCol = new TableColumn<>(_bundle.getString("label.customer.id.text"));
         TableColumn<CustomerFXAdapter, String> nameCol = new TableColumn<>(_bundle.getString("label.customer.name.text"));
         TableColumn<CustomerFXAdapter, String> addressCol = new TableColumn<>(_bundle.getString("label.customer.address.text"));
         TableColumn<CustomerFXAdapter, String> postalCol = new TableColumn<>(_bundle.getString("label.customer.postal.text"));
@@ -319,7 +319,7 @@ public class CustomerFormController implements Initializable {
                 return null;
             }
         }, db.divisions));
-        idCol.setVisible(false);
+        idCol.setVisible(true);
         tableView.getColumns().addAll(idCol, nameCol, addressCol, postalCol, phoneCol, divisionCol);
     }
 
@@ -361,7 +361,7 @@ public class CustomerFormController implements Initializable {
 
     private void dbCommit() {
         db.em.getTransaction().commit();
-        db.em.getTransaction();
+        db.em.getTransaction().begin();
     }
 
     private void dbRevert() {

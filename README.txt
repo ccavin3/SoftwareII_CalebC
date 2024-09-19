@@ -34,7 +34,7 @@ Directions:
     e.To add a new record, press the add button. Complete the fields in the add/edit area
     f.To edit a record, select the record from tableview and make changes in the add/edit area
     g.To delete a record, select the record from tableview and press delete button
-    h.To commit changes to teh database, press the commit button
+    h.To commit changes to the database, press the commit button
     i.To undo all changes and revert, press the revert button
     j.To navigate to reports, select the appointments tab and click the reports button
     k.On the reports form, there are three tabs, one for each type of report. Use respective comboBoxes to change filters and fill each report.

@@ -466,7 +466,8 @@ public class AppointmentFormController implements Initializable {
             startEndDateValid.removeListener(apptDateListener);
             startEndTimeValid.removeListener(apptListener);
             withinWorkingHours.removeListener(workingHourListener);
-            overlapping.removeListener(overlappingApptsListener);
+            overlapping1.removeListener(overlappingApptsListener);
+            overlapping2.removeListener(overlappingApptsListener);
         }
     }
 
@@ -526,7 +527,8 @@ public class AppointmentFormController implements Initializable {
 
 
 
-    private BooleanBinding overlapping;
+    private BooleanBinding overlapping1;
+    private BooleanBinding overlapping2;
     private BooleanBinding startEndDateValid;
     private BooleanBinding startEndTimeValid;
     private BooleanBinding withinWorkingHours;
@@ -554,21 +556,49 @@ public class AppointmentFormController implements Initializable {
             textStartTime.textProperty().bindBidirectional(currentAppointment.startTimeProperty(), new LocalTimeStringConverter(tformatter, tformatter));
             textEndTime.textProperty().bindBidirectional(currentAppointment.endTimeProperty(), new LocalTimeStringConverter(tformatter,tformatter));
 
-            overlapping = new BooleanBinding() {
+            overlapping1 = new BooleanBinding() {
                 {
-                    super.bind(textStart.textProperty(), textEnd.textProperty());
+                    super.bind(textStartDate.textProperty(), textEndDate.textProperty());
                 }
                 @Override
                 protected boolean computeValue() {
                     try {
-                        boolean tsEmpty = textStart.getText().trim().isEmpty();
-                        boolean teEmpty = textEnd.getText().trim().isEmpty();
-                        LocalDateTime tsDT = LocalDateTime.parse(textStart.getText(), dtformatter);
-                        LocalDateTime teDT = LocalDateTime.parse(textEnd.getText(), dtformatter);
-                        FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments, a -> a.getStart().toLocalDate().isEqual(tsDT.toLocalDate()));
+                        int id = tableView.getSelectionModel().getSelectedItem().getId();
+                        boolean tsEmpty = textStartDate.getText().trim().isEmpty();
+                        boolean teEmpty = textEndDate.getText().trim().isEmpty();
+                        LocalDateTime tsDT = LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter));
+                        LocalDateTime teDT = LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter));
+                        FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments, a -> a.getId() != id && (a.getStart().toLocalDate().isEqual(tsDT.toLocalDate()) || a.getEnd().toLocalDate().isEqual(teDT.toLocalDate())));
                         boolean tsOverlap = aFL.stream().anyMatch(a ->
-                                tsDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && tsDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
-                                        || teDT.toLocalTime().isAfter(a.getStart().toLocalTime()) && teDT.toLocalTime().isBefore(a.getEnd().toLocalTime())
+                                (tsDT.toLocalTime().isAfter(a.getStartTime()) && tsDT.toLocalTime().isBefore(a.getEndTime())) ||
+                                        (teDT.toLocalTime().isAfter(a.getStartTime()) && teDT.toLocalTime().isBefore(a.getEndTime())) ||
+                                        (tsDT.toLocalTime().equals(a.getStartTime())) ||
+                                        (teDT.toLocalTime().equals(a.getEndTime()))
+                        );
+                        return tsOverlap;
+                    } catch (DateTimeParseException dtp) {
+                        return false;
+                    }
+                }
+            };
+            overlapping2 = new BooleanBinding() {
+                {
+                    super.bind(textStartTime.textProperty(), textEndTime.textProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    try {
+                        int id = tableView.getSelectionModel().getSelectedItem().getId();
+                        boolean tsEmpty = textStartTime.getText().trim().isEmpty();
+                        boolean teEmpty = textEndTime.getText().trim().isEmpty();
+                        LocalDateTime tsDT = LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter));
+                        LocalDateTime teDT = LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter));
+                        FilteredList<Appointment> aFL = new FilteredList<Appointment>(db.appointments, a -> a.getId() != id && (a.getStart().toLocalDate().isEqual(tsDT.toLocalDate()) || a.getEnd().toLocalDate().isEqual(teDT.toLocalDate())));
+                        boolean tsOverlap = aFL.stream().anyMatch(a ->
+                                (tsDT.toLocalTime().isAfter(a.getStartTime()) && tsDT.toLocalTime().isBefore(a.getEndTime())) ||
+                                        (teDT.toLocalTime().isAfter(a.getStartTime()) && teDT.toLocalTime().isBefore(a.getEndTime())) ||
+                                        (tsDT.toLocalTime().equals(a.getStartTime())) ||
+                                        (teDT.toLocalTime().equals(a.getEndTime()))
                         );
                         return tsOverlap;
                     } catch (DateTimeParseException dtp) {
@@ -704,11 +734,11 @@ public class AppointmentFormController implements Initializable {
                 }
             };
 
-
             startEndDateValid.addListener(apptDateListener);
             startEndTimeValid.addListener(apptListener);
             withinWorkingHours.addListener(workingHourListener);
-            overlapping.addListener(overlappingApptsListener);
+            overlapping1.addListener(overlappingApptsListener);
+            overlapping2.addListener(overlappingApptsListener);
         }
 
     }

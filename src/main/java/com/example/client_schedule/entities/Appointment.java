@@ -608,35 +608,47 @@ public class Appointment extends baseEntity {
     }
 
     public LocalTime getStartTime() {
-        return this.startTime;
+        return this.start.toLocalTime();
     }
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
+        if (this.getStartDate() != null) {
+            start = getStartDate().atTime(startTime);
+        }
     }
 
     public LocalDate getStartDate() {
-        return this.startDate;
+        return this.start.toLocalDate();
     }
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
+        if (getStartTime() != null) {
+            start = startDate.atTime(getStartTime());
+        }
     }
 
     public LocalTime getEndTime() {
-        return this.endTime;
+        return this.end.toLocalTime();
     }
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+        if (getEndDate() != null) {
+            end = getEndDate().atTime(endTime);
+        }
     }
 
     public LocalDate getEndDate() {
-        return this.endDate;
+        return this.getEnd().toLocalDate();
     }
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+        if (getEndTime() != null) {
+            end = endDate.atTime(getEndTime());
+        }
     }
 
     /**

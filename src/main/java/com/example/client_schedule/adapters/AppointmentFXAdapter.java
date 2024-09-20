@@ -25,9 +25,9 @@ public class AppointmentFXAdapter {
     public Appointment appointment;
 
     public boolean overlappingError = false;
-    public boolean seDValid = false;
-    public boolean seTValid = false;
-    public boolean withinWorkingHoursValid = false;
+    public boolean seDValid = true;
+    public boolean seTValid = true;
+    public boolean withinWorkingHoursValid = true;
 
     /**
      * Constructor requiring an Appointment object to initialize the adapter.

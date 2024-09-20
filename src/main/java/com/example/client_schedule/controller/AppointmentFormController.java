@@ -529,14 +529,15 @@ public class AppointmentFormController implements Initializable {
     }
     private boolean allRowsValid() {
 //        setNodesDiabled(true, tableView.getParent());
+        AppointmentFXAdapter afa = tableView.getSelectionModel().getSelectedItem();
+        unBind(afa);
         FXAppointments.stream().forEach(a ->{
             unBind(a);
             reBind(a);
+            unBind(a);
         });
-        unBind(tableView.getSelectionModel().getSelectedItem());
-        reBind(tableView.getSelectionModel().getSelectedItem());
+        reBind(afa);
         return FXAppointments.stream().noneMatch(a -> !a.seTValid || !a.seDValid || a.overlappingError || !a.withinWorkingHoursValid);
-
     }
 
 

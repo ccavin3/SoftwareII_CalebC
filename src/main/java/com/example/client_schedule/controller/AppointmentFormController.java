@@ -287,7 +287,13 @@ public class AppointmentFormController implements Initializable {
 //    private TextFormatter<String> eltFormatter;
     public ObservableList<AppointmentFXAdapter> FXAppointments;
     private final Alert alert = new Alert(Alert.AlertType.NONE);
-
+    private void showLocalizedAlert(String headerKey, String contentKey) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(_bundle.getString("error.dialog.text"));  // Assuming you have a generic error dialog title
+        alert.setHeaderText(_bundle.getString(headerKey));
+        alert.setContentText(_bundle.getString(contentKey));
+        alert.show();
+    }
     /**
      * Initializes the controller by setting up the UI components and event handlers.
      *
@@ -297,6 +303,7 @@ public class AppointmentFormController implements Initializable {
      * @lambda initialize lines 309-313 the ActionEvent e can be sent to the local method if needed otherwise the method will be called without parameter. e.g.  onFooAction = e -> fooHandler(e);  // parameter required or onFooAction = e -> fooHandler();  // no parameter required
      *
      */
+    
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
 
@@ -312,7 +319,32 @@ public class AppointmentFormController implements Initializable {
          * @lambda ActionEvent  the ActionEvent e can be sent to the local method if needed  otherwise the method will be called without parameter. e.g.  onFooAction = e -> fooHandler(e);  // parameter required or onFooAction = e -> fooHandler();  // no parameter required
          */
 
-        onCommitAction = e -> dbCommit();
+        onCommitAction = e -> {
+            if (!validateStartEndDate()) {
+                showLocalizedAlert("error.invalidstartenddate.header.text", "error.invalidstartenddate.content.text");
+                return;
+
+            }
+            if (!validateStartEndTime()) {
+                showLocalizedAlert("error.invalidstartendtime.header.text", "error.invalid.sttartendtime.content.text");
+                return;
+            }
+            if (!validateWithinWorkingHours()) {
+                showLocalizedAlert("error.businesshours.header.text", "error.businesshours.content.text");
+                return;
+            }
+            if (validateOverlappingAppointments()) {
+                showLocalizedAlert("error.overlapping.header.text", "error.overlapping.content.text");
+                return;
+            }
+            else{
+                dbCommit();
+            }
+        };
+
+// Helper method to show the localized alert
+
+        
         onRevertAction = e -> dbRevert();
         onInsertAction = e -> recordAdd();
         onDeleteAction = e -> recordRemove();
@@ -407,7 +439,7 @@ public class AppointmentFormController implements Initializable {
                 final LocalTime lt = LocalTime.now();
 
                 // Get the logged-in user's ID
-                int loggedInUserId = getUserIdByUserName(MainApplication.curUser); // Replace with actual method to get user ID
+                int loggedInUserId = getUserIdByUserName(MainApplication.curUser);
 
                 Comparator<AppointmentFXAdapter> comparator = Comparator.comparing(AppointmentFXAdapter::getStart).reversed();
 
@@ -436,18 +468,18 @@ public class AppointmentFormController implements Initializable {
                         alert.showAndWait();
                     });
                 }
-//                else {
-//                    Platform.runLater(() -> {
-//                        alert.setTitle(_bundle.getString("alert.appointment.text"));
-//                        alert.setContentText(_bundle.getString("alert.appointment.noupcoming.text"));
-//                        alert.getButtonTypes().setAll(ButtonType.OK);
-//                        alert.showAndWait();
-//                    }
-//                    );
+                else {
+                    Platform.runLater(() -> {
+                                alert.setTitle(_bundle.getString("alert.appointment.text"));
+                                alert.setContentText(_bundle.getString("alert.appointment.noupcoming.text"));
+                                alert.getButtonTypes().setAll(ButtonType.OK);
+                                alert.showAndWait();
+                            }
+                    );
+                }
             }
 
             private int getUserIdByUserName(String userName) {
-                // Implement this method to retrieve the user ID based on the logged-in userName
                 return db.users.stream()
                         .filter(user -> user.getUserName().equals(userName))
                         .findFirst()
@@ -456,7 +488,6 @@ public class AppointmentFormController implements Initializable {
             }
         };
 
-// Example method to get the user ID from userName
 
         Timer t = new Timer();
         t.scheduleAtFixedRate(
@@ -587,6 +618,9 @@ public class AppointmentFormController implements Initializable {
      *
      * @param currentAppointment The AppointmentFXAdapter object to bind
      */
+
+
+
     private void reBind(AppointmentFXAdapter currentAppointment) {
         if (currentAppointment != null) {
             textTitle.textProperty().bindBidirectional(currentAppointment.titleProperty());
@@ -942,6 +976,64 @@ public class AppointmentFormController implements Initializable {
 
         idCol.setVisible(true);
         tableView.getColumns().addAll(idCol, titleCol, descriptionCol, locationCol, typeCol, appointmentCol, customerCol, customerIdCol, userCol, userIdCol, contactCol);
+    }
+
+
+    private boolean validateStartEndDate() {
+        try {
+            return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
+                    || (LocalDate.parse(textStartDate.getText(), dformatter).isBefore(LocalDate.parse(textEndDate.getText(), dformatter)))
+                    || (LocalDate.parse(textStartDate.getText(), dformatter).isEqual(LocalDate.parse(textEndDate.getText(), dformatter)));
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    private boolean validateStartEndTime() {
+        try {
+            return textStartTime.getText().trim().isEmpty()
+                    || textEndTime.getText().trim().isEmpty()
+                    || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter))
+                    .plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)))
+                    || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter))
+                    .plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)));
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    private boolean validateWithinWorkingHours() {
+        try {
+            AppConfig cfg = new AppConfig();
+            ZonedDates ZD = cfg.getZonedDateTime();
+            return LocalTime.parse(textStartTime.getText(), tformatter).getHour() >= ZD.start.toLocalTime().getHour()
+                    && LocalTime.parse(textEndTime.getText(), tformatter).getHour() < ZD.end.toLocalTime().getHour();
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    private boolean validateOverlappingAppointments() {
+        try {
+            int id = tableView.getSelectionModel().getSelectedItem().getId();
+            LocalDateTime startDateTime = LocalDate.parse(textStartDate.getText(), dformatter)
+                    .atTime(LocalTime.parse(textStartTime.getText(), tformatter));
+            LocalDateTime endDateTime = LocalDate.parse(textEndDate.getText(), dformatter)
+                    .atTime(LocalTime.parse(textEndTime.getText(), tformatter));
+
+            FilteredList<Appointment> filteredAppointments = new FilteredList<>(db.appointments,
+                    a -> a.getId() != id && (a.getStart().toLocalDate().isEqual(startDateTime.toLocalDate())
+                            || a.getEnd().toLocalDate().isEqual(endDateTime.toLocalDate())));
+
+            return filteredAppointments.stream().anyMatch(a ->
+                    (startDateTime.toLocalTime().isAfter(a.getStartTime()) && startDateTime.toLocalTime().isBefore(a.getEndTime())) ||
+                            (endDateTime.toLocalTime().isAfter(a.getStartTime()) && endDateTime.toLocalTime().isBefore(a.getEndTime())) ||
+                            (startDateTime.toLocalTime().equals(a.getStartTime())) ||
+                            (endDateTime.toLocalTime().equals(a.getEndTime()))
+            );
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 
     /**

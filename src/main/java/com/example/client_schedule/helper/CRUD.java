@@ -3,10 +3,8 @@ package com.example.client_schedule.helper;
 import jakarta.persistence.*;
 import javafx.collections.*;
 import javafx.collections.FXCollections;
-import org.hibernate.jpa.HibernatePersistenceProvider;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +17,7 @@ import java.util.stream.Collectors;
  */
 public class CRUD<T> extends TypeToken<T> {
 
+    public ObservableList<T> trackedChanges = FXCollections.observableArrayList();
     public static EntityManagerFactory emf;
     public static EntityManager em;
 
@@ -43,7 +42,7 @@ public class CRUD<T> extends TypeToken<T> {
      * @return T, the current row in the database.
      * @throws ClassNotFoundException if the entity class was not found.
      */
-    public <T> T getCurrentRow() throws ClassNotFoundException {
+    public T getCurrentRow() throws ClassNotFoundException {
         Class<T> clz = (Class<T>) Class.forName(getType().getTypeName());
         return clz.cast(currentRow);
     }
@@ -62,6 +61,19 @@ public class CRUD<T> extends TypeToken<T> {
      */
     public void add() {
         em.persist(currentRow);
+        addTrackedRow(currentRow);
+    }
+
+    protected void addTrackedRow(T row) {
+        if (!trackedChanges.contains(row)) {
+            trackedChanges.add(row);
+        }
+    }
+
+    protected void removeTrackedRow(T row) {
+        if (trackedChanges.contains(row)) {
+            trackedChanges.remove(row);
+        }
     }
 
     /**
@@ -69,8 +81,9 @@ public class CRUD<T> extends TypeToken<T> {
      *
      * @param row the entity to be added.
      */
-    public <T> void add(T row) {
+    public void add(T row) {
         em.persist(row);
+        addTrackedRow(row);
     }
 
     /**
@@ -78,8 +91,9 @@ public class CRUD<T> extends TypeToken<T> {
      *
      * @param row the entity to be deleted.
      */
-    public <T> void delete(T row) {
+    public void delete(T row) {
         em.remove(row);
+        removeTrackedRow(row);
     }
 
     /**
@@ -87,6 +101,7 @@ public class CRUD<T> extends TypeToken<T> {
      */
     public void delete() {
         em.remove(currentRow);
+        removeTrackedRow(currentRow);
     }
 
     public ObservableList<T> rows = FXCollections.observableArrayList();

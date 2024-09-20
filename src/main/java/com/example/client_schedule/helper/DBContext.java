@@ -49,32 +49,32 @@ public class DBContext {
     /**
      * ObservableList for storing users.
      */
-    public ObservableList<User> users;
+    public ObservableList<User> users = userDB.rows;
 
     /**
      * ObservableList for storing divisions.
      */
-    public ObservableList<Division> divisions;
+    public ObservableList<Division> divisions = divisionDB.rows;
 
     /**
      * ObservableList for storing customers.
      */
-    public ObservableList<Customer> customers;
+    public ObservableList<Customer> customers = customerDB.rows;
 
     /**
      * ObservableList for storing countries.
      */
-    public ObservableList<Country> countries;
+    public ObservableList<Country> countries = countryDB.rows;
 
     /**
      * ObservableList for storing contacts.
      */
-    public ObservableList<Contact> contacts;
+    public ObservableList<Contact> contacts = contactDB.rows;
 
     /**
      * ObservableList for storing appointments.
      */
-    public ObservableList<Appointment> appointments;
+    public ObservableList<Appointment> appointments = appointmentDB.rows;
 
     /**
      * Constructor for DBContext. Initialises entity manager and populates the ObservableLists

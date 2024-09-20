@@ -5,6 +5,7 @@ import com.example.client_schedule.adapters.AppointmentFXAdapter;
 import com.example.client_schedule.entities.*;
 import com.example.client_schedule.helper.DBContext;
 import com.example.client_schedule.helper.ZonedDates;
+import jakarta.persistence.EntityManager;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
@@ -42,6 +43,9 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.example.client_schedule.helper.AppConfig;
+import org.hibernate.Session;
+import org.hibernate.engine.spi.PersistenceContext;
+import org.hibernate.engine.spi.EntityEntry;
 
 /**
  * The AppointmentFormController class is responsible for managing the appointment form view and its behavior.
@@ -1116,7 +1120,7 @@ public class AppointmentFormController implements Initializable {
         na.setStartTime(LocalTime.now());
         na.setEndTime(LocalTime.now().plusMinutes(15));
         db.em.persist(na);
-        db.appointments.add(na);
+        db.appointmentDB.add(na);
         AppointmentFXAdapter nafx = new AppointmentFXAdapter(na);
         FXAppointments.add(nafx);
         tableView.getSelectionModel().select(nafx);
@@ -1143,7 +1147,7 @@ public class AppointmentFormController implements Initializable {
     }
 
     public void recordRemove(AppointmentFXAdapter delAppointment) {
-        db.appointments.remove(delAppointment.appointment);
+        db.appointmentDB.delete(delAppointment.appointment);
         db.em.remove(delAppointment.appointment);
         FXAppointments.remove(delAppointment);
     }

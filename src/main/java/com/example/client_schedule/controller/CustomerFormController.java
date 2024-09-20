@@ -382,7 +382,7 @@ public class CustomerFormController implements Initializable {
         nc.setCreatedBy(userName);
         nc.setCreated(LocalDateTime.now());
         db.em.persist(nc);
-        db.customers.add(nc);
+        db.customerDB.add(nc);
         CustomerFXAdapter ncfx = new CustomerFXAdapter(nc, this.db);
         FXCustomers.add(ncfx);
         tableView.getSelectionModel().select(ncfx);
@@ -394,7 +394,7 @@ public class CustomerFormController implements Initializable {
             AppointmentFXAdapter fxa = appointmentFormController.FXAppointments.stream().filter(ap -> ap.getId() == a.getId()).findFirst().orElse(null);
             appointmentFormController.recordRemove(fxa);
         });
-        db.customers.remove(delCustomer.customer);
+        db.customerDB.delete(delCustomer.customer);
         db.em.remove(delCustomer.customer);
         FXCustomers.remove(delCustomer);
         //alert to show customer was removed

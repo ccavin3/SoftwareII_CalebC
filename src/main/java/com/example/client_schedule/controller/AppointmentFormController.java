@@ -329,9 +329,15 @@ public class AppointmentFormController implements Initializable {
                 dbCommit();
             }
             else{
+                final String idlist = FXAppointments.stream()
+                        .filter(a -> !a.seDValid || !a.seTValid || !a.withinWorkingHoursValid || a.overlappingError)
+                        .map(a -> a.getId().toString())
+                        .collect(Collectors.joining(", "));
+
                 Platform.runLater(() -> {
                 alert.setTitle(_bundle.getString("alert.invalidrows.title"));
-                alert.setContentText(_bundle.getString("alert.invalidrows.content"));
+                alert.setContentText(
+                        String.format(_bundle.getString("alert.invalidrows.content"),idlist));
                 alert.getButtonTypes().setAll(ButtonType.OK);
                 alert.showAndWait();
                 });

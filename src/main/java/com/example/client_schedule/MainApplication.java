@@ -1,6 +1,7 @@
 package com.example.client_schedule;
 
 import com.example.client_schedule.controller.LoginController;
+import com.example.client_schedule.entities.Appointment;
 import com.example.client_schedule.entities.User;
 import com.example.client_schedule.helper.DBContext;
 import com.example.client_schedule.helper.JDBC;
@@ -17,6 +18,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -29,6 +32,7 @@ public class MainApplication extends Application {
      * Current user identifier
      */
     public static String curUser;
+
 
     public static boolean betweenDates(LocalDateTime needle, LocalDateTime start, LocalDateTime end) {
         return (needle.isAfter(start) && needle.isBefore(end))

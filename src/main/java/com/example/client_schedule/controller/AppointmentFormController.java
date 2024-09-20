@@ -18,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -324,25 +325,16 @@ public class AppointmentFormController implements Initializable {
          */
 
         onCommitAction = e -> {
-            if (!validateStartEndDate()) {
-                showLocalizedAlert("error.invalidstartenddate.header.text", "error.invalidstartenddate.content.text");
-                return;
-
-            }
-            if (!validateStartEndTime()) {
-                showLocalizedAlert("error.invalidstartendtime.header.text", "error.invalid.sttartendtime.content.text");
-                return;
-            }
-            if (!validateWithinWorkingHours()) {
-                showLocalizedAlert("error.businesshours.header.text", "error.businesshours.content.text");
-                return;
-            }
-            if (validateOverlappingAppointments()) {
-                showLocalizedAlert("error.overlapping.header.text", "error.overlapping.content.text");
-                return;
+            if (allRowsValid()) {
+                dbCommit();
             }
             else{
-                dbCommit();
+                Platform.runLater(() -> {
+                alert.setTitle(_bundle.getString("alert.invalidrows.title"));
+                alert.setContentText(_bundle.getString("alert.invalidrows.content"));
+                alert.getButtonTypes().setAll(ButtonType.OK);
+                alert.showAndWait();
+                });
             }
         };
 
@@ -524,7 +516,22 @@ public class AppointmentFormController implements Initializable {
         });
 
     }
+    private void setNodesDiabled(boolean disable, Node... nodes) {
+        for(Node node : nodes) {
+            node.setDisable(disable);
+        }
+    }
+    private boolean allRowsValid() {
+//        setNodesDiabled(true, tableView.getParent());
+        FXAppointments.stream().forEach(a ->{
+            unBind(a);
+            reBind(a);
+        });
+        unBind(tableView.getSelectionModel().getSelectedItem());
+        reBind(tableView.getSelectionModel().getSelectedItem());
+        return FXAppointments.stream().noneMatch(a -> !a.seTValid || !a.seDValid || a.overlappingError || !a.withinWorkingHoursValid);
 
+    }
 
 
     /**
@@ -661,7 +668,7 @@ public class AppointmentFormController implements Initializable {
                         boolean tsEmpty = textStartDate.getText().trim().isEmpty();
                         boolean teEmpty = textEndDate.getText().trim().isEmpty();
                         if (tsEmpty || teEmpty) {
-                            return false;
+                            return currentAppointment.overlappingError = false;
                         } else {
                             LocalDateTime tsDT = LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter));
                             LocalDateTime teDT = LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter));
@@ -671,7 +678,7 @@ public class AppointmentFormController implements Initializable {
                                             && (a.getStart().toLocalDate().isEqual(tsDT.toLocalDate())
                                                 || a.getEnd().toLocalDate().isEqual(teDT.toLocalDate()))
                             );
-                            return aFL.stream().anyMatch(a -> {
+                            return currentAppointment.overlappingError = aFL.stream().anyMatch(a -> {
                                         LocalDateTime astart = a.getStartDate().atTime(a.getStartTime());
                                         LocalDateTime aend = a.getEndDate().atTime(a.getEndTime());
                                         return MainApplication.overlapping(astart, aend, tsDT, teDT);
@@ -690,11 +697,11 @@ public class AppointmentFormController implements Initializable {
                 @Override
                 protected boolean computeValue() {
                     try {
-                        return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
+                        return currentAppointment.seDValid = textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
                                 || (currentAppointment.getStartDate().isBefore(currentAppointment.getEndDate()))
                                 ||  (currentAppointment.getStartDate().isEqual(currentAppointment.getEndDate()));
                     } catch (DateTimeParseException dte) {
-                        return true;
+                        return currentAppointment.seDValid = true;
                     }
                 }
             };
@@ -706,12 +713,12 @@ public class AppointmentFormController implements Initializable {
                 @Override
                 protected boolean computeValue() {
                     try {
-                        return textStartTime.getText().trim().isEmpty()
+                        return currentAppointment.seTValid = textStartTime.getText().trim().isEmpty()
                                 || textEndTime.getText().trim().isEmpty()
                                 || currentAppointment.getStartDate().atTime(currentAppointment.getStartTime().plusMinutes(15)).isBefore(currentAppointment.getEndDate().atTime(currentAppointment.getEndTime()))
                                 || currentAppointment.getStartDate().atTime(currentAppointment.getStartTime().plusMinutes(15)).equals(currentAppointment.getEndDate().atTime(currentAppointment.getEndTime()));
                     } catch (DateTimeParseException dte) {
-                        return true;
+                        return currentAppointment.seTValid = true;
                     }
                 }
             };
@@ -730,7 +737,7 @@ public class AppointmentFormController implements Initializable {
                         AppConfig cfg = new AppConfig();
                         ZonedDates ZD = cfg.getZonedDateTime();
 
-                        return MainApplication.betweenHours(
+                        return currentAppointment.withinWorkingHoursValid = MainApplication.betweenHours(
                                 currentAppointment.getStartTime(),
                                 ZD.start.toLocalTime(),
                                 ZD.end.toLocalTime()
@@ -740,7 +747,7 @@ public class AppointmentFormController implements Initializable {
                                 ZD.end.toLocalTime()
                         );
                     } catch (DateTimeParseException dte) {
-                        return true;
+                        return currentAppointment.withinWorkingHoursValid = true;
                     }
                 }
             };
@@ -755,7 +762,7 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setTitle(String.format(_bundle.getString("error.dialog.text"), currentAppointment.getId()));
                                 alert.setHeaderText(_bundle.getString("error.invalidstartenddate.header.text"));
                                 alert.setContentText(_bundle.getString("error.invalidstartenddate.content.text"));
                                 alert.show();
@@ -774,7 +781,7 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setTitle(String.format(_bundle.getString("error.dialog.text"), currentAppointment.getId()));
                                 alert.setHeaderText(_bundle.getString("error.invalidstartendtime.header.text"));
                                 alert.setContentText(_bundle.getString("error.invalid.sttartendtime.content.text"));
                                 alert.show();
@@ -793,7 +800,7 @@ public class AppointmentFormController implements Initializable {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setTitle(String.format(_bundle.getString("error.dialog.text"), currentAppointment.getId()));
                                 alert.setHeaderText(_bundle.getString("error.businesshours.header.text"));
                                 alert.setContentText(_bundle.getString("error.businesshours.content.text"));
                                 alert.show();
@@ -806,11 +813,12 @@ public class AppointmentFormController implements Initializable {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> obs, Boolean old, Boolean wen) {
                     if (wen) {
+                        final int id = currentAppointment.getId();
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle(_bundle.getString("error.dialog.text"));
+                                alert.setTitle(String.format(_bundle.getString("error.dialog.text"), currentAppointment.getId()));
                                 alert.setHeaderText(_bundle.getString("error.overlapping.header.text"));
                                 alert.setContentText(_bundle.getString("error.overlapping.content.text"));
                                 alert.show();

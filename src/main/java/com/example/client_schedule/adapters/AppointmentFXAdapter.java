@@ -5,6 +5,7 @@ import com.example.client_schedule.entities.Contact;
 import com.example.client_schedule.entities.Customer;
 import com.example.client_schedule.entities.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableIntegerValue;
@@ -22,6 +23,11 @@ import java.time.LocalTime;
  */
 public class AppointmentFXAdapter {
     public Appointment appointment;
+
+    public boolean overlappingError = false;
+    public boolean seDValid = false;
+    public boolean seTValid = false;
+    public boolean withinWorkingHoursValid = false;
 
     /**
      * Constructor requiring an Appointment object to initialize the adapter.

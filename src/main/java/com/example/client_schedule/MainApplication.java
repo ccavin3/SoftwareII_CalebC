@@ -15,6 +15,8 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -27,6 +29,25 @@ public class MainApplication extends Application {
      * Current user identifier
      */
     public static String curUser;
+
+    public static boolean betweenDates(LocalDateTime needle, LocalDateTime start, LocalDateTime end) {
+        return (needle.isAfter(start) && needle.isBefore(end))
+                || needle.isEqual(start)
+                || needle.isEqual(end);
+    }
+
+    public static boolean overlapping(LocalDateTime d1, LocalDateTime d2, LocalDateTime d3, LocalDateTime d4) {
+        return betweenDates(d1, d3, d4)
+                || betweenDates(d2, d3, d4)
+                || betweenDates(d3, d1, d1)
+                || betweenDates(d4, d1, d2);
+    }
+
+    public static boolean betweenHours(LocalTime needle, LocalTime start, LocalTime end) {
+        return (needle.isAfter(start) && needle.isBefore(end))
+                || needle.equals(start)
+                || needle.equals(end);
+    }
 
     /**
      * Starts the JavaFX application

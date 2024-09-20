@@ -647,14 +647,14 @@ public class AppointmentFormController implements Initializable {
 
             startEndDateValid = new BooleanBinding() {
                 {
-                    super.bind(textStartDate.textProperty(), textEndDate.textProperty());
+                    super.bind(currentAppointment.startDateProperty(), currentAppointment.endDateProperty());
                 }
                 @Override
                 protected boolean computeValue() {
                     try {
                         return textStartDate.getText().trim().isEmpty() || textEndDate.getText().trim().isEmpty()
-                                || (LocalDate.parse(textStartDate.getText(), dformatter).isBefore(LocalDate.parse(textEndDate.getText(), dformatter)))
-                                ||  (LocalDate.parse(textStartDate.getText(), dformatter).isEqual(LocalDate.parse(textEndDate.getText(), dformatter)));
+                                || (currentAppointment.getStartDate().isBefore(currentAppointment.getEndDate()))
+                                ||  (currentAppointment.getStartDate().isEqual(currentAppointment.getEndDate()));
                     } catch (DateTimeParseException dte) {
                         return true;
                     }
@@ -663,15 +663,15 @@ public class AppointmentFormController implements Initializable {
 
             startEndTimeValid = new BooleanBinding() {
                 {
-                    super.bind(textStartTime.textProperty(), textEndTime.textProperty());
+                    super.bind(currentAppointment.startTimeProperty(), currentAppointment.endTimeProperty());
                 }
                 @Override
                 protected boolean computeValue() {
                     try {
                         return textStartTime.getText().trim().isEmpty()
                                 || textEndTime.getText().trim().isEmpty()
-                                || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isBefore(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)))
-                                || LocalDate.parse(textStartDate.getText(), dformatter).atTime(LocalTime.parse(textStartTime.getText(), tformatter)).plusMinutes(15).isEqual(LocalDate.parse(textEndDate.getText(), dformatter).atTime(LocalTime.parse(textEndTime.getText(), tformatter)));
+                                || currentAppointment.getStartDate().atTime(currentAppointment.getStartTime().plusMinutes(15)).isBefore(currentAppointment.getEndDate().atTime(currentAppointment.getEndTime()))
+                                || currentAppointment.getStartDate().atTime(currentAppointment.getStartTime().plusMinutes(15)).equals(currentAppointment.getEndDate().atTime(currentAppointment.getEndTime()));
                     } catch (DateTimeParseException dte) {
                         return true;
                     }
@@ -681,8 +681,8 @@ public class AppointmentFormController implements Initializable {
             withinWorkingHours = new BooleanBinding() {
                 {
                     super.bind(
-                            textStartDate.textProperty(),
-                            textEndDate.textProperty()
+                            currentAppointment.startTimeProperty(),
+                            currentAppointment.endTimeProperty()
                     );
                 }
                 @Override
@@ -693,11 +693,11 @@ public class AppointmentFormController implements Initializable {
                         ZonedDates ZD = cfg.getZonedDateTime();
 
                         return MainApplication.betweenHours(
-                                LocalTime.parse(textStartTime.getText(), tformatter),
+                                currentAppointment.getStartTime(),
                                 ZD.start.toLocalTime(),
                                 ZD.end.toLocalTime()
                         ) && MainApplication.betweenHours(
-                                LocalTime.parse(textEndTime.getText(), tformatter),
+                                currentAppointment.getEndTime(),
                                 ZD.start.toLocalTime(),
                                 ZD.end.toLocalTime()
                         );

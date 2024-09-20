@@ -614,7 +614,11 @@ public class Appointment extends baseEntity {
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
         if (this.getStartDate() != null) {
-            start = getStartDate().atTime(startTime);
+            try {
+                start = getStartDate().atTime(startTime);
+            } catch (Exception e) {
+                // do nothing
+            }
         }
     }
 
@@ -625,7 +629,11 @@ public class Appointment extends baseEntity {
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
         if (getStartTime() != null) {
-            start = startDate.atTime(getStartTime());
+            try {
+                start = startDate.atTime(getStartTime());
+            } catch (Exception e) {
+                // do nothing
+            }
         }
     }
 
@@ -636,7 +644,11 @@ public class Appointment extends baseEntity {
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
         if (getEndDate() != null) {
-            end = getEndDate().atTime(endTime);
+            try {
+                end = getEndDate().atTime(endTime);
+            } catch (Exception e) {
+                // do nothing
+            }
         }
     }
 
@@ -647,7 +659,11 @@ public class Appointment extends baseEntity {
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
         if (getEndTime() != null) {
-            end = endDate.atTime(getEndTime());
+            try {
+                end = endDate.atTime(getEndTime());
+            } catch (Exception e){
+                // do nothing
+            }
         }
     }
 

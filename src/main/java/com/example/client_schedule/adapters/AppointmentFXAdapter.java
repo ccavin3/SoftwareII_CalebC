@@ -110,6 +110,7 @@ public class AppointmentFXAdapter {
     public final void applyCustomer() {
         if (customer != null) {
             appointment.setCustomer(customer.get());
+            appointment.setUserId(customer.get().getId());
         }
     }
 
@@ -119,6 +120,7 @@ public class AppointmentFXAdapter {
     public final void applyUser() {
         if (user != null) {
             appointment.setUser(user.get());
+            appointment.setUserId(user.get().getId());
         }
     }
 
@@ -128,6 +130,7 @@ public class AppointmentFXAdapter {
     public final void applyContact() {
         if (contact != null) {
             appointment.setContact(contact.get());
+            appointment.setContactId(contact.get().getId());
         }
     }
 
@@ -234,6 +237,8 @@ public class AppointmentFXAdapter {
     public void setStartDate(LocalDate ld) {
         startDate.set(ld);
         start.set(ld.atTime(startTime.get()));
+        applyStartProperty();
+        applyStartDateProperty();
     }
 
     /**
@@ -251,6 +256,8 @@ public class AppointmentFXAdapter {
     public void setEndDate(LocalDate ld) {
         endDate.set(ld);
         end.set(ld.atTime(endTime.get()));
+        applyEndDateProperty();
+        applyEndProperty();
     }
 
     /**
@@ -268,6 +275,8 @@ public class AppointmentFXAdapter {
     public void setStartTime(LocalTime lt) {
         startTime.set(lt);
         start.set(startDate.get().atTime(lt));
+        applyStartTimeProperty();
+        applyStartProperty();
     }
 
     /**
@@ -285,6 +294,8 @@ public class AppointmentFXAdapter {
     public void setEndTime(LocalTime lt) {
         endTime.set(lt);
         end.set(endDate.get().atTime(lt));
+        applyEndProperty();
+        applyEndTimeProperty();
     }
 
     /**
@@ -302,6 +313,7 @@ public class AppointmentFXAdapter {
     public void setCustomer(Customer c) {
         customerId.set(c != null ? c.getId() : 0);
         customer.set(c);
+        applyCustomer();
 
     }
 
@@ -320,6 +332,7 @@ public class AppointmentFXAdapter {
     public void setUser(User u) {
         userId.set(u != null ? u.getId() : 0);
         user.set(u);
+        applyUser();
     }
 
     /**
@@ -337,6 +350,7 @@ public class AppointmentFXAdapter {
     public void setContact(Contact c) {
         contactId.set(c != null ? c.getId() : 0);
         contact.set(c);
+        applyContact();
     }
 
     /**

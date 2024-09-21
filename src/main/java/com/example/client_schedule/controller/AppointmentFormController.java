@@ -686,7 +686,7 @@ public class AppointmentFormController implements Initializable {
                 @Override
                 protected boolean computeValue() {
                     try {
-                        int id = tableView.getSelectionModel().getSelectedItem().getId();
+                        int id = currentAppointment.getId();
                         boolean tsEmpty = textStartDate.getText().trim().isEmpty();
                         boolean teEmpty = textEndDate.getText().trim().isEmpty();
                         if (tsEmpty || teEmpty) {

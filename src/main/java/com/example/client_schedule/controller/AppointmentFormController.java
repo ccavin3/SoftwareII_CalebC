@@ -470,15 +470,6 @@ public class AppointmentFormController implements Initializable {
                         alert.showAndWait();
                     });
                 }
-                else {
-                    Platform.runLater(() -> {
-                                alert.setTitle(_bundle.getString("alert.appointment.text"));
-                                alert.setContentText(_bundle.getString("alert.appointment.noupcoming.text"));
-                                alert.getButtonTypes().setAll(ButtonType.OK);
-                                alert.showAndWait();
-                            }
-                    );
-                }
             }
 
             private int getUserIdByUserName(String userName) {
@@ -720,10 +711,27 @@ public class AppointmentFormController implements Initializable {
                 @Override
                 protected boolean computeValue() {
                     try {
-                        return currentAppointment.seTValid = textStartTime.getText().trim().isEmpty()
+                        return currentAppointment.seTValid =
+                                textStartTime.getText().trim().isEmpty()
                                 || textEndTime.getText().trim().isEmpty()
-                                || currentAppointment.getStartDate().atTime(currentAppointment.getStartTime().plusMinutes(15)).isBefore(currentAppointment.getEndDate().atTime(currentAppointment.getEndTime()))
-                                || currentAppointment.getStartDate().atTime(currentAppointment.getStartTime().plusMinutes(15)).equals(currentAppointment.getEndDate().atTime(currentAppointment.getEndTime()));
+                                || currentAppointment
+                                        .getStartDate()
+                                        .atTime(currentAppointment
+                                                .getStartTime()
+                                                .plusMinutes(15))
+                                        .isBefore(currentAppointment
+                                                .getEndDate()
+                                                .atTime(currentAppointment
+                                                        .getEndTime()))
+                                || currentAppointment
+                                        .getStartDate()
+                                        .atTime(currentAppointment
+                                                .getStartTime()
+                                                .plusMinutes(15))
+                                        .equals(currentAppointment
+                                                .getEndDate()
+                                                .atTime(currentAppointment
+                                                        .getEndTime()));
                     } catch (DateTimeParseException dte) {
                         return currentAppointment.seTValid = true;
                     }

@@ -44,9 +44,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.example.client_schedule.helper.AppConfig;
-import org.hibernate.Session;
-import org.hibernate.engine.spi.PersistenceContext;
-import org.hibernate.engine.spi.EntityEntry;
 
 /**
  * The AppointmentFormController class is responsible for managing the appointment form view and its behavior.
@@ -327,22 +324,49 @@ public class AppointmentFormController implements Initializable {
         onCommitAction = e -> {
             if (allRowsValid()) {
                 dbCommit();
-            }
-            else{
-                final String idlist = FXAppointments.stream()
-                        .filter(a -> !a.seDValid || !a.seTValid || !a.withinWorkingHoursValid || a.overlappingError)
-                        .map(a -> a.getId().toString())
-                        .collect(Collectors.joining(", "));
+            } else {
+                // Collect IDs and reasons for invalid rows
+                final StringBuilder invalidRows = new StringBuilder();
 
+                FXAppointments.stream()
+                        .filter(a -> !a.seDValid || !a.seTValid || !a.withinWorkingHoursValid || a.overlappingError)
+                        .forEach(a -> {
+                            invalidRows.append("Appointment ID ").append(a.getId()).append(": ");
+
+                            if (!a.seDValid) {
+                                invalidRows.append(_bundle.getString("error.invalidstartenddate.content.text")).append(", ");
+                            }
+                            if (!a.seTValid) {
+                                invalidRows.append(_bundle.getString("error.invalidstartendtime.content.text")).append(", ");
+                            }
+                            if (!a.withinWorkingHoursValid) {
+                                invalidRows.append(_bundle.getString("error.businesshours.content.text")).append(", ");
+                            }
+                            if (a.overlappingError) {
+                                invalidRows.append(_bundle.getString("error.overlapping.content.text")).append(", ");
+                            }
+
+                            // Remove the last comma and space
+                            int lastCommaIndex = invalidRows.lastIndexOf(", ");
+                            if (lastCommaIndex != -1) {
+                                invalidRows.delete(lastCommaIndex, invalidRows.length());
+                            }
+
+                            invalidRows.append("\n");  // New line for the next invalid appointment
+                        });
+
+                // Show an alert with invalid row IDs and reasons
                 Platform.runLater(() -> {
-                alert.setTitle(_bundle.getString("alert.invalidrows.title"));
-                alert.setContentText(
-                        String.format(_bundle.getString("alert.invalidrows.content"),idlist));
-                alert.getButtonTypes().setAll(ButtonType.OK);
-                alert.showAndWait();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(_bundle.getString("alert.invalidrows.title"));
+                    alert.setHeaderText(null);
+                    alert.setContentText(String.format(_bundle.getString("alert.invalidrows.content"), invalidRows.toString()));
+                    alert.getButtonTypes().setAll(ButtonType.OK);
+                    alert.showAndWait();
                 });
             }
         };
+
 
 // Helper method to show the localized alert
 
@@ -798,7 +822,7 @@ public class AppointmentFormController implements Initializable {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
                                 alert.setTitle(String.format(_bundle.getString("error.dialog.text"), currentAppointment.getId()));
                                 alert.setHeaderText(_bundle.getString("error.invalidstartendtime.header.text"));
-                                alert.setContentText(_bundle.getString("error.invalid.sttartendtime.content.text"));
+                                alert.setContentText(_bundle.getString("error.invalidstartendtime.content.text"));
                                 alert.show();
                             }
                         });
